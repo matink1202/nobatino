@@ -1,5 +1,7 @@
 # Agent Orchestration Patterns
 
+> مرجع اختیاری قالب. برای نقش‌ها و فرایند واقعی نوبتینو، [راهنمای همکاری تیم‌ها](../README.md) را ببینید.
+
 ## Pattern 1: Sequential Pipeline
 ```
 clarify → research → architect → review → build
@@ -25,14 +27,14 @@ Loop of sub-phases. Break when:
 - No bugs found in test
 - All items pass quality gate
 
-## Our Framework's Hybrid
+## Example Hybrid from the Original Template
 Combines patterns 1, 2, 4, 5:
 1. Sequential pipeline for phases 1-4 (clarify → research → plan → review)
 2. Fresh instance per subagent (pattern 4)
 3. Build loop per task (pattern 2)
 4. Early break on quality gates (pattern 5)
 
-## Orchestration Rules
+## Rules Used in That Example
 1. Orchestrator never implements. It delegates.
 2. Each subagent gets minimal context (context packing).
 3. Quality gates between steps: review after implement, test after review.

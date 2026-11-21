@@ -1,5 +1,7 @@
 # LLM Wiki Pattern
 
+> مرجع اختیاری قالب. در نوبتینو تصمیم‌های بصری در سیستم طراحی و تصمیم‌های صفحه در مستند تیم مسئول ثبت می‌شوند؛ [راهنمای همکاری](../README.md) مرجع محل ثبت و بازبینی است.
+
 ## What
 Instead of RAG (re-deriving knowledge every query), LLM incrementally builds and maintains a persistent wiki — structured, interlinked markdown files.
 
@@ -29,7 +31,7 @@ Tedious part of knowledge base = bookkeeping (cross-references, consistency, sta
 Human's job: curate sources, direct analysis, ask questions, think.
 LLM's job: everything else.
 
-## Application to Our Framework
+## Example Application in the Original Template
 - llm-wiki/ is our persistent knowledge layer
 - index.md lets agents find relevant knowledge without re-deriving
 - log.md tracks what's been done across sessions

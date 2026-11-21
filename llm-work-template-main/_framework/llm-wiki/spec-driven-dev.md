@@ -1,5 +1,7 @@
 # Spec-Driven Development
 
+> مرجع اختیاری قالب. در نوبتینو مشخصات هر صفحه نزد تیم مسئول آن می‌ماند؛ [الگوی تحویل](../page-handoff.md) به آن مشخصات و به سیستم طراحی مشترک ارجاع می‌دهد. `SPEC.md` سراسری لازم نیست.
+
 ## Core Idea
 Plan-then-execute forgets. Spec-driven development (SDD) remembers.
 
