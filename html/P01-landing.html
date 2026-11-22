@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="نوبتینو - رزرو آنلاین نوبت پزشک. پزشک مورد نظرت رو پیدا کن و آنلاین نوبت بگیر">
+	<title>نوبتینو - رزرو آنلاین نوبت پزشک</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<style>
+		/* Design System */
+		:root {
+			--primary: #3262CE;
+			--primary-light: #E7F0FB;
+			--dark: #111B30;
+			--text-primary: #111827;
+			--text-secondary: #526174;
+			--bg: #F5F8FA;
+			--card-bg: #FAFDFE;
+			--border: #DCE6EB;
+			--mint: #E6F6EB;
+			--blue-light: #E7F0FB;
+			--success: #10B981;
+			--white: #FFFFFF;
+			--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+			--shadow: 0 4px 16px rgba(50, 98, 206, 0.08);
+			--shadow-lg: 0 8px 24px rgba(50, 98, 206, 0.12);
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		html, body {
+			height: 100%;
+		}
+
+		body {
+			background-color: var(--bg);
+			color: var(--text-primary);
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 16px;
+			line-height: 1.6;
+		}
+
+		html {
+			scroll-behavior: smooth;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			html {
+				scroll-behavior: auto;
+			}
+		}
+
+		/* Scroll margin offset for sticky header - 80px accounts for header height */
+		#search,
+		#specialties,
+		#about,
+		#contact {
+			scroll-margin-top: 80px;
+		}
+
+		/* Typography */
+		h1 {
+			font-size: 42px;
+			font-weight: 700;
+			line-height: 1.2;
+			margin-bottom: 16px;
+		}
+
+		h2 {
+			font-size: 28px;
+			font-weight: 700;
+			line-height: 1.3;
+			margin-bottom: 12px;
+			color: var(--text-primary);
+		}
+
+		h3 {
+			font-size: 20px;
+			font-weight: 600;
+			line-height: 1.3;
+			margin-bottom: 8px;
+			color: var(--text-primary);
+		}
+
+		h4 {
+			font-size: 16px;
+			font-weight: 600;
+			margin-bottom: 8px;
+		}
+
+		p {
+			font-size: 15px;
+			color: var(--text-secondary);
+			line-height: 1.6;
+		}
+
+		a {
+			color: var(--primary);
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+
+		/* Container */
+		.container {
+			max-width: 1280px;
+			margin: 0 auto;
+			padding: 0 20px;
+		}
+
+		/* Header */
+		header {
+			background: var(--white);
+			border-bottom: 1px solid var(--border);
+			position: sticky;
+			top: 0;
+			z-index: 100;
+		}
+
+		.header-content {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 16px 0;
+		}
+
+		.logo {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			font-size: 20px;
+			font-weight: 700;
+			color: var(--primary);
+		}
+
+		.logo img {
+			height: 48px;
+			width: auto;
+		}
+
+		.nav-desktop {
+			display: flex;
+			align-items: center;
+			gap: 32px;
+			flex: 1;
+			justify-content: center;
+		}
+
+		.nav-desktop a {
+			font-size: 15px;
+			color: var(--text-primary);
+			transition: color 0.2s;
+			font-weight: 500;
+		}
+
+		.nav-desktop a:hover {
+			color: var(--primary);
+			text-decoration: none;
+		}
+
+		.auth-buttons {
+			display: flex;
+			gap: 12px;
+			align-items: center;
+		}
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 11px 24px;
+			border-radius: 999px;
+			font-size: 15px;
+			font-weight: 600;
+			border: none;
+			cursor: pointer;
+			transition: all 0.2s;
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			min-height: 44px;
+		}
+
+		.btn-primary {
+			background-color: var(--primary);
+			color: var(--white);
+		}
+
+		.btn-primary:hover {
+			background-color: #2654b8;
+			box-shadow: var(--shadow);
+		}
+
+		.btn-secondary {
+			background-color: transparent;
+			color: var(--primary);
+			border: 1.5px solid var(--primary);
+		}
+
+		.btn-secondary:hover {
+			background-color: var(--primary-light);
+		}
+
+		.btn-small {
+			padding: 8px 16px;
+			font-size: 14px;
+		}
+
+		/* Custom Dropdowns */
+		.custom-dropdown {
+			position: relative;
+			width: 100%;
+		}
+
+		.dropdown-trigger {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 100%;
+			padding: 0;
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			background: var(--white);
+			cursor: pointer;
+			transition: all 0.2s;
+			min-height: 44px;
+			font-weight: 500;
+			color: var(--text-primary);
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 15px;
+		}
+
+		.dropdown-trigger-wrapper {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 12px 16px;
+			width: 100%;
+			cursor: text;
+			gap: 8px;
+		}
+
+		.dropdown-trigger-input {
+			flex: 1;
+			border: none;
+			outline: none;
+			background: transparent;
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 15px;
+			color: var(--text-primary);
+			text-align: right;
+			padding: 0;
+		}
+
+		.dropdown-trigger-input::placeholder {
+			color: var(--text-secondary);
+		}
+
+		.dropdown-trigger:hover {
+			border-color: var(--primary);
+		}
+
+		.dropdown-trigger:focus-within {
+			outline: none;
+			border-color: var(--primary);
+		}
+
+		.dropdown-trigger.active {
+			border-color: var(--primary);
+		}
+
+		.dropdown-icon {
+			color: var(--text-secondary);
+			font-size: 12px;
+			transition: transform 0.2s;
+			margin-left: 8px;
+		}
+
+		.dropdown-trigger.active .dropdown-icon {
+			transform: rotate(180deg);
+		}
+
+		.dropdown-trigger-icons {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.dropdown-search-icon-trigger {
+			color: var(--text-secondary);
+			font-size: 14px;
+			cursor: default;
+			pointer-events: none;
+		}
+
+		.dropdown-menu {
+			display: none;
+			position: fixed;
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			box-shadow: var(--shadow-lg);
+			z-index: 1000;
+			min-width: 280px;
+			max-width: 100%;
+			max-height: 400px;
+			overflow-y: auto;
+		}
+
+		.dropdown-menu.active {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.dropdown-list {
+			max-height: 100%;
+			overflow-y: auto;
+			padding: 8px 0;
+		}
+
+		.dropdown-item {
+			padding: 12px 16px;
+			cursor: pointer;
+			transition: all 0.15s;
+			color: var(--text-primary);
+			font-weight: 500;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.dropdown-item:hover {
+			background: var(--primary-light);
+			color: var(--primary);
+		}
+
+		.dropdown-item.selected {
+			background: var(--primary-light);
+			color: var(--primary);
+		}
+
+		.dropdown-item.selected::after {
+			content: '✓';
+			font-weight: 700;
+			color: var(--primary);
+		}
+
+		.dropdown-empty {
+			padding: 20px 16px;
+			text-align: center;
+			color: var(--text-secondary);
+			font-size: 14px;
+		}
+
+		.dropdown-trigger input[type="hidden"] {
+			display: none;
+		}
+
+		/* Mobile Menu */
+		.menu-toggle {
+			display: none;
+			background: none;
+			border: none;
+			font-size: 24px;
+			cursor: pointer;
+			color: var(--text-primary);
+		}
+
+		.nav-mobile {
+			display: none;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			background: var(--white);
+			border-bottom: 1px solid var(--border);
+			flex-direction: column;
+			padding: 16px 20px;
+			gap: 12px;
+		}
+
+		.nav-mobile.active {
+			display: flex;
+		}
+
+		@media (max-width: 768px) {
+			.nav-desktop {
+				display: none;
+			}
+
+			.menu-toggle {
+				display: block;
+			}
+
+			.nav-mobile a {
+				color: var(--text-primary);
+				font-weight: 500;
+				padding: 12px 0;
+				border-bottom: 1px solid var(--border);
+			}
+
+			.nav-mobile a:last-child {
+				border-bottom: none;
+			}
+		}
+
+		/* Hero Section */
+		.hero {
+			padding: 60px 0;
+			background: linear-gradient(135deg, var(--primary-light) 0%, var(--mint) 100%);
+		}
+
+		.hero-content {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 48px;
+			align-items: center;
+		}
+
+		.hero-left h1 {
+			color: var(--primary);
+			margin-bottom: 20px;
+		}
+
+		.hero-left > p {
+			font-size: 16px;
+			margin-bottom: 32px;
+			color: var(--text-secondary);
+		}
+
+		.search-card {
+			background: var(--white);
+			border-radius: 20px;
+			padding: 24px;
+			box-shadow: var(--shadow);
+			margin-top: 20px;
+		}
+
+		.search-row {
+			display: grid;
+			grid-template-columns: 1fr 1fr auto;
+			gap: 12px;
+			margin-bottom: 12px;
+		}
+
+		.search-field {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		.search-field label {
+			font-size: 13px;
+			font-weight: 600;
+			color: var(--text-primary);
+		}
+
+		.search-field input,
+		.search-field select {
+			padding: 12px 16px;
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			font-size: 14px;
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			background-color: var(--white);
+			color: var(--text-primary);
+			transition: all 0.2s;
+		}
+
+		.search-field input:focus,
+		.search-field select:focus {
+			outline: 2px solid var(--primary);
+			outline-offset: 0;
+			border-color: var(--primary);
+		}
+
+		.search-btn-container {
+			display: flex;
+			align-items: flex-end;
+		}
+
+		.search-btn-container .btn {
+			width: 100%;
+			height: 44px;
+		}
+
+		@media (max-width: 768px) {
+			.search-row {
+				grid-template-columns: 1fr;
+				gap: 16px;
+			}
+
+			.search-btn-container {
+				align-items: stretch;
+			}
+
+			.search-btn-container .btn {
+				height: 48px;
+			}
+
+			.dropdown-menu {
+				max-height: 250px !important;
+				max-width: 90vw;
+			}
+		}
+
+		.hero-right {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.hero-image {
+			width: 100%;
+			max-width: 400px;
+			height: auto;
+			object-fit: cover;
+			border-radius: 24px;
+		}
+
+		@media (max-width: 1024px) {
+			.hero-content {
+				grid-template-columns: 1fr;
+				gap: 32px;
+			}
+
+			.hero {
+				padding: 40px 0;
+			}
+
+			h1 {
+				font-size: 32px;
+			}
+
+			.hero-right {
+				display: none;
+			}
+
+			.search-row {
+				grid-template-columns: 1fr;
+			}
+
+			.search-btn-container {
+				display: flex;
+			}
+		}
+
+		/* Stats Section */
+		.stats {
+			padding: 40px 0;
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 24px;
+		}
+
+		.stat-card {
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			padding: 24px;
+			text-align: center;
+		}
+
+		.stat-number {
+			font-size: 36px;
+			font-weight: 700;
+			color: var(--primary);
+			margin-bottom: 8px;
+		}
+
+		.stat-label {
+			font-size: 14px;
+			color: var(--text-secondary);
+		}
+
+		@media (max-width: 768px) {
+			.stats {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		/* Section */
+		.section {
+			padding: 60px 0;
+		}
+
+		.section-title {
+			text-align: center;
+			margin-bottom: 40px;
+		}
+
+		.section-title h2 {
+			margin-bottom: 12px;
+		}
+
+		.section-title p {
+			font-size: 16px;
+			color: var(--text-secondary);
+		}
+
+		/* Specialties */
+		.specialties-grid {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			gap: 20px;
+		}
+
+		.specialty-card {
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			padding: 24px;
+			text-align: center;
+			cursor: pointer;
+			transition: all 0.2s;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.specialty-card:hover {
+			border-color: var(--primary);
+			box-shadow: var(--shadow);
+			transform: translateY(-4px);
+		}
+
+		.specialty-icon {
+			font-size: 32px;
+			color: var(--primary);
+			width: 56px;
+			height: 56px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: var(--primary-light);
+			border-radius: 12px;
+		}
+
+		.specialty-name {
+			font-size: 15px;
+			font-weight: 600;
+			color: var(--text-primary);
+		}
+
+		@media (max-width: 1024px) {
+			.specialties-grid {
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+
+		@media (max-width: 768px) {
+			.specialties-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+
+		/* Benefits Section */
+		.benefits-grid {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 24px;
+		}
+
+		.benefit-card {
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			padding: 32px 24px;
+			text-align: center;
+		}
+
+		.benefit-icon {
+			font-size: 48px;
+			margin-bottom: 16px;
+			color: var(--primary);
+		}
+
+		.benefit-card h3 {
+			margin-bottom: 12px;
+		}
+
+		.benefit-card p {
+			font-size: 14px;
+		}
+
+		@media (max-width: 768px) {
+			.benefits-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		/* How It Works */
+		.steps-grid {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 24px;
+		}
+
+		.step-card {
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			padding: 32px 24px;
+			text-align: center;
+			position: relative;
+		}
+
+		.step-number {
+			width: 48px;
+			height: 48px;
+			background: var(--primary);
+			color: var(--white);
+			border-radius: 999px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 20px;
+			font-weight: 700;
+			margin: 0 auto 16px;
+		}
+
+		.step-card h3 {
+			margin-bottom: 12px;
+		}
+
+		.step-card p {
+			font-size: 14px;
+		}
+
+		@media (max-width: 768px) {
+			.steps-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		/* Doctors Section */
+		.doctors-grid {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			gap: 20px;
+		}
+
+		.doctor-card {
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			padding: 20px;
+			transition: all 0.2s;
+			overflow: hidden;
+		}
+
+		.doctor-card:hover {
+			box-shadow: var(--shadow-lg);
+			transform: translateY(-4px);
+		}
+
+		.doctor-image {
+			width: 100%;
+			aspect-ratio: 1;
+			object-fit: cover;
+			border-radius: 16px;
+			margin-bottom: 16px;
+		}
+
+		.doctor-name {
+			font-size: 16px;
+			font-weight: 600;
+			margin-bottom: 4px;
+			color: var(--text-primary);
+		}
+
+		.doctor-specialty {
+			font-size: 13px;
+			color: var(--text-secondary);
+			margin-bottom: 12px;
+		}
+
+		.doctor-rating {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+			font-size: 13px;
+			margin-bottom: 16px;
+			color: var(--text-secondary);
+		}
+
+		.doctor-rating .stars {
+			color: #FFA500;
+		}
+
+		.doctor-btn {
+			width: 100%;
+		}
+
+		@media (max-width: 1024px) {
+			.doctors-grid {
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+
+		@media (max-width: 768px) {
+			.doctors-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+
+		@media (max-width: 480px) {
+			.doctors-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		/* FAQ Section */
+		.faq-grid {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 16px;
+			max-width: 800px;
+			margin: 0 auto;
+		}
+
+		.faq-item {
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			overflow: hidden;
+		}
+
+		.faq-header {
+			padding: 20px 24px;
+			cursor: pointer;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			transition: background 0.2s;
+			font-weight: 600;
+		}
+
+		.faq-header:hover {
+			background: var(--primary-light);
+		}
+
+		.faq-toggle {
+			color: var(--primary);
+			transition: transform 0.2s;
+			font-size: 20px;
+		}
+
+		.faq-toggle.active {
+			transform: rotate(-180deg);
+		}
+
+		.faq-content {
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.2s;
+			padding: 0 24px;
+		}
+
+		.faq-content.active {
+			max-height: 500px;
+			padding: 0 24px 20px;
+		}
+
+		.faq-answer {
+			font-size: 14px;
+			color: var(--text-secondary);
+			line-height: 1.6;
+		}
+
+		/* CTA Section */
+		.cta-section {
+			background: linear-gradient(135deg, var(--primary) 0%, #2654b8 100%);
+			color: var(--white);
+			padding: 60px 20px;
+			text-align: center;
+			border-radius: 20px;
+			margin: 60px 0;
+		}
+
+		.cta-section h2 {
+			color: var(--white);
+			margin-bottom: 16px;
+		}
+
+		.cta-section p {
+			color: rgba(255, 255, 255, 0.9);
+			margin-bottom: 32px;
+			font-size: 16px;
+		}
+
+		.cta-section .btn {
+			background: var(--white);
+			color: var(--primary);
+		}
+
+		.cta-section .btn:hover {
+			background: rgba(255, 255, 255, 0.95);
+		}
+
+		/* Footer */
+		footer {
+			background: var(--dark);
+			color: var(--white);
+			padding: 40px 0 20px;
+			margin-top: 60px;
+		}
+
+		.footer-content {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			gap: 32px;
+			margin-bottom: 40px;
+		}
+
+		.footer-section h4 {
+			color: var(--white);
+			margin-bottom: 16px;
+		}
+
+		.footer-section a {
+			display: block;
+			color: rgba(255, 255, 255, 0.7);
+			font-size: 14px;
+			margin-bottom: 12px;
+			transition: color 0.2s;
+		}
+
+		.footer-section a:hover {
+			color: var(--white);
+			text-decoration: none;
+		}
+
+		.footer-bottom {
+			border-top: 1px solid rgba(255, 255, 255, 0.1);
+			padding-top: 20px;
+			text-align: center;
+			font-size: 13px;
+			color: rgba(255, 255, 255, 0.6);
+		}
+
+		@media (max-width: 768px) {
+			.footer-content {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+
+		/* Accessibility */
+		@media (prefers-reduced-motion: reduce) {
+			* {
+				animation-duration: 0.01ms !important;
+				animation-iteration-count: 1 !important;
+				transition-duration: 0.01ms !important;
+			}
+		}
+
+		:focus {
+			outline: 2px solid var(--primary);
+			outline-offset: 2px;
+		}
+
+		:focus:not(:focus-visible) {
+			outline: none;
+		}
+
+		@media (max-width: 768px) {
+			h1 {
+				font-size: 28px;
+			}
+
+			h2 {
+				font-size: 22px;
+			}
+
+			.section {
+				padding: 40px 0;
+			}
+
+			.hero {
+				padding: 40px 0;
+			}
+
+			.search-card {
+				margin-top: 16px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<!-- Header -->
+	<header>
+		<div class="container">
+			<div class="header-content">
+				<div class="logo">
+					<img src="../images/Logo.png" alt="نوبتینو لوگو">
+				</div>
+
+				<nav class="nav-desktop">
+					<a href="#search">جست‌وجو</a>
+					<a href="#specialties">تخصص‌ها</a>
+					<a href="#about">درباره ما</a>
+					<a href="#contact">تماس</a>
+				</nav>
+
+				<div class="auth-buttons">
+					<button class="btn btn-secondary btn-small">ورود</button>
+					<button class="btn btn-primary btn-small">ثبت‌نام</button>
+				</div>
+
+				<button class="menu-toggle" id="menuToggle">
+					<i class="fas fa-bars"></i>
+				</button>
+			</div>
+
+			<nav class="nav-mobile" id="navMobile">
+				<a href="#search">جست‌وجو</a>
+				<a href="#specialties">تخصص‌ها</a>
+				<a href="#about">درباره ما</a>
+				<a href="#contact">تماس</a>
+			</nav>
+		</div>
+	</header>
+
+	<!-- Hero Section -->
+	<section id="search" class="hero">
+		<div class="container">
+			<div class="hero-content">
+				<div class="hero-left">
+					<h1>پزشک مورد نظرت رو پیدا کن و آنلاین نوبت بگیر</h1>
+					<p>با نوبتینو، پزشکان متخصص رو پیدا کن، مقایسه کن و در چند قدم ساده نوبت مناسب خودت رو رزرو کن.</p>
+
+					<div class="search-card">
+						<div class="search-row">
+							<div class="search-field">
+								<label>تخصص</label>
+								<div class="custom-dropdown" id="specialty-dropdown">
+									<div class="dropdown-trigger" role="button" tabindex="0">
+										<div class="dropdown-trigger-wrapper">
+											<input type="text" class="dropdown-trigger-input" placeholder="انتخاب کنید" autocomplete="off">
+											<div class="dropdown-trigger-icons">
+												<i class="fas fa-search dropdown-search-icon-trigger" style="display: none;"></i>
+												<i class="fas fa-chevron-down dropdown-icon"></i>
+											</div>
+										</div>
+									</div>
+									<div class="dropdown-menu">
+										<div class="dropdown-list">
+											<div class="dropdown-item" data-value="cardiology">قلب و عروق</div>
+											<div class="dropdown-item" data-value="neurology">مغز و اعصاب</div>
+											<div class="dropdown-item" data-value="orthopedic">ارتوپدی</div>
+											<div class="dropdown-item" data-value="dermatology">پوست</div>
+											<div class="dropdown-item" data-value="general">طب عمومی</div>
+											<div class="dropdown-item" data-value="pediatric">کودکان</div>
+											<div class="dropdown-item" data-value="psychiatry">روانپزشکی</div>
+											<div class="dropdown-item" data-value="surgery">جراحی</div>
+										</div>
+									</div>
+									<input type="hidden" id="specialty" value="">
+								</div>
+							</div>
+
+							<div class="search-field">
+								<label>شهر</label>
+								<div class="custom-dropdown" id="city-dropdown">
+									<div class="dropdown-trigger" role="button" tabindex="0">
+										<div class="dropdown-trigger-wrapper">
+											<input type="text" class="dropdown-trigger-input" placeholder="انتخاب شهر" autocomplete="off">
+											<div class="dropdown-trigger-icons">
+												<i class="fas fa-search dropdown-search-icon-trigger" style="display: none;"></i>
+												<i class="fas fa-chevron-down dropdown-icon"></i>
+											</div>
+										</div>
+									</div>
+									<div class="dropdown-menu">
+										<div class="dropdown-list" id="cities-list">
+											<!-- Cities will be loaded here by JavaScript -->
+										</div>
+										<div class="dropdown-empty" style="display: none;">
+											شهری یافت نشد
+										</div>
+									</div>
+									<input type="hidden" id="city" value="">
+								</div>
+							</div>
+
+							<div class="search-btn-container">
+								<button class="btn btn-primary search-btn">جست‌وجو</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="hero-right">
+					<img src="../images/hero_section.png" alt="تصویر قسمت معرفی" style="width: 100%; height: auto; border-radius: 20px;">
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Stats Section -->
+	<section class="container">
+		<div class="stats">
+			<div class="stat-card">
+				<div class="stat-number">۱۲۰۰۰۰+</div>
+				<div class="stat-label">پزشک متخصص</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-number">۵۰۰۰۰+</div>
+				<div class="stat-label">نوبت رزرو‌شده</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-number">۹۸٪</div>
+				<div class="stat-label">رضایت کاربران</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Specialties Section -->
+	<section id="specialties" class="section container">
+		<div class="section-title">
+			<h2>تخصص‌های محبوب</h2>
+			<p>سریع‌ترین راه برای رزرو پزشک</p>
+		</div>
+
+		<div class="specialties-grid">
+			<div class="specialty-card" onclick="selectSpecialty(this)">
+				<div class="specialty-icon"><i class="fas fa-heart"></i></div>
+				<div class="specialty-name">قلب و عروق</div>
+			</div>
+
+			<div class="specialty-card" onclick="selectSpecialty(this)">
+				<div class="specialty-icon"><i class="fas fa-brain"></i></div>
+				<div class="specialty-name">مغز و اعصاب</div>
+			</div>
+
+			<div class="specialty-card" onclick="selectSpecialty(this)">
+				<div class="specialty-icon"><i class="fas fa-bone"></i></div>
+				<div class="specialty-name">ارتوپدی</div>
+			</div>
+
+			<div class="specialty-card" onclick="selectSpecialty(this)">
+				<div class="specialty-icon"><i class="fas fa-spa"></i></div>
+				<div class="specialty-name">پوست</div>
+			</div>
+
+			<div class="specialty-card" onclick="selectSpecialty(this)">
+				<div class="specialty-icon"><i class="fas fa-stethoscope"></i></div>
+				<div class="specialty-name">طب عمومی</div>
+			</div>
+
+			<div class="specialty-card" onclick="selectSpecialty(this)">
+				<div class="specialty-icon"><i class="fas fa-baby"></i></div>
+				<div class="specialty-name">کودکان</div>
+			</div>
+
+			<div class="specialty-card" onclick="selectSpecialty(this)">
+				<div class="specialty-icon"><i class="fas fa-head-side-virus"></i></div>
+				<div class="specialty-name">روانپزشکی</div>
+			</div>
+
+			<div class="specialty-card" onclick="selectSpecialty(this)">
+				<div class="specialty-icon"><i class="fas fa-surgical"></i></div>
+				<div class="specialty-name">جراحی</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Why Nobatino Section -->
+	<section id="about" class="section container">
+		<div class="section-title">
+			<h2>چرا نوبتینو؟</h2>
+			<p>مزایای انتخاب نوبتینو برای رزرو نوبت پزشک</p>
+		</div>
+
+		<div class="benefits-grid">
+			<div class="benefit-card">
+				<div class="benefit-icon"><i class="fas fa-search"></i></div>
+				<h3>پیدا کردن آسان</h3>
+				<p>درب و دیوار پزشکان و متخصصین رو جستجو کن و سریع پیدا کن</p>
+			</div>
+
+			<div class="benefit-card">
+				<div class="benefit-icon"><i class="fas fa-mouse"></i></div>
+				<h3>رزرو سریع</h3>
+				<p>در چند کلیک نوبت مورد نظر خود رو رزرو کن</p>
+			</div>
+
+			<div class="benefit-card">
+				<div class="benefit-icon"><i class="fas fa-shield-alt"></i></div>
+				<h3>اطلاعات قابل‌اعتماد</h3>
+				<p>اطلاعات تأیید‌شده‌ی پزشک و نظرات واقعی کاربران رو ببین</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- How It Works Section -->
+	<section class="section container">
+		<div class="section-title">
+			<h2>نحوهٔ کار</h2>
+			<p>۳ قدم ساده برای رزرو نوبت</p>
+		</div>
+
+		<div class="steps-grid">
+			<div class="step-card">
+				<div class="step-number">۱</div>
+				<h3>انتخاب تخصص</h3>
+				<p>تخصص پزشکی و شهری که نیاز دارید رو انتخاب کنید</p>
+			</div>
+
+			<div class="step-card">
+				<div class="step-number">۲</div>
+				<h3>انتخاب پزشک</h3>
+				<p>بین پزشکان متخصص بر اساس امتیاز و نظرات انتخاب کنید</p>
+			</div>
+
+			<div class="step-card">
+				<div class="step-number">۳</div>
+				<h3>رزرو نوبت</h3>
+				<p>زمان مناسب انتخاب کنید و نوبت خود را رزرو کنید</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Featured Doctors Section -->
+	<section class="section container">
+		<div class="section-title">
+			<h2>پزشکان برتر</h2>
+			<p>بهترین پزشکان در حوزهٔ تخصص خود</p>
+		</div>
+
+		<div class="doctors-grid">
+			<div class="doctor-card">
+				<img src="../images/male1.png" alt="دکتر احمد علی‌پور" class="doctor-image">
+				<div class="doctor-name">دکتر احمد علی‌پور</div>
+				<div class="doctor-specialty">متخصص قلب و عروق</div>
+				<div class="doctor-rating">
+					<span class="stars">★★★★★</span>
+					<span>۴.۹</span>
+					<span>(۱۲۸)</span>
+				</div>
+				<a href="P02-doctor-details.html?id=doctor-001" class="btn btn-primary btn-small doctor-btn" style="text-decoration: none;">رزرو نوبت</a>
+			</div>
+
+			<div class="doctor-card">
+				<img src="../images/female1.png" alt="دکتر مریم محمدی" class="doctor-image">
+				<div class="doctor-name">دکتر مریم محمدی</div>
+				<div class="doctor-specialty">متخصص مغز و اعصاب</div>
+				<div class="doctor-rating">
+					<span class="stars">★★★★★</span>
+					<span>۴.۸</span>
+					<span>(۹۵)</span>
+				</div>
+				<a href="P02-doctor-details.html?id=doctor-002" class="btn btn-primary btn-small doctor-btn" style="text-decoration: none;">رزرو نوبت</a>
+			</div>
+
+			<div class="doctor-card">
+				<img src="../images/male2.png" alt="دکتر علی رحیمی" class="doctor-image">
+				<div class="doctor-name">دکتر علی رحیمی</div>
+				<div class="doctor-specialty">متخصص ارتوپدی</div>
+				<div class="doctor-rating">
+					<span class="stars">★★★★★</span>
+					<span>۴.۹</span>
+					<span>(۱۴۳)</span>
+				</div>
+				<a href="P02-doctor-details.html?id=doctor-003" class="btn btn-primary btn-small doctor-btn" style="text-decoration: none;">رزرو نوبت</a>
+			</div>
+
+			<div class="doctor-card">
+				<img src="../images/female2.png" alt="دکتر سارا کریمی" class="doctor-image">
+				<div class="doctor-name">دکتر سارا کریمی</div>
+				<div class="doctor-specialty">متخصص پوست</div>
+				<div class="doctor-rating">
+					<span class="stars">★★★★★</span>
+					<span>۴.۷</span>
+					<span>(۸۷)</span>
+				</div>
+				<a href="P02-doctor-details.html?id=doctor-004" class="btn btn-primary btn-small doctor-btn" style="text-decoration: none;">رزرو نوبت</a>
+			</div>
+		</div>
+	</section>
+
+	<!-- FAQ Section -->
+	<section class="section container">
+		<div class="section-title">
+			<h2>سوالات متداول</h2>
+			<p>پاسخ به سوالات شما</p>
+		</div>
+
+		<div class="faq-grid">
+			<div class="faq-item">
+				<div class="faq-header" onclick="toggleFaq(this)">
+					<span>چطور پزشک مورد نظرم رو پیدا کنم؟</span>
+					<i class="fas fa-chevron-down faq-toggle"></i>
+				</div>
+				<div class="faq-content">
+					<p class="faq-answer">برای پیدا کردن پزشک مورد نظر، تخصص و شهر خود را انتخاب کنید، سپس از لیست پزشکان نمایش‌داده‌شده انتخاب کنید. می‌توانید اطلاعات، امتیاز و نظرات آنها را مقایسه کنید.</p>
+				</div>
+			</div>
+
+			<div class="faq-item">
+				<div class="faq-header" onclick="toggleFaq(this)">
+					<span>چطور نوبت رزرو کنم؟</span>
+					<i class="fas fa-chevron-down faq-toggle"></i>
+				</div>
+				<div class="faq-content">
+					<p class="faq-answer">پس از انتخاب پزشک، روی دکمهٔ «رزرو نوبت» کلیک کنید. سپس زمان مناسب را انتخاب کنید و اطلاعات خود را وارد کنید تا نوبت نهایی شود.</p>
+				</div>
+			</div>
+
+			<div class="faq-item">
+				<div class="faq-header" onclick="toggleFaq(this)">
+					<span>آیا می‌توانم نوبت خود را لغو کنم؟</span>
+					<i class="fas fa-chevron-down faq-toggle"></i>
+				</div>
+				<div class="faq-content">
+					<p class="faq-answer">بله، شما می‌توانید نوبت‌های خود را از پنل کاربر لغو کنید. لطفاً توجه داشته باشید که لغو باید حداکثر ۲۴ ساعت قبل از نوبت انجام شود.</p>
+				</div>
+			</div>
+
+			<div class="faq-item">
+				<div class="faq-header" onclick="toggleFaq(this)">
+					<span>آیا اطلاعات من محفوظ است؟</span>
+					<i class="fas fa-chevron-down faq-toggle"></i>
+				</div>
+				<div class="faq-content">
+					<p class="faq-answer">بله، تمام اطلاعات شما بر اساس استانداردهای امنیتی بین‌المللی محفوظ است. ما از رمزگذاری و محافظ‌های امنیتی پیشرفتهٔ داده استفاده می‌کنیم.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Section -->
+	<div class="container">
+		<section class="cta-section">
+			<h2>بیشتر منتظر نباش!</h2>
+			<p>امروز پزشک مورد نظرت رو پیدا کن و نوبت بگیر</p>
+			<button class="btn">جست‌وجو و رزرو</button>
+		</section>
+	</div>
+
+	<!-- Footer -->
+	<footer id="contact">
+		<div class="container">
+			<div class="footer-content">
+				<div class="footer-section">
+					<h4>درباره نوبتینو</h4>
+					<a href="#about">درباره ما</a>
+					<a href="#blog">بلاگ</a>
+					<a href="#career">فرصت‌های شغلی</a>
+					<a href="#press">مطبوعات</a>
+				</div>
+
+				<div class="footer-section">
+					<h4>برای کاربران</h4>
+					<a href="#search">جست‌وجو پزشک</a>
+					<a href="#appointments">نوبت‌های من</a>
+					<a href="#prescriptions">نسخه‌های الکترونیکی</a>
+					<a href="#reports">گزارش‌های پزشکی</a>
+				</div>
+
+				<div class="footer-section">
+					<h4>برای پزشکان</h4>
+					<a href="#panel">پنل پزشکان</a>
+					<a href="#pricing">تعرفه</a>
+					<a href="#support">پشتیبانی</a>
+					<a href="#docs">مستندات</a>
+				</div>
+
+				<div class="footer-section">
+					<h4>قانونی و حریم</h4>
+					<a href="#privacy">حریم خصوصی</a>
+					<a href="#terms">شرایط استفاده</a>
+					<a href="#cookies">سیاست کوکی‌ها</a>
+					<a href="#contact">تماس حقوقی</a>
+				</div>
+			</div>
+
+			<div class="footer-bottom">
+				<p>&copy; ۱۴۰۳ نوبتینو. تمام حقوق محفوظ است.</p>
+			</div>
+		</div>
+	</footer>
+
+	<script>
+		// Mobile Menu
+		const menuToggle = document.getElementById('menuToggle');
+		const navMobile = document.getElementById('navMobile');
+
+		menuToggle?.addEventListener('click', () => {
+			navMobile.classList.toggle('active');
+		});
+
+		// Close menu on link click and handle smooth scrolling
+		document.querySelectorAll('.nav-mobile a, .nav-desktop a').forEach(link => {
+			link.addEventListener('click', (e) => {
+				const href = link.getAttribute('href');
+				// Close mobile menu on any navigation link click
+				if (navMobile && navMobile.classList.contains('active')) {
+					navMobile.classList.remove('active');
+				}
+				// Smooth scroll is handled by CSS scroll-behavior: smooth
+				// and scroll-margin-top offsets
+			});
+		});
+
+		// Specialty selection
+		function selectSpecialty(element) {
+			document.querySelectorAll('.specialty-card').forEach(card => {
+				card.style.borderColor = 'var(--border)';
+				card.style.boxShadow = 'none';
+			});
+
+			element.style.borderColor = 'var(--primary)';
+			element.style.boxShadow = 'var(--shadow)';
+
+			const specialtyName = element.querySelector('.specialty-name').textContent;
+			document.getElementById('specialty').value = specialtyName;
+		}
+
+		// FAQ Toggle
+		function toggleFaq(header) {
+			const content = header.nextElementSibling;
+			const toggle = header.querySelector('.faq-toggle');
+
+			document.querySelectorAll('.faq-content').forEach(item => {
+				if (item !== content) {
+					item.classList.remove('active');
+					item.previousElementSibling.querySelector('.faq-toggle').classList.remove('active');
+				}
+			});
+
+			content.classList.toggle('active');
+			toggle.classList.toggle('active');
+		}
+
+		// Search functionality - ONLY for search button, not doctor buttons
+		const searchBtn = document.querySelector('.search-btn');
+		if (searchBtn) {
+			searchBtn.addEventListener('click', () => {
+				const specialty = document.getElementById('specialty').value;
+				const city = document.getElementById('city').value;
+				if (specialty && city) {
+					console.log(`Searching for ${specialty} in ${city}`);
+					alert(`جستجو برای ${specialty} در ${city}`);
+				} else {
+					alert('لطفاً تخصص و شهر را انتخاب کنید');
+				}
+			});
+		}
+
+		// Doctor booking - now handled by links in P02-doctor-details.html
+		// No action needed here
+
+		// Iranian Cities Database
+		const iranianCities = {
+			'تهران': ['تهران'],
+			'مازندران': ['ساری', 'بابل', 'آمل', 'نور', 'بابلسر'],
+			'گیلان': ['رشت', 'لاهیجان', 'انزلی', 'صومعه سرا'],
+			'اردبیل': ['اردبیل', 'پارس‌آباد'],
+			'اصفهان': ['اصفهان', 'خميني شهر', 'نجف‌آباد', 'کاشان'],
+			'البرز': ['کرج', 'ساوجبلاغ', 'نظرآباد'],
+			'البرز': ['کرج', 'ساوجبلاغ'],
+			'قم': ['قم'],
+			'خراسان رضوی': ['مشهد', 'نیشاپور', 'خراسان'],
+			'خراسان شمالی': ['بجنورد'],
+			'خراسان جنوبی': ['بیرجند'],
+			'سمنان': ['سمنان', 'شاهرود'],
+			'تلگرد': ['تلگرد'],
+			'گلستان': ['گرگان', 'بندرترکمن'],
+			'هرمزگان': ['بندرعباس', 'قشم'],
+			'هرمزگان': ['بندرعباس', 'قشم', 'بندرلنگه'],
+			'خوزستان': ['اهواز', 'خرمشهر', 'آبادان', 'دزفول'],
+			'کرمانشاه': ['کرمانشاه', 'کنگان'],
+			'کرمانشاه': ['کرمانشاه', 'کنگان', 'اسلام‌آباد'],
+			'فارس': ['شیراز', 'مرودشت', 'کازرون'],
+			'کرمان': ['کرمان', 'جیرفت', 'سیرجان'],
+			'بوشهر': ['بوشهر'],
+			'سیستان و بلوچستان': ['زاهدان', 'زابل'],
+			'یزد': ['یزد'],
+			'اصفهان': ['اصفهان', 'خميني شهر', 'نجف‌آباد'],
+			'قزوین': ['قزوین'],
+			'مرکزی': ['اراک', 'ساوه'],
+			'قم': ['قم'],
+			'البرز': ['کرج'],
+			'مازندران': ['ساری', 'بابل'],
+			'گیلان': ['رشت'],
+			'آذربایجان شرقی': ['تبریز', 'مراغه'],
+			'آذربایجان غربی': ['ارومیه', 'خوی'],
+			'کردستان': ['سنندج', 'کرمانشاه'],
+			'کرمانشاه': ['کرمانشاه'],
+			'لرستان': ['خرم‌آباد'],
+			'هرمزگان': ['بندرعباس'],
+			'بوشهر': ['بوشهر'],
+			'خوزستان': ['اهواز'],
+			'سمنان': ['سمنان'],
+			'تهران': ['تهران'],
+		};
+
+		// Flatten cities list
+		const allCities = [];
+		for (const province in iranianCities) {
+			iranianCities[province].forEach(city => {
+				if (!allCities.find(c => c.name === city)) {
+					allCities.push({ name: city, province: province });
+				}
+			});
+		}
+		allCities.sort((a, b) => a.name.localeCompare(b.name, 'fa'));
+
+		// Initialize cities dropdown
+		function initializeCitiesDropdown() {
+			const citiesList = document.getElementById('cities-list');
+			citiesList.innerHTML = '';
+
+			allCities.forEach(city => {
+				const item = document.createElement('div');
+				item.className = 'dropdown-item';
+				item.dataset.value = city.name;
+				item.dataset.province = city.province;
+				item.innerHTML = `
+					<div>
+						<div style="color: var(--text-primary);">${city.name}</div>
+						<div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">${city.province}</div>
+					</div>
+				`;
+				item.addEventListener('click', () => selectCity(city.name, city.province));
+				citiesList.appendChild(item);
+			});
+		}
+
+		// Custom Dropdown Class
+		// Global state for mutual dropdown closing
+		let activeDropdown = null;
+
+		class CustomDropdown {
+			constructor(containerId) {
+				this.container = document.getElementById(containerId);
+				this.trigger = this.container.querySelector('.dropdown-trigger');
+				this.menu = this.container.querySelector('.dropdown-menu');
+				this.list = this.container.querySelector('.dropdown-list');
+				this.triggerInput = this.container.querySelector('.dropdown-trigger-input');
+				this.searchIcon = this.container.querySelector('.dropdown-search-icon-trigger');
+				this.chevronIcon = this.container.querySelector('.dropdown-icon');
+				this.hiddenInput = this.container.querySelector('input[type="hidden"]');
+				this.isOpen = false;
+				this.allItems = [...this.list.querySelectorAll('.dropdown-item')];
+				this.containerId = containerId;
+
+				this.init();
+			}
+
+			init() {
+				// Trigger click - focus the input to open dropdown
+				this.trigger.addEventListener('click', (e) => {
+					e.stopPropagation();
+					// Focus input, which will trigger the focus handler to open dropdown
+					this.triggerInput.focus();
+				});
+
+				// Input focus - open dropdown
+				this.triggerInput.addEventListener('focus', (e) => {
+					if (!this.isOpen) {
+						this.open();
+					}
+				});
+
+				// Input typing - search and show search icon
+				this.triggerInput.addEventListener('input', (e) => {
+					const query = e.target.value;
+					this.filterItems(query);
+					this.updateIconDisplay();
+				});
+
+				// Input keyboard navigation
+				this.triggerInput.addEventListener('keydown', (e) => {
+					if (e.key === 'Escape') {
+						this.close();
+					} else if (e.key === 'ArrowDown') {
+						e.preventDefault();
+						const visibleItems = this.getVisibleItems();
+						if (visibleItems.length > 0) visibleItems[0].focus();
+					} else if (e.key === 'Enter') {
+						e.preventDefault();
+						const visibleItems = this.getVisibleItems();
+						if (visibleItems.length === 1) {
+							const item = visibleItems[0];
+							this.selectItemElement(item);
+						}
+					}
+				});
+
+				// Item selection
+				this.list.addEventListener('click', (e) => {
+					const item = e.target.closest('.dropdown-item');
+					if (item && !item.classList.contains('hidden')) {
+						this.selectItemElement(item);
+						this.close();
+					}
+				});
+
+				// Keyboard navigation in items
+				this.list.addEventListener('keydown', (e) => {
+					const visibleItems = this.getVisibleItems();
+					const currentIndex = visibleItems.indexOf(document.activeElement);
+
+					if (e.key === 'ArrowDown') {
+						e.preventDefault();
+						if (currentIndex < visibleItems.length - 1) {
+							visibleItems[currentIndex + 1].focus();
+						}
+					} else if (e.key === 'ArrowUp') {
+						e.preventDefault();
+						if (currentIndex > 0) {
+							visibleItems[currentIndex - 1].focus();
+						} else {
+							this.triggerInput.focus();
+						}
+					} else if (e.key === 'Enter') {
+						e.preventDefault();
+						if (currentIndex >= 0) {
+							this.selectItemElement(visibleItems[currentIndex]);
+							this.close();
+						}
+					} else if (e.key === 'Escape') {
+						this.close();
+					}
+				});
+
+				// Close on outside click
+				document.addEventListener('click', (e) => {
+					if (!this.container.contains(e.target)) {
+						this.close();
+					}
+				});
+
+				// Position menu on resize
+				window.addEventListener('resize', () => {
+					if (this.isOpen) this.positionMenu();
+				});
+
+				// Position menu on scroll - use requestAnimationFrame for performance
+				this.scrollHandler = () => {
+					if (this.isOpen) {
+						if (this.scrollAnimationId) {
+							cancelAnimationFrame(this.scrollAnimationId);
+						}
+						this.scrollAnimationId = requestAnimationFrame(() => {
+							this.positionMenu();
+							this.scrollAnimationId = null;
+						});
+					}
+				};
+			}
+
+			toggle() {
+				if (this.isOpen) {
+					this.close();
+				} else {
+					this.open();
+				}
+			}
+
+			open() {
+				// Close other dropdown if open
+				if (activeDropdown && activeDropdown !== this.containerId) {
+					const otherContainer = document.getElementById(activeDropdown);
+					if (otherContainer) {
+						const otherDropdown = otherContainer.customDropdownInstance;
+						if (otherDropdown) otherDropdown.close();
+					}
+				}
+
+				this.isOpen = true;
+				activeDropdown = this.containerId;
+				this.trigger.classList.add('active');
+				this.menu.classList.add('active');
+				this.positionMenu();
+
+				// Attach scroll listener to keep dropdown attached during scrolling
+				document.addEventListener('scroll', this.scrollHandler, true);
+
+				setTimeout(() => this.triggerInput.focus(), 50);
+			}
+
+			close() {
+				this.isOpen = false;
+				if (activeDropdown === this.containerId) {
+					activeDropdown = null;
+				}
+				this.trigger.classList.remove('active');
+				this.menu.classList.remove('active');
+				this.triggerInput.value = '';
+				this.allItems.forEach(item => item.classList.remove('hidden'));
+				this.updateIconDisplay();
+				this.trigger.focus();
+
+				// Remove scroll listener and cancel pending animation frame
+				document.removeEventListener('scroll', this.scrollHandler, true);
+				if (this.scrollAnimationId) {
+					cancelAnimationFrame(this.scrollAnimationId);
+					this.scrollAnimationId = null;
+				}
+			}
+
+			positionMenu() {
+				const triggerRect = this.trigger.getBoundingClientRect();
+				const viewportHeight = window.innerHeight;
+
+				// Always open downward
+				this.menu.style.top = triggerRect.bottom + 8 + 'px';
+				this.menu.style.left = triggerRect.left + 'px';
+				this.menu.style.width = triggerRect.width + 'px';
+
+				// Calculate max-height to prevent clipping
+				const spaceBelow = viewportHeight - triggerRect.bottom - 8;
+				const maxHeight = Math.max(200, Math.min(400, spaceBelow - 20));
+				this.menu.style.maxHeight = maxHeight + 'px';
+			}
+
+			filterItems(query) {
+				const lowerQuery = query.toLowerCase();
+				const normalizedQuery = this.normalizeText(query);
+
+				this.allItems.forEach(item => {
+					const text = item.textContent.toLowerCase();
+					const normalizedText = this.normalizeText(item.textContent);
+
+					if (normalizedText.includes(normalizedQuery) || text.includes(lowerQuery)) {
+						item.classList.remove('hidden');
+					} else {
+						item.classList.add('hidden');
+					}
+				});
+
+				const visibleItems = this.getVisibleItems();
+				const emptyMessage = this.container.querySelector('.dropdown-empty');
+				if (emptyMessage) {
+					emptyMessage.style.display = visibleItems.length === 0 ? 'block' : 'none';
+				}
+			}
+
+			normalizeText(text) {
+				return text
+					.replace(/[ًٌٍَُِّْ]/g, '')
+					.replace(/ة/g, 'ه')
+					.replace(/ي/g, 'ی')
+					.replace(/ک/g, 'ك');
+			}
+
+			selectItemElement(itemElement) {
+				const value = itemElement.dataset.value;
+				const text = itemElement.textContent.trim().split('\n')[0];
+				this.selectItem(value, text);
+			}
+
+			selectItem(value, text) {
+				this.hiddenInput.value = value;
+				this.triggerInput.placeholder = text;
+				this.triggerInput.value = '';
+
+				this.allItems.forEach(item => {
+					item.classList.remove('selected');
+				});
+
+				const selectedItem = this.allItems.find(item => item.dataset.value === value);
+				if (selectedItem) {
+					selectedItem.classList.add('selected');
+				}
+
+				this.updateIconDisplay();
+			}
+
+			updateIconDisplay() {
+				const hasText = this.triggerInput.value.length > 0;
+				if (hasText) {
+					this.searchIcon.style.display = 'block';
+					this.chevronIcon.style.display = 'none';
+				} else {
+					this.searchIcon.style.display = 'none';
+					this.chevronIcon.style.display = 'block';
+				}
+			}
+
+			getVisibleItems() {
+				return this.allItems.filter(item => !item.classList.contains('hidden'));
+			}
+		}
+
+		// Initialize dropdowns
+		initializeCitiesDropdown();
+		const specialtyDropdown = new CustomDropdown('specialty-dropdown');
+		const cityDropdown = new CustomDropdown('city-dropdown');
+
+		// Store instances on containers for mutual closing access
+		document.getElementById('specialty-dropdown').customDropdownInstance = specialtyDropdown;
+		document.getElementById('city-dropdown').customDropdownInstance = cityDropdown;
+
+		function selectCity(cityName, province) {
+			cityDropdown.selectItem(cityName, `${cityName} (${province})`);
+		}
+
+		// Update selectSpecialty function to work with new dropdown
+		function selectSpecialty(element) {
+			document.querySelectorAll('.specialty-card').forEach(card => {
+				card.style.borderColor = 'var(--border)';
+				card.style.boxShadow = 'none';
+			});
+
+			element.style.borderColor = 'var(--primary)';
+			element.style.boxShadow = 'var(--shadow)';
+
+			const specialtyName = element.querySelector('.specialty-name').textContent;
+			specialtyDropdown.selectItem(specialtyName, specialtyName);
+		}
+
+		// Hide custom dropdowns CSS for items
+		const style = document.createElement('style');
+		style.textContent = `
+			.dropdown-item.hidden {
+				display: none !important;
+			}
+		`;
+		document.head.appendChild(style);
+	</script>
+</body>
+</html>
