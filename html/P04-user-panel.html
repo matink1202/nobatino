@@ -688,23 +688,6 @@
 			margin-top: 16px;
 		}
 
-		.seed-hint {
-			margin-top: 16px;
-			font-size: 13px;
-		}
-
-		.seed-hint button {
-			background: none;
-			border: none;
-			color: var(--primary);
-			font-family: inherit;
-			font-size: 13px;
-			cursor: pointer;
-			text-decoration: underline;
-			padding: 4px;
-			min-height: 32px;
-		}
-
 		/* Modal */
 		.modal-overlay {
 			position: fixed;
@@ -1313,7 +1296,6 @@
 							<div id="notifList"></div>
 						</div>
 					</div>
-					<a href="P05-doctor-panel.html" class="btn btn-secondary btn-small" title="برای نمایش پروتوتایپ - در نسخهٔ نهایی از طریق ورود جداگانه دسترسی دارد">پنل پزشک</a>
 					<a href="P01-landing.html" class="btn btn-ghost btn-small">بازگشت</a>
 				</div>
 			</div>
@@ -1779,11 +1761,7 @@
 						<i class="fas fa-calendar-plus" aria-hidden="true"></i>
 						<h3>هنوز نوبتی ندارید</h3>
 						<p>همین حالا پزشک موردنظرتان را پیدا کنید و نوبت بگیرید.</p>
-						<a href="P01-landing.html" class="btn btn-primary"><i class="fas fa-magnifying-glass"></i> جستجوی پزشک</a>
-						<div class="seed-hint">
-							برای دیدن ظاهر پنل با دادهٔ نمونه:
-							<button type="button" onclick="seedDemoData()">بارگذاری دادهٔ نمونه</button>
-						</div>
+						<a href="P01-landing.html" class="btn btn-primary">جستجوی پزشک</a>
 					</div>`;
 				return;
 			}
@@ -2005,114 +1983,6 @@
 				showToast('لغو نوبت انجام نشد', false);
 			}
 			renderAll();
-		}
-
-		/* ---------- Demo data (prototype only) ---------- */
-
-		function seedDemoData() {
-			const patient = getProfile().fullName || 'کاربر نوبتینو';
-
-			// 1) A held reservation with a live 10-minute countdown (real API)
-			const hold = ReservationSystem.createTemporaryHold('doctor-002', datePlus(2), '10:00', '10:45', 300000);
-			if (hold.success) {
-				hold.reservation.patientName = patient;
-				ReservationSystem.saveReservation(hold.reservation);
-			}
-
-			// 2) A confirmed future reservation
-			const conf = ReservationSystem.createTemporaryHold('doctor-003', datePlus(4), '11:00', '11:20', 250000);
-			if (conf.success) {
-				conf.reservation.patientName = patient;
-				ReservationSystem.saveReservation(conf.reservation);
-				ReservationSystem.confirmPayment(conf.reservation.id, 'TRX-DEMO-CONF');
-			}
-
-			// 3) A completed visit in the past
-			const past = {
-				id: ReservationSystem.generateReservationId(),
-				doctorId: 'doctor-004',
-				patientName: patient,
-				appointmentDate: datePlus(-6),
-				startTime: '17:00',
-				endTime: '17:25',
-				consultationFee: 200000,
-				status: ReservationSystem.STATES.CONFIRMED,
-				createdAt: new Date(Date.now() - 7 * 86400000).toISOString(),
-				expiresAt: new Date(Date.now() - 7 * 86400000 + 600000).toISOString(),
-				paymentStatus: 'PAID',
-				transactionId: 'TRX-DEMO-PAST'
-			};
-			ReservationSystem.saveReservation(past);
-
-			// 4) A cancelled one
-			const cancelled = {
-				id: ReservationSystem.generateReservationId(),
-				doctorId: 'doctor-001',
-				patientName: patient,
-				appointmentDate: datePlus(-12),
-				startTime: '09:30',
-				endTime: '10:00',
-				consultationFee: 250000,
-				status: ReservationSystem.STATES.CANCELLED,
-				createdAt: new Date(Date.now() - 13 * 86400000).toISOString(),
-				expiresAt: new Date(Date.now() - 13 * 86400000 + 600000).toISOString(),
-				paymentStatus: null,
-				cancelledAt: new Date(Date.now() - 13 * 86400000).toISOString()
-			};
-			ReservationSystem.saveReservation(cancelled);
-
-			// 5) A failed payment in the past (shows in the payments tab)
-			const failed = {
-				id: ReservationSystem.generateReservationId(),
-				doctorId: 'doctor-001',
-				patientName: patient,
-				appointmentDate: datePlus(-9),
-				startTime: '10:30',
-				endTime: '11:00',
-				consultationFee: 250000,
-				status: ReservationSystem.STATES.PAYMENT_FAILED,
-				createdAt: new Date(Date.now() - 10 * 86400000).toISOString(),
-				expiresAt: new Date(Date.now() - 10 * 86400000 + 600000).toISOString(),
-				paymentStatus: 'FAILED',
-				failureReason: 'خطای درگاه پرداخت'
-			};
-			ReservationSystem.saveReservation(failed);
-
-			// 6) A visit result recorded by the doctor for the completed visit
-			const visits = getVisits();
-			visits[past.id] = {
-				reservationId: past.id,
-				doctorId: 'doctor-004',
-				patientName: patient,
-				diagnosis: 'بازبینی پوست و کنترل دورهٔ درمان',
-				notes: 'وضعیت پوست بهبود خوبی داشته است. ادامهٔ کرم مرطوب‌کننده و پرهیز از آفتاب مستقیم توصیه می‌شود.',
-				prescription: [
-					'کرم مرطوب‌کننده — روزی ۲ بار',
-					'ضدآفتاب SPF 50 — هر ۳ ساعت در نور روز',
-					'ویزیت بعدی حضوری'
-				],
-				followUpDate: datePlus(30),
-				recordedAt: new Date().toISOString()
-			};
-			localStorage.setItem(VISITS_KEY, JSON.stringify(visits));
-
-			// 7) An unread message from the doctor
-			const msgs = getMessages();
-			msgs.push({
-				id: 'M-seed-1',
-				threadKey: 'doctor-002__me',
-				doctorId: 'doctor-002',
-				patientName: patient,
-				from: 'doctor',
-				text: 'سلام! نوبت شما ثبت شد. اگر نیاز به تغییر ساعت دارید پیام بدهید.',
-				at: new Date(Date.now() - 3600000).toISOString(),
-				readByPatient: false,
-				readByDoctor: true
-			});
-			localStorage.setItem(MESSAGES_KEY, JSON.stringify(msgs));
-
-			renderAll();
-			showToast('دادهٔ نمونه بارگذاری شد');
 		}
 
 		/* ---------- Notifications ---------- */

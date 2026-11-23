@@ -818,20 +818,6 @@
 
 		.empty-state .btn { margin-top: 16px; }
 
-		.seed-hint { margin-top: 16px; font-size: 13px; }
-
-		.seed-hint button {
-			background: none;
-			border: none;
-			color: var(--primary);
-			font-family: inherit;
-			font-size: 13px;
-			cursor: pointer;
-			text-decoration: underline;
-			padding: 4px;
-			min-height: 32px;
-		}
-
 		/* Modal */
 		.modal-overlay {
 			position: fixed;
@@ -1357,7 +1343,6 @@
 					<img src="../images/Logo.png" alt="لوگوی نوبتینو" style="height: 32px; object-fit: contain;">
 				</a>
 				<div class="header-actions">
-					<a href="P04-user-panel.html" class="btn btn-secondary btn-small" title="برای نمایش پروتوتایپ - در نسخهٔ نهایی از طریق ورود جداگانه دسترسی دارد">پنل کاربر</a>
 					<a href="P01-landing.html" class="btn btn-ghost btn-small">بازگشت</a>
 				</div>
 			</div>
@@ -2041,10 +2026,6 @@
 						<i class="fas fa-calendar" aria-hidden="true"></i>
 						<h3>نوبتی ${rangeLabel ? 'برای ' + rangeLabel : ''} ثبت نشده است</h3>
 						<p>نوبت‌های بیماران پس از رزرو در صفحهٔ عمومی شما اینجا نمایش داده می‌شوند.</p>
-						<div class="seed-hint">
-							برای دیدن ظاهر پنل با دادهٔ نمونه:
-							<button type="button" onclick="seedDemoData()">بارگذاری دادهٔ نمونه</button>
-						</div>
 					</div>`;
 				return;
 			}
@@ -2527,93 +2508,6 @@
 			showToast(result.success ? 'نوبت لغو شد' : 'لغو نوبت انجام نشد', result.success);
 			renderStats();
 			renderAppointments();
-		}
-
-		/* ---------- Demo data (prototype only) ---------- */
-
-		function seedDemoData() {
-			const names = ['علی محمدی', 'فاطمه احمدی', 'رضا کاظمی', 'مریم حسینی'];
-
-			// Two confirmed visits today (via real APIs)
-			const t1 = ReservationSystem.createTemporaryHold(currentDoctorId, datePlus(0), '09:30', '10:00', getEffectiveDoctor(currentDoctorId).consultationFeeNumeric);
-			if (t1.success) {
-				t1.reservation.patientName = names[0];
-				ReservationSystem.saveReservation(t1.reservation);
-				ReservationSystem.confirmPayment(t1.reservation.id, 'TRX-DEMO-D1');
-			}
-
-			const t2 = ReservationSystem.createTemporaryHold(currentDoctorId, datePlus(0), '11:00', '11:30', getEffectiveDoctor(currentDoctorId).consultationFeeNumeric);
-			if (t2.success) {
-				t2.reservation.patientName = names[1];
-				ReservationSystem.saveReservation(t2.reservation);
-				ReservationSystem.confirmPayment(t2.reservation.id, 'TRX-DEMO-D2');
-			}
-
-			// A held reservation tomorrow (live countdown on the user side)
-			const t3 = ReservationSystem.createTemporaryHold(currentDoctorId, datePlus(1), '10:00', '10:30', getEffectiveDoctor(currentDoctorId).consultationFeeNumeric);
-			if (t3.success) {
-				t3.reservation.patientName = names[2];
-				ReservationSystem.saveReservation(t3.reservation);
-			}
-
-			// A cancelled one last week
-			ReservationSystem.saveReservation({
-				id: ReservationSystem.generateReservationId(),
-				doctorId: currentDoctorId,
-				patientName: names[3],
-				appointmentDate: datePlus(-4),
-				startTime: '15:00',
-				endTime: '15:30',
-				consultationFee: getEffectiveDoctor(currentDoctorId).consultationFeeNumeric,
-				status: ReservationSystem.STATES.CANCELLED,
-				createdAt: new Date(Date.now() - 5 * 86400000).toISOString(),
-				expiresAt: new Date(Date.now() - 5 * 86400000 + 600000).toISOString(),
-				paymentStatus: null,
-				cancelledAt: new Date(Date.now() - 5 * 86400000).toISOString()
-			});
-
-			// A confirmed visit yesterday (so recording its result can be demoed)
-			const yesterday = ReservationSystem.createTemporaryHold(currentDoctorId, datePlus(-1), '16:00', '16:30', getEffectiveDoctor(currentDoctorId).consultationFeeNumeric);
-			if (yesterday.success) {
-				yesterday.reservation.patientName = 'حسین رضایی';
-				ReservationSystem.saveReservation(yesterday.reservation);
-				ReservationSystem.confirmPayment(yesterday.reservation.id, 'TRX-DEMO-Y1');
-
-				// …with a recorded visit result (visible in the patient panel)
-				const visits = readJson(VISITS_KEY, {});
-				visits[yesterday.reservation.id] = {
-					reservationId: yesterday.reservation.id,
-					doctorId: currentDoctorId,
-					patientName: 'حسین رضایی',
-					diagnosis: 'معاینه و مشاورهٔ دوره‌ای',
-					notes: 'وضعیت عمومی مناسب است. در صورت تداوم علائم، فاصلهٔ ویزیت بعدی کوتاه‌تر شود.',
-					prescription: ['بررسی مجدد در ویزیت بعدی', 'استراحت کافی و مصرف مایعات'],
-					followUpDate: datePlus(20),
-					recordedAt: new Date().toISOString()
-				};
-				localStorage.setItem(VISITS_KEY, JSON.stringify(visits));
-			}
-
-			// A patient message thread
-			const msgs = readJson(MESSAGES_KEY, []);
-			msgs.push({
-				id: 'M-seed-doc-1',
-				threadKey: currentDoctorId + '__me',
-				doctorId: currentDoctorId,
-				patientName: names[0],
-				from: 'patient',
-				text: 'سلام دکتر، برای نوبت فردا امکان تغییر ساعت هست؟',
-				at: new Date(Date.now() - 7200000).toISOString(),
-				readByPatient: true,
-				readByDoctor: false
-			});
-			localStorage.setItem(MESSAGES_KEY, JSON.stringify(msgs));
-
-			renderStats();
-			renderAppointments();
-			renderCalendar();
-			renderChat();
-			showToast('دادهٔ نمونه بارگذاری شد');
 		}
 
 		/* ---------- Weekly calendar ---------- */
