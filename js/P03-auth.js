@@ -1,4 +1,6 @@
 // Browser-only preview. Account records, codes and login state are not a security boundary.
+'use strict';
+
 const DEMO_PHONE = '09000000000';
 const session = window.NobatinoAccount;
 const { PREFIX } = session;
@@ -366,4 +368,5 @@ try {
   if (!returnIfSignedIn()) render();
 } catch {
   setIntro('دسترسی به پیش‌نمایش ممکن نیست', 'ذخیره‌سازی مرورگر را برای این سایت فعال کنید و صفحه را دوباره باز کنید.');
+  flow.replaceChildren();
 }

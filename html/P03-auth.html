@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="../css/P03-auth.css">
-  <script src="../js/P03-session.js"></script>
-  <script type="module" src="../js/P03-auth.js"></script>
+  <script defer src="../js/P03-session.js"></script>
+  <script defer src="../js/P03-auth.js"></script>
 </head>
 <body>
   <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -53,8 +53,9 @@
           <h1 id="flow-title" tabindex="-1">ورود به نوبتینو</h1>
           <p id="flow-description">با شماره موبایل و رمز عبور وارد حساب کاربری‌تان شوید.</p>
         </div>
-        <div id="flow"></div>
-        <noscript><p>برای استفاده از فرم ورود، جاوااسکریپت مرورگر را فعال کنید.</p></noscript>
+        <div id="flow">
+          <p class="notice">اگر فرم نمایش داده نشد، جاوااسکریپت مرورگر را فعال کنید و صفحه را دوباره باز کنید.</p>
+        </div>
       </section>
 
       <aside class="overview" aria-labelledby="overview-title">

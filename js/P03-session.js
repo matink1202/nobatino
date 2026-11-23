@@ -14,7 +14,7 @@
   };
   const allowedPaths = new Set([root.pathname, new URL('index.html', root).pathname,
     pages.home.pathname, pages.doctor.pathname, pages.panel.pathname, pages.staff.pathname]);
-  const relative = (url) => url.pathname + url.search + url.hash;
+  const route = (url) => url.protocol === 'file:' ? url.href : url.pathname + url.search + url.hash;
   const fa = (number) => number.replace(/\d/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[digit]);
   const valid = (number) => typeof number === 'string' && /^09\d{9}$/.test(number)
     && localStorage.getItem(PREFIX + 'account:' + number) !== null;
@@ -22,18 +22,19 @@
   function safeReturn(value) {
     try {
       const url = new URL(value, root);
-      if (value && url.origin === root.origin && !url.username && !url.password && allowedPaths.has(url.pathname)) {
-        return relative(url);
+      if (value && url.protocol === root.protocol && url.host === root.host &&
+        !url.username && !url.password && allowedPaths.has(url.pathname)) {
+        return route(url);
       }
     } catch { /* Treat malformed destinations like a direct visit. */ }
-    return pages.home.pathname;
+    return route(pages.home);
   }
 
   function authUrl(mode, destination) {
     const url = new URL(pages.auth);
     if (mode && mode !== 'login') url.searchParams.set('mode', mode);
     url.searchParams.set('next', safeReturn(destination));
-    return relative(url);
+    return route(url);
   }
 
   function readCurrent() {
@@ -88,7 +89,7 @@
     if (!host && !links.length) return;
 
     function updateLinks() {
-      const here = relative(new URL(location.href));
+      const here = route(new URL(location.href));
       for (const link of links) link.href = authUrl(link.dataset.p03Auth, here);
     }
     updateLinks();
