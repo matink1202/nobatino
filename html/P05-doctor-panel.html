@@ -1,0 +1,3075 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="پنل پزشک نوبتینو - مدیریت نوبت‌ها، برنامهٔ کاری و اطلاعات حرفه‌ای">
+	<title>پنل پزشک - نوبتینو</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<style>
+		:root {
+			--primary: #3262CE;
+			--primary-light: #E7F0FB;
+			--dark: #111B30;
+			--text-primary: #111827;
+			--text-secondary: #526174;
+			--bg: #F5F8FA;
+			--card-bg: #FAFDFE;
+			--border: #DCE6EB;
+			--input-border: #788BA2;
+			--mint: #E6F6EB;
+			--success: #10B981;
+			--white: #FFFFFF;
+			--error: #DC2626;
+			--error-light: #FEE2E2;
+			--amber-bg: #FFF4DF;
+			--amber-text: #92400E;
+			--purple-bg: #F1EAFB;
+			--purple-text: #6D28D9;
+			--pink-bg: #FCE9EE;
+			--pink-text: #B91C1C;
+			--green-bg: #DCFCE7;
+			--green-text: #047857;
+			--gray-bg: #E2E8F0;
+			--gray-text: #475569;
+			--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+			--shadow: 0 4px 16px rgba(17, 27, 48, 0.05);
+			--shadow-lg: 0 8px 24px rgba(17, 27, 48, 0.08);
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			background: linear-gradient(180deg, #DCEBFC 0%, #E5F5F0 100%);
+			background-attachment: fixed;
+			min-height: 100vh;
+			color: var(--text-primary);
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 16px;
+			line-height: 1.6;
+		}
+
+		h1, h2, h3, h4 {
+			color: var(--text-primary);
+			margin-bottom: 12px;
+		}
+
+		h2 { font-size: 20px; font-weight: 700; }
+		h3 { font-size: 18px; font-weight: 600; }
+		h4 { font-size: 16px; font-weight: 600; }
+
+		p { font-size: 15px; color: var(--text-secondary); }
+
+		a { color: var(--primary); text-decoration: none; }
+		a:hover { text-decoration: underline; }
+
+		.container {
+			max-width: 1080px;
+			margin: 0 auto;
+			padding: 0 20px;
+		}
+
+		/* Header */
+		header {
+			background: var(--white);
+			border-bottom: 1px solid var(--border);
+			position: sticky;
+			top: 0;
+			z-index: 100;
+		}
+
+		.header-content {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 12px 0;
+			gap: 12px;
+		}
+
+		.logo {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			text-decoration: none;
+		}
+
+		.logo:hover { text-decoration: none; }
+
+		.header-actions {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		/* Buttons */
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 11px 24px;
+			border-radius: 999px;
+			font-size: 15px;
+			font-weight: 600;
+			border: none;
+			cursor: pointer;
+			transition: background-color 0.2s, box-shadow 0.2s, color 0.2s;
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			min-height: 44px;
+			text-decoration: none;
+		}
+
+		.btn:hover { text-decoration: none; }
+
+		.btn-primary {
+			background-color: var(--primary);
+			color: var(--white);
+		}
+
+		.btn-primary:hover:not(:disabled) {
+			background-color: #2654b8;
+			box-shadow: var(--shadow-lg);
+		}
+
+		.btn-secondary {
+			background-color: transparent;
+			color: var(--primary);
+			border: 1.5px solid var(--primary);
+		}
+
+		.btn-secondary:hover:not(:disabled) {
+			background-color: var(--primary-light);
+		}
+
+		.btn-danger {
+			background-color: transparent;
+			color: var(--error);
+			border: 1.5px solid var(--error);
+		}
+
+		.btn-danger:hover:not(:disabled) {
+			background-color: var(--error-light);
+		}
+
+		.btn-ghost {
+			background-color: var(--primary-light);
+			color: var(--primary);
+		}
+
+		.btn-ghost:hover:not(:disabled) {
+			background-color: #d8e6f8;
+		}
+
+		.btn-small {
+			padding: 8px 16px;
+			font-size: 14px;
+			min-height: 44px;
+		}
+
+		.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+		.btn:focus-visible,
+		button:focus-visible,
+		input:focus-visible,
+		select:focus-visible,
+		textarea:focus-visible,
+		a:focus-visible,
+		[role="tab"]:focus-visible {
+			outline: 2px solid var(--primary);
+			outline-offset: 2px;
+		}
+
+		/* Page layout */
+		.page-content {
+			padding: 24px 20px 40px;
+		}
+
+		/* Doctor hero */
+		.doctor-hero {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow);
+			padding: 24px;
+			display: flex;
+			align-items: center;
+			gap: 20px;
+			flex-wrap: wrap;
+		}
+
+		.doctor-avatar {
+			width: 84px;
+			height: 84px;
+			border-radius: 50%;
+			background: var(--primary-light);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 24px;
+			color: var(--primary);
+			flex-shrink: 0;
+			overflow: hidden;
+			border: 3px solid var(--white);
+			box-shadow: var(--shadow);
+		}
+
+		.doctor-avatar img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.doctor-hero-info { flex: 1; min-width: 220px; }
+
+		.doctor-hero-info h1 {
+			font-size: 26px;
+			font-weight: 700;
+			margin-bottom: 2px;
+		}
+
+		.doctor-specialty {
+			font-size: 15px;
+			color: var(--text-secondary);
+			margin-bottom: 8px;
+		}
+
+		.doctor-meta {
+			display: flex;
+			align-items: center;
+			gap: 8px 16px;
+			flex-wrap: wrap;
+			font-size: 14px;
+			color: var(--text-secondary);
+		}
+
+		.doctor-meta span {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.doctor-meta .stars {
+			color: #F59E0B;
+		}
+
+		.doctor-hero-actions {
+			display: flex;
+			gap: 8px;
+			flex-wrap: wrap;
+		}
+
+		/* Stats */
+		.stats-row {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			gap: 16px;
+			margin: 24px 0;
+		}
+
+		.stat-card {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow);
+			padding: 20px;
+			display: flex;
+			align-items: center;
+			gap: 16px;
+		}
+
+		.stat-icon {
+			width: 48px;
+			height: 48px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 20px;
+			flex-shrink: 0;
+		}
+
+		.stat-icon.blue { background: var(--primary-light); color: var(--primary); }
+		.stat-icon.green { background: var(--mint); color: var(--green-text); }
+		.stat-icon.amber { background: var(--amber-bg); color: var(--amber-text); }
+		.stat-icon.purple { background: var(--purple-bg); color: var(--purple-text); }
+
+		.stat-value {
+			font-size: 24px;
+			font-weight: 700;
+			line-height: 1.3;
+			white-space: nowrap;
+		}
+
+		.stat-label {
+			font-size: 13px;
+			color: var(--text-secondary);
+		}
+
+		/* Tabs */
+		.tabs {
+			display: flex;
+			gap: 8px;
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 999px;
+			padding: 6px;
+			box-shadow: var(--shadow);
+			margin-bottom: 24px;
+			overflow-x: auto;
+		}
+
+		[role="tab"] {
+			flex: 1;
+			min-width: 130px;
+			padding: 10px 16px;
+			min-height: 44px;
+			border: none;
+			background: transparent;
+			border-radius: 999px;
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 15px;
+			font-weight: 600;
+			color: var(--text-secondary);
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			white-space: nowrap;
+			transition: background-color 0.2s, color 0.2s;
+		}
+
+		[role="tab"]:hover { color: var(--primary); }
+
+		[role="tab"][aria-selected="true"] {
+			background: var(--primary);
+			color: var(--white);
+		}
+
+		.tab-count {
+			background: var(--primary-light);
+			color: var(--primary);
+			border-radius: 999px;
+			font-size: 12px;
+			font-weight: 700;
+			padding: 1px 8px;
+			min-width: 24px;
+			text-align: center;
+		}
+
+		[role="tab"][aria-selected="true"] .tab-count {
+			background: rgba(255, 255, 255, 0.25);
+			color: var(--white);
+		}
+
+		[role="tabpanel"][hidden] { display: none; }
+
+		/* Segmented filter */
+		.segmented {
+			display: inline-flex;
+			background: var(--white);
+			border: 1.5px solid var(--border);
+			border-radius: 999px;
+			padding: 4px;
+			gap: 4px;
+			margin-bottom: 16px;
+		}
+
+		.segmented button {
+			border: none;
+			background: transparent;
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 14px;
+			font-weight: 600;
+			color: var(--text-secondary);
+			padding: 8px 16px;
+			min-height: 40px;
+			border-radius: 999px;
+			cursor: pointer;
+			white-space: nowrap;
+			transition: background-color 0.2s, color 0.2s;
+		}
+
+		.segmented button.active {
+			background: var(--primary-light);
+			color: var(--primary);
+		}
+
+		.section-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			margin-bottom: 16px;
+			flex-wrap: wrap;
+		}
+
+		/* Appointment rows */
+		.appointment-row {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			box-shadow: var(--shadow);
+			padding: 16px 20px;
+			margin-bottom: 12px;
+			display: flex;
+			align-items: center;
+			gap: 16px;
+			flex-wrap: wrap;
+		}
+
+		.time-badge {
+			background: var(--primary-light);
+			color: var(--primary);
+			border-radius: 20px;
+			padding: 10px 14px;
+			text-align: center;
+			min-width: 92px;
+			flex-shrink: 0;
+		}
+
+		.time-badge .t {
+			font-size: 17px;
+			font-weight: 700;
+			direction: ltr;
+			font-variant-numeric: tabular-nums;
+		}
+
+		.time-badge .d {
+			font-size: 12px;
+			margin-top: 2px;
+		}
+
+		.appointment-row-info { flex: 1; min-width: 180px; }
+
+		.appointment-row-info h4 { margin-bottom: 2px; }
+
+		.appointment-row-info .sub {
+			font-size: 13px;
+			color: var(--text-secondary);
+		}
+
+		.appointment-row-side {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			flex-wrap: wrap;
+		}
+
+		.appointment-fee {
+			font-size: 15px;
+			font-weight: 700;
+			white-space: nowrap;
+		}
+
+		.row-actions {
+			display: flex;
+			gap: 8px;
+		}
+
+		.icon-btn {
+			width: 44px;
+			height: 44px;
+			border-radius: 50%;
+			border: 1.5px solid var(--error);
+			background: transparent;
+			color: var(--error);
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 15px;
+			transition: background-color 0.2s;
+		}
+
+		.icon-btn:hover { background: var(--error-light); }
+
+		/* Status badges */
+		.status-badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 5px 12px;
+			border-radius: 999px;
+			font-size: 13px;
+			font-weight: 600;
+			white-space: nowrap;
+		}
+
+		.status-HELD { background: var(--amber-bg); color: var(--amber-text); }
+		.status-AWAITING_PAYMENT { background: var(--purple-bg); color: var(--purple-text); }
+		.status-CONFIRMED { background: var(--mint); color: var(--green-text); }
+		.status-CANCELLED { background: var(--gray-bg); color: var(--gray-text); }
+		.status-EXPIRED { background: var(--gray-bg); color: var(--gray-text); }
+		.status-PAYMENT_FAILED { background: var(--pink-bg); color: var(--pink-text); }
+
+		/* Schedule editor */
+		.schedule-card,
+		.profile-card {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow);
+			padding: 24px;
+		}
+
+		.day-row {
+			display: flex;
+			align-items: center;
+			gap: 16px;
+			padding: 14px 0;
+			border-bottom: 1px solid var(--border);
+			flex-wrap: wrap;
+		}
+
+		.day-row:last-of-type { border-bottom: none; }
+
+		.day-name {
+			width: 90px;
+			font-weight: 600;
+			font-size: 15px;
+			flex-shrink: 0;
+		}
+
+		/* Toggle switch */
+		.switch {
+			position: relative;
+			display: inline-flex;
+			align-items: center;
+			gap: 10px;
+			cursor: pointer;
+			flex-shrink: 0;
+			min-height: 44px;
+		}
+
+		.switch input {
+			position: absolute;
+			opacity: 0;
+			width: 52px;
+			height: 28px;
+			margin: 0;
+			cursor: pointer;
+		}
+
+		.switch .track {
+			width: 52px;
+			height: 28px;
+			background: var(--gray-bg);
+			border-radius: 999px;
+			position: relative;
+			transition: background-color 0.2s;
+			flex-shrink: 0;
+		}
+
+		.switch .track::after {
+			content: '';
+			position: absolute;
+			top: 3px;
+			right: 3px;
+			width: 22px;
+			height: 22px;
+			border-radius: 50%;
+			background: var(--white);
+			box-shadow: var(--shadow-sm);
+			transition: transform 0.2s;
+		}
+
+		.switch input:checked + .track {
+			background: var(--success);
+		}
+
+		.switch input:checked + .track::after {
+			transform: translateX(-24px);
+		}
+
+		.switch input:focus-visible + .track {
+			outline: 2px solid var(--primary);
+			outline-offset: 2px;
+		}
+
+		.switch .switch-state {
+			font-size: 13px;
+			color: var(--text-secondary);
+			min-width: 44px;
+		}
+
+		.day-times {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			flex-wrap: wrap;
+		}
+
+		.day-times input[type="time"] {
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 14px;
+			color: var(--text-primary);
+			background: var(--white);
+			border: 1.5px solid var(--input-border);
+			border-radius: 20px;
+			padding: 8px 12px;
+			min-height: 44px;
+			direction: ltr;
+		}
+
+		.day-times input[type="time"]:disabled {
+			background: var(--gray-bg);
+			opacity: 0.6;
+		}
+
+		.day-times .dash { color: var(--text-secondary); }
+
+		.schedule-block { margin-top: 24px; }
+
+		.schedule-block h3 {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.breaks-list {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			margin-top: 12px;
+		}
+
+		.break-item {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			padding: 10px 16px;
+			font-size: 14px;
+			gap: 12px;
+			flex-wrap: wrap;
+		}
+
+		.break-item .range {
+			direction: ltr;
+			font-variant-numeric: tabular-nums;
+			font-weight: 600;
+		}
+
+		.break-item button {
+			background: none;
+			border: none;
+			color: var(--error);
+			cursor: pointer;
+			font-size: 14px;
+			min-height: 44px;
+			min-width: 44px;
+			border-radius: 50%;
+		}
+
+		.break-item button:hover { background: var(--error-light); }
+
+		.add-break-row {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-top: 12px;
+			flex-wrap: wrap;
+		}
+
+		.add-break-row input[type="time"] {
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 14px;
+			background: var(--white);
+			border: 1.5px solid var(--input-border);
+			border-radius: 20px;
+			padding: 8px 12px;
+			min-height: 44px;
+			direction: ltr;
+		}
+
+		.duration-row {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			margin-top: 24px;
+			flex-wrap: wrap;
+		}
+
+		.duration-row label {
+			font-weight: 600;
+			font-size: 15px;
+		}
+
+		.duration-row select {
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 15px;
+			background: var(--white);
+			border: 1.5px solid var(--input-border);
+			border-radius: 20px;
+			padding: 10px 16px;
+			min-height: 44px;
+			cursor: pointer;
+		}
+
+		.capacity-note {
+			margin-top: 16px;
+			background: var(--mint);
+			color: var(--green-text);
+			border-radius: 20px;
+			padding: 12px 16px;
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.save-bar {
+			display: flex;
+			gap: 8px;
+			margin-top: 24px;
+			flex-wrap: wrap;
+		}
+
+		/* Forms */
+		.form-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 16px 20px;
+		}
+
+		.form-field {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		.form-field.full { grid-column: 1 / -1; }
+
+		.form-field label {
+			font-size: 14px;
+			font-weight: 600;
+		}
+
+		.form-field label .required { color: var(--error); }
+
+		.form-field input,
+		.form-field textarea,
+		.form-field select {
+			background: var(--white);
+			border: 1.5px solid var(--input-border);
+			border-radius: 20px;
+			padding: 11px 16px;
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 15px;
+			color: var(--text-primary);
+			min-height: 46px;
+			width: 100%;
+			transition: border-color 0.2s;
+		}
+
+		.form-field textarea {
+			min-height: 110px;
+			resize: vertical;
+			line-height: 1.8;
+		}
+
+		.form-field input:focus,
+		.form-field textarea:focus,
+		.form-field select:focus { border-color: var(--primary); }
+
+		.form-field input[aria-invalid="true"],
+		.form-field textarea[aria-invalid="true"] {
+			border-color: var(--error);
+			background: #FFFBFB;
+		}
+
+		.field-error {
+			font-size: 13px;
+			color: var(--error);
+			display: none;
+		}
+
+		.field-error.visible { display: block; }
+
+		.field-hint { font-size: 13px; color: var(--text-secondary); }
+
+		/* Empty state */
+		.empty-state {
+			text-align: center;
+			padding: 40px 16px;
+			color: var(--text-secondary);
+			background: var(--card-bg);
+			border: 1px dashed var(--border);
+			border-radius: 24px;
+		}
+
+		.empty-state i {
+			font-size: 40px;
+			color: var(--primary);
+			opacity: 0.6;
+			margin-bottom: 16px;
+			display: block;
+		}
+
+		.empty-state h3 { font-size: 18px; }
+
+		.empty-state .btn { margin-top: 16px; }
+
+		.seed-hint { margin-top: 16px; font-size: 13px; }
+
+		.seed-hint button {
+			background: none;
+			border: none;
+			color: var(--primary);
+			font-family: inherit;
+			font-size: 13px;
+			cursor: pointer;
+			text-decoration: underline;
+			padding: 4px;
+			min-height: 32px;
+		}
+
+		/* Modal */
+		.modal-overlay {
+			position: fixed;
+			inset: 0;
+			background: rgba(17, 27, 48, 0.45);
+			display: none;
+			align-items: center;
+			justify-content: center;
+			z-index: 200;
+			padding: 20px;
+		}
+
+		.modal-overlay.open { display: flex; }
+
+		.modal {
+			background: var(--card-bg);
+			border-radius: 24px;
+			box-shadow: var(--shadow-lg);
+			padding: 24px;
+			max-width: 420px;
+			width: 100%;
+			text-align: center;
+		}
+
+		.modal-icon {
+			width: 56px;
+			height: 56px;
+			border-radius: 50%;
+			background: var(--error-light);
+			color: var(--error);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 24px;
+			margin: 0 auto 16px;
+		}
+
+		.modal h3 { font-size: 18px; margin-bottom: 8px; }
+
+		.modal p { font-size: 14px; margin-bottom: 20px; }
+
+		.modal-actions {
+			display: flex;
+			gap: 8px;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+
+		/* Toast */
+		.toast {
+			position: fixed;
+			bottom: 24px;
+			right: 50%;
+			transform: translate(50%, 100px);
+			background: var(--dark);
+			color: var(--white);
+			border-radius: 999px;
+			padding: 12px 24px;
+			font-size: 14px;
+			font-weight: 600;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			box-shadow: var(--shadow-lg);
+			z-index: 300;
+			opacity: 0;
+			transition: transform 0.25s, opacity 0.25s;
+			max-width: calc(100vw - 40px);
+		}
+
+		.toast.show { transform: translate(50%, 0); opacity: 1; }
+
+		.toast i { color: #6EE7B7; }
+
+		.toast.toast-error i { color: #FCA5A5; }
+
+		/* Weekly calendar */
+		.cal-wrap {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow);
+			padding: 16px;
+			overflow-x: auto;
+		}
+
+		.cal-nav {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 8px;
+			margin-bottom: 12px;
+			flex-wrap: wrap;
+		}
+
+		.cal-title { font-size: 15px; font-weight: 700; display: block; }
+
+		.cal-grid {
+			display: grid;
+			grid-template-columns: 56px repeat(7, minmax(120px, 1fr));
+			min-width: 920px;
+			gap: 4px;
+		}
+
+		.cal-head-cell {
+			text-align: center;
+			font-size: 13px;
+			font-weight: 700;
+			padding: 8px 4px;
+			background: var(--primary-light);
+			color: var(--primary);
+			border-radius: 12px;
+		}
+
+		.cal-head-cell .cal-date {
+			display: block;
+			font-size: 11px;
+			font-weight: 500;
+			color: var(--text-secondary);
+		}
+
+		.cal-head-cell.today-head {
+			background: var(--primary);
+			color: var(--white);
+		}
+
+		.cal-head-cell.today-head .cal-date { color: rgba(255, 255, 255, 0.85); }
+
+		.cal-hour {
+			font-size: 12px;
+			color: var(--text-secondary);
+			text-align: center;
+			padding: 6px 0;
+			direction: ltr;
+			font-variant-numeric: tabular-nums;
+		}
+
+		.cal-cell {
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			min-height: 52px;
+			padding: 3px;
+			display: flex;
+			flex-direction: column;
+			gap: 3px;
+		}
+
+		.cal-cell.off {
+			background: repeating-linear-gradient(45deg, #F5F8FA, #F5F8FA 6px, #FAFDFE 6px, #FAFDFE 12px);
+		}
+
+		.cal-cell.today-cell { border-color: var(--primary); }
+
+		.cal-chip {
+			border-radius: 10px;
+			padding: 4px 8px;
+			font-size: 12px;
+			font-weight: 600;
+			line-height: 1.5;
+			border-inline-start: 4px solid var(--gray-text);
+			background: var(--card-bg);
+			overflow: hidden;
+			text-align: start;
+		}
+
+		.cal-chip .t {
+			display: block;
+			font-size: 11px;
+			font-weight: 500;
+			color: var(--text-secondary);
+			direction: ltr;
+		}
+
+		.cal-chip.s-CONFIRMED { border-inline-start-color: var(--green-text); background: var(--mint); }
+		.cal-chip.s-HELD { border-inline-start-color: var(--amber-text); background: var(--amber-bg); }
+		.cal-chip.s-AWAITING_PAYMENT { border-inline-start-color: var(--purple-text); background: var(--purple-bg); }
+		.cal-chip.s-PAYMENT_FAILED { border-inline-start-color: var(--pink-text); background: var(--pink-bg); }
+		.cal-chip.s-CANCELLED, .cal-chip.s-EXPIRED { border-inline-start-color: var(--gray-text); background: var(--gray-bg); text-decoration: line-through; }
+
+		.cal-legend {
+			display: flex;
+			gap: 14px;
+			flex-wrap: wrap;
+			margin-top: 12px;
+			font-size: 12px;
+			color: var(--text-secondary);
+		}
+
+		.cal-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+		.cal-legend i {
+			width: 12px;
+			height: 12px;
+			border-radius: 4px;
+			display: inline-block;
+		}
+
+		/* Clinics */
+		.clinic-card {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			box-shadow: var(--shadow-sm);
+			padding: 16px 20px;
+			margin-bottom: 12px;
+			display: flex;
+			align-items: center;
+			gap: 16px;
+			flex-wrap: wrap;
+		}
+
+		.clinic-card.active-clinic {
+			border-color: var(--primary);
+			box-shadow: 0 0 0 2px var(--primary-light), var(--shadow);
+		}
+
+		.clinic-icon {
+			width: 48px;
+			height: 48px;
+			border-radius: 16px;
+			background: var(--primary-light);
+			color: var(--primary);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 20px;
+			flex-shrink: 0;
+		}
+
+		.clinic-info { flex: 1; min-width: 220px; text-align: start; }
+
+		.clinic-info h4 {
+			margin-bottom: 2px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			flex-wrap: wrap;
+		}
+
+		.clinic-sub {
+			font-size: 13px;
+			color: var(--text-secondary);
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.clinic-sub i { color: var(--primary); width: 14px; }
+
+		.clinic-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+		#scheduleClinicSelect, .mode-select {
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 15px;
+			background: var(--white);
+			border: 1.5px solid var(--input-border);
+			border-radius: 20px;
+			padding: 10px 16px;
+			min-height: 44px;
+			cursor: pointer;
+		}
+
+		/* Chat */
+		.chat-card {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow);
+			overflow: hidden;
+			display: grid;
+			grid-template-columns: 280px 1fr;
+			min-height: 420px;
+		}
+
+		.contacts {
+			border-inline-end: 1px solid var(--border);
+			background: var(--white);
+			overflow-y: auto;
+			max-height: 560px;
+		}
+
+		.contact-item {
+			display: flex;
+			gap: 12px;
+			align-items: center;
+			width: 100%;
+			padding: 12px 16px;
+			background: none;
+			border: none;
+			border-bottom: 1px solid var(--border);
+			cursor: pointer;
+			font-family: inherit;
+			text-align: start;
+			min-height: 64px;
+			transition: background-color 0.15s;
+		}
+
+		.contact-item:hover { background: var(--primary-light); }
+		.contact-item.active { background: var(--primary-light); }
+
+		.contact-avatar {
+			width: 44px;
+			height: 44px;
+			border-radius: 50%;
+			object-fit: cover;
+			flex-shrink: 0;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 700;
+		}
+
+		.contact-meta {
+			flex: 1;
+			min-width: 0;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		.contact-name {
+			font-size: 14px;
+			font-weight: 600;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.contact-sub {
+			font-size: 12px;
+			color: var(--text-secondary);
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.contact-unread {
+			background: var(--primary);
+			color: var(--white);
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 700;
+			min-width: 22px;
+			height: 22px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0 6px;
+			flex-shrink: 0;
+		}
+
+		.chat-main { display: flex; flex-direction: column; }
+
+		.chat-head {
+			padding: 12px 16px;
+			border-bottom: 1px solid var(--border);
+			background: var(--white);
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.chat-messages {
+			flex: 1;
+			padding: 16px;
+			overflow-y: auto;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			max-height: 420px;
+			background: linear-gradient(180deg, #F5F8FA, #FAFDFE);
+		}
+
+		.msg {
+			max-width: 75%;
+			padding: 10px 16px;
+			border-radius: 20px;
+			font-size: 14px;
+			line-height: 1.7;
+			box-shadow: var(--shadow-sm);
+		}
+
+		.msg.theirs {
+			align-self: flex-start;
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-start-start-radius: 6px;
+		}
+
+		.msg.mine {
+			align-self: flex-end;
+			background: var(--primary-light);
+			border: 1px solid #c8daf5;
+			border-start-end-radius: 6px;
+		}
+
+		.msg-time {
+			display: block;
+			font-size: 11px;
+			opacity: 0.7;
+			margin-top: 4px;
+		}
+
+		.chat-composer {
+			display: flex;
+			gap: 8px;
+			padding: 12px;
+			border-top: 1px solid var(--border);
+			background: var(--white);
+		}
+
+		.chat-composer input {
+			flex: 1;
+			border: 1.5px solid var(--input-border);
+			border-radius: 20px;
+			padding: 10px 16px;
+			font-family: inherit;
+			font-size: 14px;
+			min-height: 44px;
+			background: var(--card-bg);
+		}
+
+		.send-btn {
+			width: 44px;
+			height: 44px;
+			border-radius: 50%;
+			background: var(--dark);
+			color: var(--white);
+			border: none;
+			cursor: pointer;
+			font-size: 15px;
+			flex-shrink: 0;
+			transition: opacity 0.2s;
+		}
+
+		.send-btn:hover { opacity: 0.9; }
+
+		.chat-empty {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			color: var(--text-secondary);
+			padding: 40px 16px;
+			text-align: center;
+		}
+
+		.chat-empty i {
+			font-size: 28px;
+			color: var(--primary);
+			opacity: 0.6;
+		}
+
+		.modal-wide { max-width: 520px; }
+
+		@media (max-width: 720px) {
+			.chat-card { grid-template-columns: 1fr; }
+
+			.contacts {
+				display: flex;
+				overflow-x: auto;
+				border-inline-end: none;
+				border-bottom: 1px solid var(--border);
+				max-height: none;
+			}
+
+			.contact-item {
+				border-bottom: none;
+				border-inline-end: 1px solid var(--border);
+				min-width: 180px;
+				flex-direction: column;
+				text-align: center;
+				gap: 6px;
+			}
+		}
+
+		/* Responsive */
+		@media (max-width: 900px) {
+			.stats-row {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+
+		@media (max-width: 720px) {
+			.doctor-hero {
+				flex-direction: column;
+				text-align: center;
+			}
+
+			.doctor-meta { justify-content: center; }
+			.doctor-hero-actions { justify-content: center; width: 100%; }
+
+			.appointment-row { align-items: flex-start; }
+			.appointment-row-side { width: 100%; justify-content: space-between; }
+
+			.form-grid { grid-template-columns: 1fr; }
+
+			.day-row { gap: 8px; }
+			.day-name { width: 100%; }
+		}
+
+		@media (max-width: 480px) {
+			.stats-row { grid-template-columns: 1fr; }
+			[role="tab"] { min-width: 110px; font-size: 14px; }
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after {
+				transition: none !important;
+				animation: none !important;
+			}
+		}
+	</style>
+</head>
+<body>
+	<!-- Header -->
+	<header>
+		<div class="container">
+			<div class="header-content">
+				<a href="P01-landing.html" class="logo" aria-label="نوبتینو - صفحهٔ اصلی">
+					<img src="../images/Logo.png" alt="لوگوی نوبتینو" style="height: 32px; object-fit: contain;">
+				</a>
+				<div class="header-actions">
+					<a href="P04-user-panel.html" class="btn btn-secondary btn-small" title="برای نمایش پروتوتایپ - در نسخهٔ نهایی از طریق ورود جداگانه دسترسی دارد">پنل کاربر</a>
+					<a href="P01-landing.html" class="btn btn-ghost btn-small">بازگشت</a>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<main class="container page-content">
+		<!-- Doctor hero -->
+		<section class="doctor-hero" aria-label="خلاصهٔ حساب پزشک">
+			<div class="doctor-avatar" id="heroAvatar" aria-hidden="true"></div>
+			<div class="doctor-hero-info">
+				<h1 id="heroName">—</h1>
+				<div class="doctor-specialty" id="heroSpecialty">—</div>
+				<div class="doctor-meta">
+					<span class="stars" id="heroRating"></span>
+					<span id="heroReviews"></span>
+					<span><i class="fas fa-id-card" aria-hidden="true"></i> نظام پزشکی: <span id="heroCouncil">—</span></span>
+					<span><i class="fas fa-money-check-dollar" aria-hidden="true"></i> ویزیت: <span id="heroFee">—</span></span>
+					<span id="heroAddress"><i class="fas fa-location-dot" aria-hidden="true"></i> —</span>
+				</div>
+			</div>
+			<div class="doctor-hero-actions">
+				<a class="btn btn-secondary btn-small" id="publicPageLink" href="#">
+					<i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> صفحهٔ عمومی من
+				</a>
+				<button type="button" class="btn btn-ghost btn-small" onclick="switchTab('info')">
+					<i class="fas fa-user-pen" aria-hidden="true"></i> ویرایش اطلاعات
+				</button>
+			</div>
+		</section>
+
+		<!-- Stats -->
+		<section class="stats-row" aria-label="خلاصهٔ نوبت‌ها">
+			<div class="stat-card">
+				<div class="stat-icon blue"><i class="fas fa-calendar-day" aria-hidden="true"></i></div>
+				<div>
+					<div class="stat-value" id="statToday">۰</div>
+					<div class="stat-label">نوبت امروز</div>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon green"><i class="fas fa-calendar-week" aria-hidden="true"></i></div>
+				<div>
+					<div class="stat-value" id="statWeek">۰</div>
+					<div class="stat-label">نوبت این هفته</div>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon purple"><i class="fas fa-money-check-dollar" aria-hidden="true"></i></div>
+				<div>
+					<div class="stat-value" id="statRevenue">۰</div>
+					<div class="stat-label">درآمد تأییدشدهٔ هفته</div>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon amber"><i class="fas fa-star" aria-hidden="true"></i></div>
+				<div>
+					<div class="stat-value" id="statRating">—</div>
+					<div class="stat-label">امتیاز کاربران</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Tabs -->
+		<div class="tabs" role="tablist" aria-label="بخش‌های پنل پزشک">
+			<button type="button" role="tab" id="tab-appts" aria-selected="true" aria-controls="panel-appts" onclick="switchTab('appts')">
+				<i class="fas fa-calendar-check" aria-hidden="true"></i> نوبت‌ها <span class="tab-count" id="countAppts">۰</span>
+			</button>
+			<button type="button" role="tab" id="tab-calendar" aria-selected="false" aria-controls="panel-calendar" onclick="switchTab('calendar')">
+				<i class="fas fa-table-columns" aria-hidden="true"></i> تقویم هفتگی
+			</button>
+			<button type="button" role="tab" id="tab-schedule" aria-selected="false" aria-controls="panel-schedule" onclick="switchTab('schedule')">
+				<i class="fas fa-calendar-days" aria-hidden="true"></i> برنامهٔ کاری
+			</button>
+			<button type="button" role="tab" id="tab-clinics" aria-selected="false" aria-controls="panel-clinics" onclick="switchTab('clinics')">
+				<i class="fas fa-house-medical" aria-hidden="true"></i> مطب‌ها
+			</button>
+			<button type="button" role="tab" id="tab-messages" aria-selected="false" aria-controls="panel-messages" onclick="switchTab('messages')">
+				<i class="fas fa-comments" aria-hidden="true"></i> پیام‌ها <span class="tab-count" id="countMessages">۰</span>
+			</button>
+			<button type="button" role="tab" id="tab-info" aria-selected="false" aria-controls="panel-info" onclick="switchTab('info')">
+				<i class="fas fa-user-pen" aria-hidden="true"></i> اطلاعات حرفه‌ای
+			</button>
+		</div>
+
+		<!-- Appointments -->
+		<section id="panel-appts" role="tabpanel" aria-labelledby="tab-appts">
+			<div class="section-head">
+				<div class="segmented" role="group" aria-label="بازهٔ زمانی نوبت‌ها">
+					<button type="button" class="active" data-range="today" onclick="setRange('today')">امروز</button>
+					<button type="button" data-range="week" onclick="setRange('week')">این هفته</button>
+					<button type="button" data-range="all" onclick="setRange('all')">همه</button>
+				</div>
+			</div>
+			<div id="appointmentsList"></div>
+		</section>
+
+		<!-- Weekly calendar -->
+		<section id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" hidden>
+			<div class="cal-wrap">
+				<div class="cal-nav">
+					<div>
+						<span class="cal-title" id="calTitle">—</span>
+						<span class="field-hint" id="calSub"></span>
+					</div>
+					<div style="display: flex; gap: 8px;">
+						<button type="button" class="btn btn-secondary btn-small" onclick="shiftWeek(-1)" aria-label="هفتهٔ قبل"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+						<button type="button" class="btn btn-ghost btn-small" onclick="shiftWeek(0)">هفتهٔ جاری</button>
+						<button type="button" class="btn btn-secondary btn-small" onclick="shiftWeek(1)" aria-label="هفتهٔ بعد"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+					</div>
+				</div>
+				<div class="cal-grid" id="calGrid"></div>
+				<div class="cal-legend" aria-hidden="true">
+					<span><i style="background: var(--mint); border: 2px solid var(--green-text);"></i> تأییدشده</span>
+					<span><i style="background: var(--amber-bg); border: 2px solid var(--amber-text);"></i> در انتظار پرداخت</span>
+					<span><i style="background: var(--purple-bg); border: 2px solid var(--purple-text);"></i> در انتظار تأیید پرداخت</span>
+					<span><i style="background: var(--gray-bg); border: 2px solid var(--gray-text);"></i> لغو/منقضی</span>
+					<span><i style="background: repeating-linear-gradient(45deg,#F5F8FA,#F5F8FA 4px,#FAFDFE 4px,#FAFDFE 8px); border: 1px solid var(--border);"></i> روز غیرکاری مطب فعال</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- Schedule -->
+		<section id="panel-schedule" role="tabpanel" aria-labelledby="tab-schedule" hidden>
+			<div class="schedule-card">
+				<h3><i class="fas fa-calendar-days" aria-hidden="true"></i> برنامهٔ هفتگی مطب</h3>
+				<p style="margin-bottom: 12px;">روزهای کاری و ساعات پذیرش را تعیین کنید. این برنامه مبنای نمایش نوبت‌های خالی در صفحهٔ رزرو است.</p>
+				<div style="margin-bottom: 20px;">
+					<label for="scheduleClinicSelect" class="field-hint" style="display: block; margin-bottom: 4px;">ویرایش برنامهٔ کدام مطب؟</label>
+					<select id="scheduleClinicSelect" onchange="onScheduleClinicChange(this.value)"></select>
+				</div>
+				<div id="weeklySchedule"></div>
+
+				<div class="schedule-block">
+					<h3><i class="fas fa-mug-hot" aria-hidden="true"></i> وقفه‌های استراحت روزانه</h3>
+					<p style="margin-bottom: 4px;">در این بازه‌ها نوبتی خالی نمی‌شود (هر روز تکرار می‌شود).</p>
+					<div class="breaks-list" id="breaksList"></div>
+					<div class="add-break-row">
+						<label for="newBreakStart" class="field-hint">از</label>
+						<input type="time" id="newBreakStart" value="12:00">
+						<label for="newBreakEnd" class="field-hint">تا</label>
+						<input type="time" id="newBreakEnd" value="13:00">
+						<button type="button" class="btn btn-ghost btn-small" onclick="addBreak()">
+							<i class="fas fa-plus" aria-hidden="true"></i> افزودن وقفه
+						</button>
+					</div>
+				</div>
+
+				<div class="duration-row">
+					<label for="durationSelect">مدت هر ویزیت:</label>
+					<select id="durationSelect">
+						<option value="15">۱۵ دقیقه</option>
+						<option value="20">۲۰ دقیقه</option>
+						<option value="25">۲۵ دقیقه</option>
+						<option value="30">۳۰ دقیقه</option>
+						<option value="45">۴۵ دقیقه</option>
+						<option value="60">۶۰ دقیقه</option>
+					</select>
+				</div>
+
+				<div class="schedule-block">
+					<h3><i class="fas fa-umbrella-beach" aria-hidden="true"></i> مرخصی و تعطیلات</h3>
+					<p style="margin-bottom: 4px;">در این روزها هیچ نوبت آنلاینی ارائه نمی‌شود (در همهٔ مطب‌ها).</p>
+					<div class="breaks-list" id="vacationsList"></div>
+					<div class="add-break-row">
+						<label class="field-hint" for="newVacationDate">تاریخ</label>
+						<input type="date" id="newVacationDate" dir="ltr">
+						<button type="button" class="btn btn-ghost btn-small" onclick="addVacation()">
+							<i class="fas fa-plus" aria-hidden="true"></i> افزودن روز تعطیل
+						</button>
+					</div>
+				</div>
+
+				<div class="schedule-block">
+					<h3><i class="fas fa-calendar-plus" aria-hidden="true"></i> روزهای کاری استثنایی</h3>
+					<p style="margin-bottom: 4px;">برای یک تاریخ خاص، ساعات متفاوت یا تعطیلی کامل تعیین کنید. این برنامه بر برنامهٔ هفتگی همان روز مقدم است.</p>
+					<div class="breaks-list" id="specialDatesList"></div>
+					<div class="add-break-row">
+						<label class="field-hint" for="newSpecialDate">تاریخ</label>
+						<input type="date" id="newSpecialDate" dir="ltr">
+						<label class="field-hint" for="newSpecialStart">از</label>
+						<input type="time" id="newSpecialStart" value="10:00">
+						<label class="field-hint" for="newSpecialEnd">تا</label>
+						<input type="time" id="newSpecialEnd" value="14:00">
+						<select id="newSpecialMode" class="mode-select" aria-label="نوع برنامهٔ استثنایی">
+							<option value="work">کاری با این ساعات</option>
+							<option value="off">تعطیل کامل</option>
+						</select>
+						<button type="button" class="btn btn-ghost btn-small" onclick="addSpecialDate()">
+							<i class="fas fa-plus" aria-hidden="true"></i> افزودن
+						</button>
+					</div>
+				</div>
+
+				<div class="schedule-block">
+					<h3><i class="fas fa-ban" aria-hidden="true"></i> بلاک ساعت خاص</h3>
+					<p style="margin-bottom: 4px;">یک ساعت مشخص را از نوبت‌دهی حذف کنید (جلسه، جراحی، معاینه و…). اسلات‌های رزروشده از کار نمی‌افتند.</p>
+					<div class="breaks-list" id="blockedSlotsList"></div>
+					<div class="add-break-row">
+						<label class="field-hint" for="newBlockedDate">تاریخ</label>
+						<input type="date" id="newBlockedDate" dir="ltr">
+						<label class="field-hint" for="newBlockedTime">ساعت</label>
+						<input type="time" id="newBlockedTime" value="12:00">
+						<button type="button" class="btn btn-ghost btn-small" onclick="addBlockedSlot()">
+							<i class="fas fa-plus" aria-hidden="true"></i> بلاک کردن
+						</button>
+					</div>
+				</div>
+
+				<div class="capacity-note" id="capacityNote" hidden>
+					<i class="fas fa-circle-info" aria-hidden="true"></i>
+					<span id="capacityText"></span>
+				</div>
+
+				<div class="save-bar">
+					<button type="button" class="btn btn-primary" onclick="saveSchedule()">
+						<i class="fas fa-floppy-disk" aria-hidden="true"></i> ذخیرهٔ برنامه
+					</button>
+					<button type="button" class="btn btn-secondary" onclick="resetSchedule()">
+						<i class="fas fa-rotate-right" aria-hidden="true"></i> بازنشانی به پیش‌فرض
+					</button>
+				</div>
+			</div>
+		</section>
+
+		<!-- Clinics -->
+		<section id="panel-clinics" role="tabpanel" aria-labelledby="tab-clinics" hidden>
+			<div class="profile-card">
+				<div class="section-head" style="margin-bottom: 12px;">
+					<h3><i class="fas fa-house-medical" aria-hidden="true"></i> مطب‌ها و شعب</h3>
+					<button type="button" class="btn btn-primary btn-small" onclick="openClinicModal()">
+						<i class="fas fa-plus" aria-hidden="true"></i> افزودن مطب
+					</button>
+				</div>
+				<p style="margin-bottom: 16px;">
+					برنامهٔ کاری هر مطب در تب «برنامهٔ کاری» به‌تفکیک همان مطب ویرایش می‌شود و نوبت‌دهی آنلاین بر اساس برنامهٔ <strong>مطب فعال</strong> انجام می‌شود.
+				</p>
+				<div id="clinicsList"></div>
+			</div>
+		</section>
+
+		<!-- Messages -->
+		<section id="panel-messages" role="tabpanel" aria-labelledby="tab-messages" hidden>
+			<div class="chat-card" id="chatCard"></div>
+		</section>
+
+		<!-- Professional info -->
+		<section id="panel-info" role="tabpanel" aria-labelledby="tab-info" hidden>
+			<div class="profile-card">
+				<h3><i class="fas fa-user-pen" aria-hidden="true"></i> اطلاعات حرفه‌ای</h3>
+				<p style="margin-bottom: 20px;">
+					این اطلاعات در صفحهٔ عمومی شما نمایش داده می‌شود.
+					<span class="field-hint">در این پروتوتایپ، تغییرات فقط در همین مرورگر ذخیره می‌شود و پس از اتصال صفحهٔ عمومی پزشک (P02) به همین داده‌ها، در آن صفحه هم دیده خواهد شد.</span>
+				</p>
+				<form id="infoForm" novalidate onsubmit="saveInfo(event)">
+					<div class="form-grid">
+						<div class="form-field">
+							<label for="specialty">تخصص <span class="required" aria-hidden="true">*</span></label>
+							<input type="text" id="specialty" required>
+							<span class="field-error" id="specialtyError">تخصص را وارد کنید.</span>
+						</div>
+						<div class="form-field">
+							<label for="degree">مدرک و سوابق تحصیلی (خلاصه)</label>
+							<input type="text" id="degree">
+						</div>
+						<div class="form-field">
+							<label for="fee">هزینهٔ ویزیت (تومان) <span class="required" aria-hidden="true">*</span></label>
+							<input type="text" id="fee" inputmode="numeric" required>
+							<span class="field-error" id="feeError">مبلغ معتبر (بزرگ‌تر از صفر) وارد کنید.</span>
+						</div>
+						<div class="form-field">
+							<label for="phone">تلفن مطب فعال</label>
+							<input type="tel" id="phone" dir="ltr" placeholder="021XXXXXXXX">
+						</div>
+						<div class="form-field full">
+							<label for="address">آدرس مطب فعال</label>
+							<input type="text" id="address">
+							<span class="field-hint">این فیلدها اطلاعات «مطب فعال» را در تب مطب‌ها به‌روزرسانی می‌کنند.</span>
+						</div>
+						<div class="form-field full">
+							<label for="bio">معرفی کوتاه (بیوگرافی)</label>
+							<textarea id="bio"></textarea>
+						</div>
+						<div class="form-field full">
+							<label for="services">خدمات (هر خط یک مورد)</label>
+							<textarea id="services"></textarea>
+						</div>
+						<div class="form-field full">
+							<label for="education">تحصیلات (هر خط یک مورد)</label>
+							<textarea id="education"></textarea>
+						</div>
+						<div class="form-field full">
+							<label for="experience">سوابق شغلی (هر خط یک مورد)</label>
+							<textarea id="experience"></textarea>
+						</div>
+					</div>
+					<div class="save-bar">
+						<button type="submit" class="btn btn-primary">
+							<i class="fas fa-floppy-disk" aria-hidden="true"></i> ذخیرهٔ اطلاعات
+						</button>
+					</div>
+				</form>
+			</div>
+		</section>
+	</main>
+
+	<!-- Cancel modal -->
+	<div class="modal-overlay" id="cancelModal" role="dialog" aria-modal="true" aria-labelledby="cancelModalTitle">
+		<div class="modal">
+			<div class="modal-icon"><i class="fas fa-triangle-exclamation"></i></div>
+			<h3 id="cancelModalTitle">لغو نوبت بیمار</h3>
+			<p id="cancelModalText">آیا از لغو این نوبت مطمئن هستید؟</p>
+			<div class="modal-actions">
+				<button type="button" class="btn btn-danger" id="confirmCancelBtn">بله، لغو کن</button>
+				<button type="button" class="btn btn-secondary" onclick="closeCancelModal()">انصراف</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Visit result modal (doctor records) -->
+	<div class="modal-overlay" id="visitModal" role="dialog" aria-modal="true" aria-labelledby="visitModalTitle">
+		<div class="modal modal-wide" style="text-align: start;">
+			<div class="modal-icon" style="background: var(--mint); color: var(--green-text);"><i class="fas fa-file-waveform" aria-hidden="true"></i></div>
+			<h3 id="visitModalTitle" style="text-align: center;">ثبت نتیجهٔ ویزیت</h3>
+			<p id="visitModalSub" style="text-align: center;"></p>
+			<form id="visitForm" onsubmit="saveVisit(event)">
+				<input type="hidden" id="visitResId" value="">
+				<div class="form-grid" style="grid-template-columns: 1fr;">
+					<div class="form-field">
+						<label for="visitDiagnosis">تشخیص</label>
+						<input type="text" id="visitDiagnosis">
+					</div>
+					<div class="form-field">
+						<label for="visitNotes">توضیحات و توصیه‌ها</label>
+						<textarea id="visitNotes" style="min-height: 80px;"></textarea>
+					</div>
+					<div class="form-field">
+						<label for="visitRx">نسخه (هر خط یک مورد)</label>
+						<textarea id="visitRx" style="min-height: 90px;"></textarea>
+					</div>
+					<div class="form-field">
+						<label for="visitFollowUp">تاریخ ویزیت بعدی (اختیاری)</label>
+						<input type="date" id="visitFollowUp" dir="ltr">
+					</div>
+				</div>
+				<div class="modal-actions" style="margin-top: 16px;">
+					<button type="submit" class="btn btn-primary">ذخیرهٔ نتیجه</button>
+					<button type="button" class="btn btn-secondary" onclick="closeModal('visitModal')">انصراف</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Clinic modal -->
+	<div class="modal-overlay" id="clinicModal" role="dialog" aria-modal="true" aria-labelledby="clinicModalTitle">
+		<div class="modal modal-wide" style="text-align: start;">
+			<div class="modal-icon" style="background: var(--primary-light); color: var(--primary);"><i class="fas fa-house-medical" aria-hidden="true"></i></div>
+			<h3 id="clinicModalTitle" style="text-align: center;">مطب جدید</h3>
+			<form id="clinicForm" onsubmit="saveClinic(event)">
+				<input type="hidden" id="clinicEditId" value="">
+				<div class="form-grid" style="grid-template-columns: 1fr;">
+					<div class="form-field">
+						<label for="clinicName">نام مطب <span class="required" aria-hidden="true">*</span></label>
+						<input type="text" id="clinicName" required>
+					</div>
+					<div class="form-field">
+						<label for="clinicAddress">آدرس</label>
+						<input type="text" id="clinicAddress">
+					</div>
+					<div class="form-field">
+						<label for="clinicPhone">تلفن</label>
+						<input type="tel" id="clinicPhone" dir="ltr" placeholder="021XXXXXXXX">
+					</div>
+				</div>
+				<div class="modal-actions" style="margin-top: 16px;">
+					<button type="submit" class="btn btn-primary">ذخیره</button>
+					<button type="button" class="btn btn-secondary" onclick="closeModal('clinicModal')">انصراف</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Toast -->
+	<div class="toast" id="toast" role="status" aria-live="polite">
+		<i class="fas fa-circle-check" id="toastIcon"></i>
+		<span id="toastText"></span>
+	</div>
+
+	<!-- Scripts -->
+	<script src="../js/doctors-data.js"></script>
+	<script src="../js/appointment-availability.js"></script>
+	<script src="../js/reservation-system.js"></script>
+
+	<script>
+		'use strict';
+
+		/* ---------- Constants & state ---------- */
+
+		const CURRENT_DOCTOR_KEY = 'nobatino_current_doctor';
+		const DOCTOR_OVERRIDES_KEY = 'nobatino_doctor_overrides';
+		const CLINICS_KEY = 'nobatino_clinic_data';
+		const VACATIONS_KEY = 'nobatino_vacations';
+		const VISITS_KEY = 'nobatino_visits';
+		const MESSAGES_KEY = 'nobatino_messages';
+
+		// Untouched copy of the shipped availability data (reset + first-init source)
+		const BASE_AVAILABILITY = JSON.parse(JSON.stringify(appointmentAvailability));
+
+		const DAYS = [
+			{ key: 'saturday', label: 'شنبه' },
+			{ key: 'sunday', label: 'یکشنبه' },
+			{ key: 'monday', label: 'دوشنبه' },
+			{ key: 'tuesday', label: 'سه‌شنبه' },
+			{ key: 'wednesday', label: 'چهارشنبه' },
+			{ key: 'thursday', label: 'پنجشنبه' },
+			{ key: 'friday', label: 'جمعه' }
+		];
+
+		const STATUS_META = {
+			HELD: { label: 'در انتظار پرداخت', cls: 'status-HELD', icon: 'fa-hourglass-half' },
+			AWAITING_PAYMENT: { label: 'در انتظار تأیید پرداخت', cls: 'status-AWAITING_PAYMENT', icon: 'fa-credit-card' },
+			CONFIRMED: { label: 'تأییدشده', cls: 'status-CONFIRMED', icon: 'fa-circle-check' },
+			CANCELLED: { label: 'لغوشده', cls: 'status-CANCELLED', icon: 'fa-ban' },
+			EXPIRED: { label: 'منقضی‌شده', cls: 'status-EXPIRED', icon: 'fa-hourglass-end' },
+			PAYMENT_FAILED: { label: 'پرداخت ناموفق', cls: 'status-PAYMENT_FAILED', icon: 'fa-xmark' }
+		};
+
+		let currentDoctorId = null;
+		let apptRange = 'today';
+		let pendingCancelId = null;
+		let draftBreaks = [];
+		let draftSpecialDates = {};
+		let draftBlockedSlots = [];
+
+		/* ---------- Helpers ---------- */
+
+		function faNum(str) {
+			const persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+			return String(str).replace(/\d/g, d => persian[d]);
+		}
+
+		function toEnDigits(str) {
+			return String(str)
+				.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+				.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+		}
+
+		function todayStr() {
+			return datePlus(0);
+		}
+
+		function datePlus(days) {
+			const d = new Date();
+			d.setDate(d.getDate() + days);
+			return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+		}
+
+		function formatFaDate(dateStr) {
+			if (!dateStr) return '—';
+			const d = new Date(dateStr + 'T00:00:00');
+			return new Intl.DateTimeFormat('fa-IR', { weekday: 'long', day: 'numeric', month: 'long' }).format(d);
+		}
+
+		function formatFee(num) {
+			return faNum(Number(num || 0).toLocaleString('en-US')) + ' تومان';
+		}
+
+		function faTimeAgo(iso) {
+			if (!iso) return '—';
+			const diff = Date.now() - new Date(iso).getTime();
+			const mins = Math.floor(diff / 60000);
+			if (mins < 1) return 'همین حالا';
+			if (mins < 60) return `${faNum(mins)} دقیقه پیش`;
+			const hours = Math.floor(mins / 60);
+			if (hours < 24) return `${faNum(hours)} ساعت پیش`;
+			const days = Math.floor(hours / 24);
+			if (days < 7) return `${faNum(days)} روز پیش`;
+			return formatFaDate(String(iso).slice(0, 10));
+		}
+
+		function statusBadge(status) {
+			const meta = STATUS_META[status] || STATUS_META.CANCELLED;
+			return `<span class="status-badge ${meta.cls}"><i class="fas ${meta.icon}" aria-hidden="true"></i> ${meta.label}</span>`;
+		}
+
+		function escapeHtml(str) {
+			return String(str ?? '').replace(/[&<>"']/g, c => ({
+				'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+			}[c]));
+		}
+
+		function readJson(key, fallback) {
+			try {
+				const raw = localStorage.getItem(key);
+				if (raw) return JSON.parse(raw);
+			} catch (e) { /* ignore corrupt data */ }
+			return fallback;
+		}
+
+		/* ---------- Effective data (base + local overrides) ---------- */
+
+		function getDoctorOverrides() {
+			return readJson(DOCTOR_OVERRIDES_KEY, {});
+		}
+
+		function getEffectiveDoctor(id) {
+			const base = getDoctorById(id);
+			if (!base) return null;
+			const override = getDoctorOverrides()[id];
+			return Object.assign({}, base, override || {});
+		}
+
+		/* ---------- Clinics (per-doctor, prototype) ---------- */
+
+		function getEffectiveAvailability(id) {
+			const base = BASE_AVAILABILITY[id];
+			if (!base) return null;
+			return JSON.parse(JSON.stringify(base));
+		}
+
+		function getClinicData() {
+			const all = readJson(CLINICS_KEY, {});
+			if (all[currentDoctorId]) return all[currentDoctorId];
+
+			// First open: build one clinic from base data
+			const baseAvail = getEffectiveAvailability(currentDoctorId) || {
+				weeklySchedule: {}, dailyBreaks: [], appointmentDuration: 30,
+				holidays: [], blockedSlots: [], specialDates: {}, timezone: 'Asia/Tehran'
+			};
+			const doc = getEffectiveDoctor(currentDoctorId);
+			const data = {
+				activeClinicId: 'clinic-1',
+				list: [{
+					id: 'clinic-1',
+					name: 'مطب اصلی',
+					address: doc ? doc.clinicAddress : '',
+					phone: doc ? doc.phone : '',
+					availability: JSON.parse(JSON.stringify(baseAvail))
+				}]
+			};
+			all[currentDoctorId] = data;
+			localStorage.setItem(CLINICS_KEY, JSON.stringify(all));
+			return data;
+		}
+
+		function saveClinicData(data) {
+			const all = readJson(CLINICS_KEY, {});
+			all[currentDoctorId] = data;
+			localStorage.setItem(CLINICS_KEY, JSON.stringify(all));
+		}
+
+		function activeClinic(data) {
+			data = data || getClinicData();
+			return data.list.find(c => c.id === data.activeClinicId) || data.list[0];
+		}
+
+		/* ---------- Vacations ---------- */
+
+		function getVacations() {
+			const all = readJson(VACATIONS_KEY, {});
+			return all[currentDoctorId] || [];
+		}
+
+		function saveVacations(list) {
+			const all = readJson(VACATIONS_KEY, {});
+			all[currentDoctorId] = list;
+			localStorage.setItem(VACATIONS_KEY, JSON.stringify(all));
+		}
+
+		/**
+		 * Effective schedule = active clinic's schedule + vacation dates merged into holidays.
+		 * This is what drives slot generation (getAvailableSlots) and the capacity preview.
+		 */
+		function buildEffectiveAvailability() {
+			const clinic = activeClinic();
+			if (!clinic) return null;
+			const avail = JSON.parse(JSON.stringify(clinic.availability));
+			avail.holidays = Array.from(new Set([...(avail.holidays || []), ...getVacations()]));
+			return avail;
+		}
+
+		// Apply the effective schedule to the global object so getAvailableSlots() reflects it
+		function applyAvailabilityGlobal() {
+			const avail = buildEffectiveAvailability();
+			if (avail) appointmentAvailability[currentDoctorId] = avail;
+		}
+
+		/* ---------- Rendering: hero ---------- */
+
+		function renderHero() {
+			const doc = getEffectiveDoctor(currentDoctorId);
+			if (!doc) return;
+
+			document.getElementById('heroAvatar').innerHTML = `<img src="../images/${doc.photo}" alt="">`;
+			document.getElementById('heroName').textContent = doc.name;
+			document.getElementById('heroSpecialty').textContent = doc.specialty;
+			document.getElementById('heroRating').innerHTML =
+				`<i class="fas fa-star" aria-hidden="true"></i> ${faNum(doc.rating)} از ۵`;
+			document.getElementById('heroReviews').textContent = `${faNum(doc.reviewCount)} نظر ثبت‌شده`;
+			document.getElementById('heroCouncil').textContent = faNum(doc.medicalCouncilNumber);
+			document.getElementById('heroFee').textContent = formatFee(doc.consultationFeeNumeric);
+			const clinic = activeClinic();
+			document.getElementById('heroAddress').innerHTML =
+				`<i class="fas fa-location-dot" aria-hidden="true"></i> ${escapeHtml(clinic ? (clinic.address || 'آدرس مطب ثبت نشده') : '—')} — ${escapeHtml(clinic && clinic.name ? clinic.name : '')}`;
+			document.getElementById('publicPageLink').href = `P02-doctor-details.html?id=${doc.id}`;
+		}
+
+		/* ---------- Rendering: stats & appointments ---------- */
+
+		function doctorReservations() {
+			// Refresh expirations for active holds first
+			const all = ReservationSystem.getAllReservations();
+			for (const id in all) {
+				const res = all[id];
+				if (res.doctorId === currentDoctorId && (res.status === 'HELD' || res.status === 'AWAITING_PAYMENT')) {
+					ReservationSystem.checkExpiration(id);
+				}
+			}
+			const refreshed = ReservationSystem.getAllReservations();
+			return Object.values(refreshed)
+				.filter(r => r.doctorId === currentDoctorId)
+				.sort((a, b) => (a.appointmentDate + a.startTime).localeCompare(b.appointmentDate + b.startTime));
+		}
+
+		function weekDates() {
+			const dates = [];
+			for (let i = 0; i < 7; i++) dates.push(datePlus(i));
+			return dates;
+		}
+
+		function renderStats() {
+			const all = doctorReservations();
+			const today = todayStr();
+			const week = weekDates();
+			const active = all.filter(r => r.status === 'HELD' || r.status === 'AWAITING_PAYMENT' || r.status === 'CONFIRMED');
+
+			const todayCount = active.filter(r => r.appointmentDate === today).length;
+			const weekCount = active.filter(r => week.includes(r.appointmentDate)).length;
+			const weekRevenue = active
+				.filter(r => r.appointmentDate >= today && r.appointmentDate <= datePlus(6) && r.status === 'CONFIRMED')
+				.reduce((sum, r) => sum + (r.consultationFee || 0), 0);
+
+			const doc = getEffectiveDoctor(currentDoctorId);
+
+			document.getElementById('statToday').textContent = faNum(todayCount);
+			document.getElementById('statWeek').textContent = faNum(weekCount);
+			document.getElementById('statRevenue').textContent = formatFee(weekRevenue);
+			document.getElementById('statRating').textContent = faNum(doc ? doc.rating : '—');
+			document.getElementById('countAppts').textContent = faNum(all.length);
+		}
+
+		function setRange(range) {
+			apptRange = range;
+			document.querySelectorAll('.segmented button').forEach(btn => {
+				btn.classList.toggle('active', btn.dataset.range === range);
+			});
+			renderAppointments();
+		}
+
+		function renderAppointments() {
+			let list = doctorReservations();
+			const today = todayStr();
+			const week = weekDates();
+
+			if (apptRange === 'today') {
+				list = list.filter(r => r.appointmentDate === today);
+			} else if (apptRange === 'week') {
+				list = list.filter(r => week.includes(r.appointmentDate));
+			}
+
+			// Active first, then by date
+			const order = { HELD: 0, AWAITING_PAYMENT: 0, CONFIRMED: 0 };
+			list.sort((a, b) => (order[a.status] ?? 1) - (order[b.status] ?? 1));
+
+			const el = document.getElementById('appointmentsList');
+
+			if (list.length === 0) {
+				const rangeLabel = apptRange === 'today' ? 'امروز' : apptRange === 'week' ? 'این هفته' : '';
+				el.innerHTML = `
+					<div class="empty-state">
+						<i class="fas fa-calendar" aria-hidden="true"></i>
+						<h3>نوبتی ${rangeLabel ? 'برای ' + rangeLabel : ''} ثبت نشده است</h3>
+						<p>نوبت‌های بیماران پس از رزرو در صفحهٔ عمومی شما اینجا نمایش داده می‌شوند.</p>
+						<div class="seed-hint">
+							برای دیدن ظاهر پنل با دادهٔ نمونه:
+							<button type="button" onclick="seedDemoData()">بارگذاری دادهٔ نمونه</button>
+						</div>
+					</div>`;
+				return;
+			}
+
+			el.innerHTML = list.map(res => {
+				const isActive = res.status === 'HELD' || res.status === 'AWAITING_PAYMENT' || res.status === 'CONFIRMED';
+				const patient = res.patientName || 'کاربر نوبتینو';
+				const today = todayStr();
+				const canRecordVisit = res.status === 'CONFIRMED' && res.appointmentDate <= today;
+				const hasVisit = !!getVisits()[res.id];
+				return `
+				<article class="appointment-row">
+					<div class="time-badge">
+						<div class="t">${faNum(res.startTime)}</div>
+						<div class="d">${formatFaDate(res.appointmentDate)}</div>
+					</div>
+					<div class="appointment-row-info">
+						<h4>${escapeHtml(patient)}</h4>
+						<div class="sub">کد رهگیری: ${faNum(res.id.replace('RES-', ''))}</div>
+					</div>
+					<div class="appointment-row-side">
+						${statusBadge(res.status)}
+						<span class="appointment-fee">${formatFee(res.consultationFee)}</span>
+						<div class="row-actions">
+							${canRecordVisit ? `<button type="button" class="btn btn-ghost btn-small" onclick="openVisitModal('${res.id}')">
+								<i class="fas fa-file-waveform" aria-hidden="true"></i> ${hasVisit ? 'ویرایش نتیجه' : 'ثبت نتیجه'}
+							</button>` : ''}
+							${isActive ? `<button type="button" class="icon-btn" onclick="askCancel('${res.id}')" aria-label="لغو نوبت" title="لغو نوبت">
+								<i class="fas fa-ban" aria-hidden="true"></i>
+							</button>` : ''}
+						</div>
+					</div>
+				</article>`;
+			}).join('');
+		}
+
+		/* ---------- Rendering: schedule ---------- */
+
+		function renderSchedule() {
+			const clinic = activeClinic();
+			if (!clinic) return;
+			const avail = clinic.availability;
+
+			// Clinic selector: editing target = active clinic
+			const data = getClinicData();
+			document.getElementById('scheduleClinicSelect').innerHTML = data.list.map(c =>
+				`<option value="${c.id}" ${c.id === data.activeClinicId ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+
+			const rows = DAYS.map(day => {
+				const sched = avail.weeklySchedule[day.key] || { startTime: null, endTime: null, available: false };
+				const checked = sched.available ? 'checked' : '';
+				const disabled = sched.available ? '' : 'disabled';
+				return `
+				<div class="day-row" data-day="${day.key}">
+					<span class="day-name">${day.label}</span>
+					<label class="switch">
+						<input type="checkbox" data-role="day-toggle" ${checked} onchange="onDayToggle(this)" aria-label="${day.label} کاری است">
+						<span class="track" aria-hidden="true"></span>
+						<span class="switch-state">${sched.available ? 'کاری' : 'تعطیل'}</span>
+					</label>
+					<div class="day-times">
+						<label class="field-hint" style="display:none">ساعت شروع ${day.label}</label>
+						<input type="time" data-role="start" value="${sched.startTime || '09:00'}" ${disabled} dir="ltr" aria-label="ساعت شروع ${day.label}">
+						<span class="dash" aria-hidden="true">تا</span>
+						<label class="field-hint" style="display:none">ساعت پایان ${day.label}</label>
+						<input type="time" data-role="end" value="${sched.endTime || '17:00'}" ${disabled} dir="ltr" aria-label="ساعت پایان ${day.label}">
+					</div>
+				</div>`;
+			}).join('');
+			document.getElementById('weeklySchedule').innerHTML = rows;
+
+			draftBreaks = (avail.dailyBreaks || []).map(b => ({ ...b }));
+			renderBreaks();
+			draftSpecialDates = JSON.parse(JSON.stringify(avail.specialDates || {}));
+			renderSpecialDates();
+			draftBlockedSlots = (avail.blockedSlots || []).slice();
+			renderBlockedSlots();
+
+			document.getElementById('durationSelect').value = String(avail.appointmentDuration);
+			renderVacations();
+			renderCapacity();
+		}
+
+		function onScheduleClinicChange(clinicId) {
+			setActiveClinic(clinicId);
+		}
+
+		function onDayToggle(checkbox) {
+			const row = checkbox.closest('.day-row');
+			const stateLabel = row.querySelector('.switch-state');
+			const inputs = row.querySelectorAll('input[type="time"]');
+			const on = checkbox.checked;
+			stateLabel.textContent = on ? 'کاری' : 'تعطیل';
+			inputs.forEach(inp => { inp.disabled = !on; });
+			renderCapacity();
+		}
+
+		function renderBreaks() {
+			const el = document.getElementById('breaksList');
+			if (draftBreaks.length === 0) {
+				el.innerHTML = '<p class="field-hint">وقفه‌ای ثبت نشده است.</p>';
+				return;
+			}
+			el.innerHTML = draftBreaks.map((b, i) => `
+				<div class="break-item">
+					<span>وقفهٔ ${faNum(i + 1)}</span>
+					<span class="range">${faNum(b.startTime)} — ${faNum(b.endTime)}</span>
+					<button type="button" onclick="removeBreak(${i})" aria-label="حذف وقفهٔ ${faNum(i + 1)}">
+						<i class="fas fa-trash-can" aria-hidden="true"></i>
+					</button>
+				</div>
+			`).join('');
+		}
+
+		function addBreak() {
+			const start = document.getElementById('newBreakStart').value;
+			const end = document.getElementById('newBreakEnd').value;
+			if (!start || !end) {
+				showToast('ساعت شروع و پایان وقفه را مشخص کنید', false);
+				return;
+			}
+			if (start >= end) {
+				showToast('ساعت پایان وقفه باید بعد از شروع باشد', false);
+				return;
+			}
+			draftBreaks.push({ startTime: start, endTime: end });
+			renderBreaks();
+			renderCapacity();
+		}
+
+		function removeBreak(index) {
+			draftBreaks.splice(index, 1);
+			renderBreaks();
+			renderCapacity();
+		}
+
+		function collectDraftSchedule() {
+			const clinic = activeClinic();
+			const base = clinic ? clinic.availability : { timezone: 'Asia/Tehran', holidays: [], blockedSlots: [], specialDates: {} };
+			const weeklySchedule = {};
+			document.querySelectorAll('.day-row').forEach(row => {
+				const key = row.dataset.day;
+				const on = row.querySelector('[data-role="day-toggle"]').checked;
+				weeklySchedule[key] = {
+					startTime: on ? row.querySelector('[data-role="start"]').value : null,
+					endTime: on ? row.querySelector('[data-role="end"]').value : null,
+					available: on
+				};
+			});
+			return {
+				appointmentDuration: Number(document.getElementById('durationSelect').value),
+				timezone: base.timezone,
+				weeklySchedule,
+				dailyBreaks: draftBreaks.map(b => ({ ...b })),
+				holidays: base.holidays || [],
+				blockedSlots: draftBlockedSlots.slice(),
+				specialDates: JSON.parse(JSON.stringify(draftSpecialDates))
+			};
+		}
+
+		function renderCapacity() {
+			const note = document.getElementById('capacityNote');
+			// Build a temporary availability object from current draft + vacations and measure next 7 days
+			const draft = collectDraftSchedule();
+			draft.holidays = Array.from(new Set([...(draft.holidays || []), ...getVacations()]));
+			const saved = appointmentAvailability[currentDoctorId];
+			appointmentAvailability[currentDoctorId] = draft;
+
+			let totalSlots = 0;
+			for (let i = 1; i <= 7; i++) {
+				totalSlots += getAvailableSlots(currentDoctorId, datePlus(i)).length;
+			}
+
+			appointmentAvailability[currentDoctorId] = saved;
+
+			if (totalSlots === 0) {
+				document.getElementById('capacityText').innerHTML =
+					'با برنامهٔ فعلی، هفتهٔ آینده هیچ نوبت خالی ایجاد نمی‌شود.';
+			} else {
+				document.getElementById('capacityText').innerHTML =
+					`با برنامهٔ فعلی، در ۷ روز آینده <strong>${faNum(totalSlots)}</strong> نوبت خالی ایجاد می‌شود.`;
+			}
+			note.hidden = false;
+		}
+
+		function saveSchedule() {
+			// Validate: start < end on working days
+			for (const row of document.querySelectorAll('.day-row')) {
+				if (!row.querySelector('[data-role="day-toggle"]').checked) continue;
+				const start = row.querySelector('[data-role="start"]').value;
+				const end = row.querySelector('[data-role="end"]').value;
+				if (!start || !end) {
+					showToast('ساعات کاری روزهای فعال را کامل کنید', false);
+					return;
+				}
+				if (start >= end) {
+					showToast(`ساعت پایان باید بعد از شروع باشد (${row.querySelector('.day-name').textContent})`, false);
+					return;
+				}
+			}
+
+			const data = getClinicData();
+			const clinic = activeClinic(data);
+			clinic.availability = collectDraftSchedule();
+			saveClinicData(data);
+			applyAvailabilityGlobal();
+			renderCapacity();
+			renderCalendar();
+			showToast('برنامهٔ کاری این مطب ذخیره شد');
+		}
+
+		function resetSchedule() {
+			const data = getClinicData();
+			const clinic = activeClinic(data);
+			clinic.availability = getEffectiveAvailability(currentDoctorId) || clinic.availability;
+			saveClinicData(data);
+			applyAvailabilityGlobal();
+			renderSchedule();
+			renderCalendar();
+			showToast('برنامهٔ این مطب به پیش‌فرض بازگشت');
+		}
+
+		/* ---------- Vacations ---------- */
+
+		function renderVacations() {
+			const el = document.getElementById('vacationsList');
+			const list = getVacations().slice().sort();
+			if (list.length === 0) {
+				el.innerHTML = '<p class="field-hint">روز تعطیلی ثبت نشده است.</p>';
+				return;
+			}
+			el.innerHTML = list.map(d => `
+				<div class="break-item">
+					<span><i class="fas fa-umbrella-beach" aria-hidden="true"></i> مرخصی / تعطیلی</span>
+					<span style="font-weight: 600;">${formatFaDate(d)}</span>
+					<button type="button" onclick="removeVacation('${d}')" aria-label="حذف روز ${formatFaDate(d)}">
+						<i class="fas fa-trash-can" aria-hidden="true"></i>
+					</button>
+				</div>`).join('');
+		}
+
+		function addVacation() {
+			const d = document.getElementById('newVacationDate').value;
+			if (!d) {
+				showToast('تاریخ را انتخاب کنید', false);
+				return;
+			}
+			const list = getVacations();
+			if (!list.includes(d)) list.push(d);
+			saveVacations(list);
+			document.getElementById('newVacationDate').value = '';
+			applyAvailabilityGlobal();
+			renderVacations();
+			renderCapacity();
+			renderCalendar();
+			showToast('روز تعطیل ثبت شد و نوبت‌های آن روز حذف می‌شوند از فروش');
+		}
+
+		function removeVacation(d) {
+			saveVacations(getVacations().filter(x => x !== d));
+			applyAvailabilityGlobal();
+			renderVacations();
+			renderCapacity();
+			renderCalendar();
+			showToast('روز تعطیل حذف شد');
+		}
+
+		/* ---------- Special working days (specialDates) ---------- */
+
+		function renderSpecialDates() {
+			const el = document.getElementById('specialDatesList');
+			const keys = Object.keys(draftSpecialDates).sort();
+			if (keys.length === 0) {
+				el.innerHTML = '<p class="field-hint">برنامهٔ استثنایی ثبت نشده است.</p>';
+				return;
+			}
+			el.innerHTML = keys.map(d => {
+				const spec = draftSpecialDates[d];
+				const isWork = spec && spec.available;
+				return `
+				<div class="break-item">
+					<span><i class="fas fa-calendar-plus" aria-hidden="true"></i> ${formatFaDate(d)}</span>
+					${isWork
+						? `<span class="status-badge status-CONFIRMED">کاری ${faNum(spec.startTime)} تا ${faNum(spec.endTime)}</span>`
+						: `<span class="status-badge status-CANCELLED">تعطیل کامل</span>`}
+					<button type="button" onclick="removeSpecialDate('${d}')" aria-label="حذف برنامهٔ استثنایی ${formatFaDate(d)}">
+						<i class="fas fa-trash-can" aria-hidden="true"></i>
+					</button>
+				</div>`;
+			}).join('');
+		}
+
+		function addSpecialDate() {
+			const d = document.getElementById('newSpecialDate').value;
+			const mode = document.getElementById('newSpecialMode').value;
+			const start = document.getElementById('newSpecialStart').value;
+			const end = document.getElementById('newSpecialEnd').value;
+
+			if (!d) {
+				showToast('تاریخ را انتخاب کنید', false);
+				return;
+			}
+			if (mode === 'work') {
+				if (!start || !end) {
+					showToast('ساعت شروع و پایان را مشخص کنید', false);
+					return;
+				}
+				if (start >= end) {
+					showToast('ساعت پایان باید بعد از شروع باشد', false);
+					return;
+				}
+			}
+
+			const existed = !!draftSpecialDates[d];
+			draftSpecialDates[d] = mode === 'work'
+				? { startTime: start, endTime: end, available: true }
+				: { startTime: null, endTime: null, available: false };
+
+			document.getElementById('newSpecialDate').value = '';
+			renderSpecialDates();
+			renderCapacity();
+			showToast(existed ? 'برنامهٔ استثنایی این تاریخ جایگزین شد' : 'برنامهٔ استثنایی ثبت شد (با «ذخیرهٔ برنامه» قطعی می‌شود)');
+		}
+
+		function removeSpecialDate(d) {
+			delete draftSpecialDates[d];
+			renderSpecialDates();
+			renderCapacity();
+		}
+
+		/* ---------- Manually blocked time slots (blockedSlots) ---------- */
+
+		function renderBlockedSlots() {
+			const el = document.getElementById('blockedSlotsList');
+			if (draftBlockedSlots.length === 0) {
+				el.innerHTML = '<p class="field-hint">ساعتی بلاک نشده است.</p>';
+				return;
+			}
+			el.innerHTML = draftBlockedSlots.slice().sort().map(slot => {
+				const [d, t] = slot.split('T');
+				return `
+				<div class="break-item">
+					<span><i class="fas fa-ban" aria-hidden="true"></i> ${formatFaDate(d)}</span>
+					<span class="status-badge status-CANCELLED">ساعت ${faNum((t || '').slice(0, 5))}</span>
+					<button type="button" onclick="removeBlockedSlot('${slot}')" aria-label="حذف بلاک ${formatFaDate(d)} ${(t || '').slice(0, 5)}">
+						<i class="fas fa-trash-can" aria-hidden="true"></i>
+					</button>
+				</div>`;
+			}).join('');
+		}
+
+		function addBlockedSlot() {
+			const d = document.getElementById('newBlockedDate').value;
+			const t = document.getElementById('newBlockedTime').value;
+			if (!d || !t) {
+				showToast('تاریخ و ساعت را مشخص کنید', false);
+				return;
+			}
+			const value = `${d}T${t}:00`;
+			if (draftBlockedSlots.includes(value)) {
+				showToast('این ساعت قبلاً بلاک شده است', false);
+				return;
+			}
+			draftBlockedSlots.push(value);
+			document.getElementById('newBlockedDate').value = '';
+			renderBlockedSlots();
+			renderCapacity();
+			showToast('ساعت بلاک شد (با «ذخیرهٔ برنامه» قطعی می‌شود)');
+		}
+
+		function removeBlockedSlot(value) {
+			draftBlockedSlots = draftBlockedSlots.filter(s => s !== value);
+			renderBlockedSlots();
+			renderCapacity();
+		}
+
+		/* ---------- Professional info ---------- */
+
+		function fillInfoForm() {
+			const doc = getEffectiveDoctor(currentDoctorId);
+			if (!doc) return;
+			const clinic = activeClinic();
+			document.getElementById('specialty').value = doc.specialty || '';
+			document.getElementById('degree').value = doc.degree || '';
+			document.getElementById('fee').value = doc.consultationFeeNumeric || '';
+			document.getElementById('phone').value = clinic ? (clinic.phone || '') : '';
+			document.getElementById('address').value = clinic ? (clinic.address || '') : '';
+			document.getElementById('bio').value = doc.bio || '';
+			document.getElementById('services').value = (doc.services || []).join('\n');
+			document.getElementById('education').value = (doc.education || []).join('\n');
+			document.getElementById('experience').value = (doc.experience || []).join('\n');
+			clearInfoErrors();
+		}
+
+		function clearInfoErrors() {
+			['specialty', 'fee'].forEach(id => {
+				document.getElementById(id).setAttribute('aria-invalid', 'false');
+				document.getElementById(id + 'Error').classList.remove('visible');
+			});
+		}
+
+		function saveInfo(event) {
+			event.preventDefault();
+			clearInfoErrors();
+
+			const specialty = document.getElementById('specialty').value.trim();
+			const feeRaw = toEnDigits(document.getElementById('fee').value).replace(/[^\d]/g, '');
+			const fee = Number(feeRaw);
+
+			let valid = true;
+			if (!specialty) {
+				markInfoInvalid('specialty');
+				valid = false;
+			}
+			if (!fee || fee <= 0) {
+				markInfoInvalid('fee');
+				valid = false;
+			}
+			if (!valid) {
+				showToast('لطفاً خطاهای فرم را برطرف کنید', false);
+				return;
+			}
+
+			const lines = id => document.getElementById(id).value
+				.split('\n').map(s => s.trim()).filter(Boolean);
+
+			const overrides = getDoctorOverrides();
+			overrides[currentDoctorId] = Object.assign({}, overrides[currentDoctorId] || {}, {
+				specialty,
+				degree: document.getElementById('degree').value.trim(),
+				consultationFeeNumeric: fee,
+				consultationFee: formatFee(fee),
+				bio: document.getElementById('bio').value.trim(),
+				services: lines('services'),
+				education: lines('education'),
+				experience: lines('experience')
+			});
+			localStorage.setItem(DOCTOR_OVERRIDES_KEY, JSON.stringify(overrides));
+
+			// Address & phone belong to the active clinic
+			const cd = getClinicData();
+			const ac = activeClinic(cd);
+			ac.address = document.getElementById('address').value.trim();
+			ac.phone = document.getElementById('phone').value.trim();
+			saveClinicData(cd);
+
+			renderHero();
+			renderStats();
+			renderClinics();
+			showToast('اطلاعات حرفه‌ای ذخیره شد');
+		}
+
+		function markInfoInvalid(id) {
+			document.getElementById(id).setAttribute('aria-invalid', 'true');
+			document.getElementById(id + 'Error').classList.add('visible');
+		}
+
+		/* ---------- Cancel appointment ---------- */
+
+		function askCancel(id) {
+			pendingCancelId = id;
+			const res = ReservationSystem.getReservation(id);
+			const patient = (res && res.patientName) || 'کاربر نوبتینو';
+			const when = res ? `${formatFaDate(res.appointmentDate)} ساعت ${faNum(res.startTime)}` : '';
+			document.getElementById('cancelModalText').innerHTML =
+				`نوبت <strong>${escapeHtml(patient)}</strong> در ${when} لغو شود؟`;
+			document.getElementById('cancelModal').classList.add('open');
+			document.getElementById('confirmCancelBtn').focus();
+		}
+
+		function closeCancelModal() {
+			document.getElementById('cancelModal').classList.remove('open');
+			pendingCancelId = null;
+		}
+
+		function confirmCancel() {
+			if (!pendingCancelId) return;
+			const result = ReservationSystem.cancel(pendingCancelId);
+			closeCancelModal();
+			showToast(result.success ? 'نوبت لغو شد' : 'لغو نوبت انجام نشد', result.success);
+			renderStats();
+			renderAppointments();
+		}
+
+		/* ---------- Demo data (prototype only) ---------- */
+
+		function seedDemoData() {
+			const names = ['علی محمدی', 'فاطمه احمدی', 'رضا کاظمی', 'مریم حسینی'];
+
+			// Two confirmed visits today (via real APIs)
+			const t1 = ReservationSystem.createTemporaryHold(currentDoctorId, datePlus(0), '09:30', '10:00', getEffectiveDoctor(currentDoctorId).consultationFeeNumeric);
+			if (t1.success) {
+				t1.reservation.patientName = names[0];
+				ReservationSystem.saveReservation(t1.reservation);
+				ReservationSystem.confirmPayment(t1.reservation.id, 'TRX-DEMO-D1');
+			}
+
+			const t2 = ReservationSystem.createTemporaryHold(currentDoctorId, datePlus(0), '11:00', '11:30', getEffectiveDoctor(currentDoctorId).consultationFeeNumeric);
+			if (t2.success) {
+				t2.reservation.patientName = names[1];
+				ReservationSystem.saveReservation(t2.reservation);
+				ReservationSystem.confirmPayment(t2.reservation.id, 'TRX-DEMO-D2');
+			}
+
+			// A held reservation tomorrow (live countdown on the user side)
+			const t3 = ReservationSystem.createTemporaryHold(currentDoctorId, datePlus(1), '10:00', '10:30', getEffectiveDoctor(currentDoctorId).consultationFeeNumeric);
+			if (t3.success) {
+				t3.reservation.patientName = names[2];
+				ReservationSystem.saveReservation(t3.reservation);
+			}
+
+			// A cancelled one last week
+			ReservationSystem.saveReservation({
+				id: ReservationSystem.generateReservationId(),
+				doctorId: currentDoctorId,
+				patientName: names[3],
+				appointmentDate: datePlus(-4),
+				startTime: '15:00',
+				endTime: '15:30',
+				consultationFee: getEffectiveDoctor(currentDoctorId).consultationFeeNumeric,
+				status: ReservationSystem.STATES.CANCELLED,
+				createdAt: new Date(Date.now() - 5 * 86400000).toISOString(),
+				expiresAt: new Date(Date.now() - 5 * 86400000 + 600000).toISOString(),
+				paymentStatus: null,
+				cancelledAt: new Date(Date.now() - 5 * 86400000).toISOString()
+			});
+
+			// A confirmed visit yesterday (so recording its result can be demoed)
+			const yesterday = ReservationSystem.createTemporaryHold(currentDoctorId, datePlus(-1), '16:00', '16:30', getEffectiveDoctor(currentDoctorId).consultationFeeNumeric);
+			if (yesterday.success) {
+				yesterday.reservation.patientName = 'حسین رضایی';
+				ReservationSystem.saveReservation(yesterday.reservation);
+				ReservationSystem.confirmPayment(yesterday.reservation.id, 'TRX-DEMO-Y1');
+
+				// …with a recorded visit result (visible in the patient panel)
+				const visits = readJson(VISITS_KEY, {});
+				visits[yesterday.reservation.id] = {
+					reservationId: yesterday.reservation.id,
+					doctorId: currentDoctorId,
+					patientName: 'حسین رضایی',
+					diagnosis: 'معاینه و مشاورهٔ دوره‌ای',
+					notes: 'وضعیت عمومی مناسب است. در صورت تداوم علائم، فاصلهٔ ویزیت بعدی کوتاه‌تر شود.',
+					prescription: ['بررسی مجدد در ویزیت بعدی', 'استراحت کافی و مصرف مایعات'],
+					followUpDate: datePlus(20),
+					recordedAt: new Date().toISOString()
+				};
+				localStorage.setItem(VISITS_KEY, JSON.stringify(visits));
+			}
+
+			// A patient message thread
+			const msgs = readJson(MESSAGES_KEY, []);
+			msgs.push({
+				id: 'M-seed-doc-1',
+				threadKey: currentDoctorId + '__me',
+				doctorId: currentDoctorId,
+				patientName: names[0],
+				from: 'patient',
+				text: 'سلام دکتر، برای نوبت فردا امکان تغییر ساعت هست؟',
+				at: new Date(Date.now() - 7200000).toISOString(),
+				readByPatient: true,
+				readByDoctor: false
+			});
+			localStorage.setItem(MESSAGES_KEY, JSON.stringify(msgs));
+
+			renderStats();
+			renderAppointments();
+			renderCalendar();
+			renderChat();
+			showToast('دادهٔ نمونه بارگذاری شد');
+		}
+
+		/* ---------- Weekly calendar ---------- */
+
+		let calWeekOffset = 0;
+
+		function shiftWeek(delta) {
+			calWeekOffset = delta === 0 ? 0 : calWeekOffset + delta;
+			renderCalendar();
+		}
+
+		function renderCalendar() {
+			const grid = document.getElementById('calGrid');
+			if (!grid) return;
+
+			// Week starts on Saturday
+			const start = new Date();
+			const dow = (start.getDay() + 1) % 7;
+			start.setHours(0, 0, 0, 0);
+			start.setDate(start.getDate() - dow + calWeekOffset * 7);
+
+			const dates = [];
+			for (let i = 0; i < 7; i++) {
+				const d = new Date(start);
+				d.setDate(d.getDate() + i);
+				dates.push(d);
+			}
+
+			const dateStrs = dates.map(d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+			const today = todayStr();
+
+			// Map reservations to { date: [chips] }
+			const res = doctorReservations();
+			const byDate = {};
+			res.filter(r => dateStrs.includes(r.appointmentDate)).forEach(r => {
+				(byDate[r.appointmentDate] = byDate[r.appointmentDate] || []).push(r);
+			});
+
+			// Day availability from the effective schedule (active clinic + vacations)
+			const eff = buildEffectiveAvailability();
+			const dayKeys = ['friday', 'saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday'];
+			const vacations = new Set(getVacations());
+
+			const dayNames = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'];
+
+			// Header row
+			let html = '<div></div>' + dates.map((d, i) => {
+				const isToday = dateStrs[i] === today;
+				return `
+				<div class="cal-head-cell ${isToday ? 'today-head' : ''}">
+					${dayNames[i]}
+					<span class="cal-date">${new Intl.DateTimeFormat('fa-IR', { day: 'numeric', month: 'long' }).format(d)}</span>
+				</div>`;
+			}).join('');
+
+			// Hour rows 8..19
+			for (let h = 8; h <= 19; h++) {
+				html += `<div class="cal-hour">${String(h).padStart(2, '0')}:00</div>`;
+				for (let i = 0; i < 7; i++) {
+					const dateStr = dateStrs[i];
+					const dayKey = dayKeys[dates[i].getDay()];
+					// Special dates override the weekly schedule for that specific date
+					const sched = eff
+						? (eff.specialDates && eff.specialDates[dateStr]
+							? eff.specialDates[dateStr]
+							: (eff.weeklySchedule ? eff.weeklySchedule[dayKey] : null))
+						: null;
+					const off = vacations.has(dateStr) || !sched || !sched.available;
+					const chips = (byDate[dateStr] || [])
+						.filter(r => Number(r.startTime.split(':')[0]) === h)
+						.map(r => `
+							<div class="cal-chip s-${r.status}" title="${escapeHtml(r.patientName || 'بیمار')} — ${faNum(r.startTime)}">
+								${escapeHtml(r.patientName || 'بیمار')}
+								<span class="t">${faNum(r.startTime)}</span>
+							</div>`).join('');
+					html += `<div class="cal-cell ${off ? 'off' : ''} ${dateStr === today ? 'today-cell' : ''}">${chips}</div>`;
+				}
+			}
+
+			grid.innerHTML = html;
+
+			const weekCount = res.filter(r => dateStrs.includes(r.appointmentDate) &&
+				(r.status === 'HELD' || r.status === 'AWAITING_PAYMENT' || r.status === 'CONFIRMED')).length;
+			const fmt = d => new Intl.DateTimeFormat('fa-IR', { day: 'numeric', month: 'long' }).format(d);
+			document.getElementById('calTitle').textContent =
+				(calWeekOffset === 0 ? 'هفتهٔ جاری' : calWeekOffset === -1 ? 'هفتهٔ گذشته' : calWeekOffset === 1 ? 'هفتهٔ بعد' : `هفتهٔ ${faNum(Math.abs(calWeekOffset))} مرحله ${calWeekOffset > 0 ? 'بعد' : 'قبل'}`);
+			document.getElementById('calSub').textContent = ` از ${fmt(dates[0])} تا ${fmt(dates[6])} — ${faNum(weekCount)} نوبت فعال`;
+		}
+
+		/* ---------- Visit results (doctor records, patient panel reads) ---------- */
+
+		function getVisits() {
+			return readJson(VISITS_KEY, {});
+		}
+
+		function openVisitModal(resId) {
+			const res = ReservationSystem.getReservation(resId);
+			if (!res) return;
+			const visit = getVisits()[resId];
+			document.getElementById('visitResId').value = resId;
+			document.getElementById('visitModalSub').textContent =
+				`${res.patientName || 'بیمار'} — ${formatFaDate(res.appointmentDate)} ساعت ${faNum(res.startTime)}`;
+			document.getElementById('visitDiagnosis').value = visit ? (visit.diagnosis || '') : '';
+			document.getElementById('visitNotes').value = visit ? (visit.notes || '') : '';
+			document.getElementById('visitRx').value = visit ? (visit.prescription || []).join('\n') : '';
+			document.getElementById('visitFollowUp').value = visit && visit.followUpDate ? visit.followUpDate : '';
+			document.getElementById('visitModalTitle').textContent = visit ? 'ویرایش نتیجهٔ ویزیت' : 'ثبت نتیجهٔ ویزیت';
+			openModal('visitModal');
+			document.getElementById('visitDiagnosis').focus();
+		}
+
+		function saveVisit(event) {
+			event.preventDefault();
+			const resId = document.getElementById('visitResId').value;
+			const res = ReservationSystem.getReservation(resId);
+			if (!res || !resId) return;
+			const visits = getVisits();
+			visits[resId] = {
+				reservationId: resId,
+				doctorId: currentDoctorId,
+				patientName: res.patientName || 'بیمار',
+				diagnosis: document.getElementById('visitDiagnosis').value.trim(),
+				notes: document.getElementById('visitNotes').value.trim(),
+				prescription: document.getElementById('visitRx').value.split('\n').map(s => s.trim()).filter(Boolean),
+				followUpDate: document.getElementById('visitFollowUp').value || null,
+				recordedAt: new Date().toISOString()
+			};
+			localStorage.setItem(VISITS_KEY, JSON.stringify(visits));
+			closeModal('visitModal');
+			renderAppointments();
+			showToast('نتیجهٔ ویزیت ثبت شد و بیمار آن را در پنل خود می‌بیند');
+		}
+
+		/* ---------- Clinics UI ---------- */
+
+		function renderClinics() {
+			const data = getClinicData();
+			const el = document.getElementById('clinicsList');
+			el.innerHTML = data.list.map(c => `
+				<div class="clinic-card ${c.id === data.activeClinicId ? 'active-clinic' : ''}">
+					<span class="clinic-icon"><i class="fas fa-house-medical" aria-hidden="true"></i></span>
+					<div class="clinic-info">
+						<h4>${escapeHtml(c.name)} ${c.id === data.activeClinicId ? '<span class="status-badge status-CONFIRMED"><i class="fas fa-check" aria-hidden="true"></i> مطب فعال</span>' : ''}</h4>
+						<div class="clinic-sub"><i class="fas fa-location-dot" aria-hidden="true"></i><span>${escapeHtml(c.address || 'آدرس ثبت نشده')}</span></div>
+						<div class="clinic-sub"><i class="fas fa-phone" aria-hidden="true"></i><span dir="ltr">${c.phone ? faNum(c.phone) : '—'}</span></div>
+					</div>
+					<div class="clinic-actions">
+						${c.id !== data.activeClinicId ? `<button type="button" class="btn btn-ghost btn-small" onclick="setActiveClinic('${c.id}')">
+							<i class="fas fa-check" aria-hidden="true"></i> نوبت‌دهی از این مطب
+						</button>` : ''}
+						<button type="button" class="btn btn-secondary btn-small" onclick="openClinicModal('${c.id}')">
+							<i class="fas fa-pen" aria-hidden="true"></i> ویرایش
+						</button>
+						${data.list.length > 1 ? `<button type="button" class="btn btn-danger btn-small" onclick="deleteClinic('${c.id}')">
+							<i class="fas fa-trash-can" aria-hidden="true"></i> حذف
+						</button>` : ''}
+					</div>
+				</div>`).join('');
+		}
+
+		function openClinicModal(clinicId) {
+			const data = getClinicData();
+			const c = clinicId ? data.list.find(x => x.id === clinicId) : null;
+			document.getElementById('clinicEditId').value = c ? c.id : '';
+			document.getElementById('clinicName').value = c ? c.name : '';
+			document.getElementById('clinicAddress').value = c ? c.address : '';
+			document.getElementById('clinicPhone').value = c ? c.phone : '';
+			document.getElementById('clinicModalTitle').textContent = c ? 'ویرایش مطب' : 'مطب جدید';
+			openModal('clinicModal');
+			document.getElementById('clinicName').focus();
+		}
+
+		function saveClinic(event) {
+			event.preventDefault();
+			const name = document.getElementById('clinicName').value.trim();
+			if (!name) {
+				showToast('نام مطب را وارد کنید', false);
+				return;
+			}
+			const data = getClinicData();
+			const editId = document.getElementById('clinicEditId').value;
+			const address = document.getElementById('clinicAddress').value.trim();
+			const phone = document.getElementById('clinicPhone').value.trim();
+
+			if (editId) {
+				const c = data.list.find(x => x.id === editId);
+				if (c) {
+					c.name = name;
+					c.address = address;
+					c.phone = phone;
+				}
+			} else {
+				data.list.push({
+					id: 'clinic-' + Date.now(),
+					name,
+					address,
+					phone,
+					availability: getEffectiveAvailability(currentDoctorId) || {
+						weeklySchedule: {}, dailyBreaks: [], appointmentDuration: 30,
+						holidays: [], blockedSlots: [], specialDates: {}, timezone: 'Asia/Tehran'
+					}
+				});
+			}
+			saveClinicData(data);
+			closeModal('clinicModal');
+			renderClinics();
+			renderSchedule();
+			renderHero();
+			showToast('اطلاعات مطب ذخیره شد');
+		}
+
+		function deleteClinic(clinicId) {
+			const data = getClinicData();
+			if (data.list.length <= 1) return;
+			data.list = data.list.filter(c => c.id !== clinicId);
+			if (data.activeClinicId === clinicId) data.activeClinicId = data.list[0].id;
+			saveClinicData(data);
+			applyAvailabilityGlobal();
+			renderClinics();
+			renderSchedule();
+			renderCalendar();
+			renderHero();
+			showToast('مطب حذف شد');
+		}
+
+		function setActiveClinic(clinicId) {
+			const data = getClinicData();
+			if (!data.list.find(c => c.id === clinicId)) return;
+			data.activeClinicId = clinicId;
+			saveClinicData(data);
+			applyAvailabilityGlobal();
+			renderClinics();
+			renderSchedule();
+			renderCalendar();
+			renderHero();
+			showToast('مطب فعال تغییر کرد؛ نوبت‌دهی آنلاین بر اساس برنامهٔ همین مطب انجام می‌شود');
+		}
+
+		/* ---------- Chat with patients ---------- */
+
+		function getMessages() {
+			return readJson(MESSAGES_KEY, []);
+		}
+
+		function saveMessages(list) {
+			localStorage.setItem(MESSAGES_KEY, JSON.stringify(list));
+		}
+
+		let activeThread = null;
+
+		function doctorThreads() {
+			const msgs = getMessages().filter(m => m.doctorId === currentDoctorId);
+			const byKey = {};
+			msgs.forEach(m => {
+				if (!byKey[m.threadKey]) {
+					byKey[m.threadKey] = { key: m.threadKey, patientName: m.patientName || 'بیمار', last: m, unread: 0, count: 0 };
+				}
+				byKey[m.threadKey].count++;
+				if (m.at > byKey[m.threadKey].last.at) byKey[m.threadKey].last = m;
+				if (m.from === 'patient' && !m.readByDoctor) byKey[m.threadKey].unread++;
+			});
+			return Object.values(byKey).sort((a, b) => String(b.last.at).localeCompare(String(a.last.at)));
+		}
+
+		function renderChat() {
+			const threads = doctorThreads();
+			document.getElementById('countMessages').textContent = faNum(threads.reduce((s, t) => s + t.unread, 0));
+			if (!activeThread || !threads.find(t => t.key === activeThread)) {
+				activeThread = threads[0] ? threads[0].key : null;
+			}
+
+			const listHtml = threads.length ? threads.map(t => `
+				<button type="button" class="contact-item ${t.key === activeThread ? 'active' : ''}" onclick="openThread('${t.key}')">
+					<span class="contact-avatar" style="background: var(--primary-light); color: var(--primary);">${escapeHtml(t.patientName.charAt(0))}</span>
+					<span class="contact-meta">
+						<span class="contact-name">${escapeHtml(t.patientName)}</span>
+						<span class="contact-sub">${escapeHtml(t.last.text.slice(0, 38))}</span>
+					</span>
+					${t.unread ? `<span class="contact-unread">${faNum(t.unread)}</span>` : ''}
+				</button>`).join('') : `
+				<div class="chat-empty">
+					<i class="fas fa-comments" aria-hidden="true"></i>
+					<p>هنوز پیامی از بیماران دریافت نشده است.<br>پیام‌های بیماران از پنل کاربر ارسال می‌شود.</p>
+				</div>`;
+
+			const msgs = activeThread ? getMessages().filter(m => m.threadKey === activeThread) : [];
+			const head = threads.find(t => t.key === activeThread);
+			const thread = msgs.length ? msgs.map(m => `
+				<div class="msg ${m.from === 'doctor' ? 'mine' : 'theirs'}">
+					${escapeHtml(m.text)}
+					<span class="msg-time">${faTimeAgo(m.at)}</span>
+				</div>`).join('') : (threads.length ? '<div class="chat-empty"><i class="fas fa-comment-dots" aria-hidden="true"></i><p>گفتگویی در این پیام‌ها نیست.</p></div>' : '');
+
+			document.getElementById('chatCard').innerHTML = `
+				<div class="contacts" aria-label="گفتگوهای بیماران">${listHtml}</div>
+				<div class="chat-main">
+					${head ? `
+					<div class="chat-head">
+						<span class="contact-avatar" style="background: var(--primary-light); color: var(--primary);">${escapeHtml(head.patientName.charAt(0))}</span>
+						<div>
+							<span class="contact-name" style="display: block;">${escapeHtml(head.patientName)}</span>
+							<span class="contact-sub">بیمار — ${faNum(head.count)} پیام</span>
+						</div>
+					</div>
+					<div class="chat-messages" id="chatMessages">${thread}</div>
+					<form class="chat-composer" onsubmit="sendReply(event)">
+						<label class="field-hint" for="chatInput" style="display: none;">متن پاسخ</label>
+						<input type="text" id="chatInput" placeholder="پاسخ خود را بنویسید…" autocomplete="off">
+						<button type="submit" class="send-btn" aria-label="ارسال پاسخ"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
+					</form>` : `
+					<div class="chat-empty" style="flex: 1;">
+						<i class="fas fa-comments" aria-hidden="true"></i>
+						<p>برای شروع گفتگو، بیمار باید از پنل خود پیامی بفرستد.</p>
+					</div>`}
+				</div>`;
+
+			// Mark this thread's patient messages as read
+			if (msgs.length) {
+				let changed = false;
+				const all = getMessages();
+				all.forEach(m => {
+					if (m.threadKey === activeThread && m.from === 'patient' && !m.readByDoctor) {
+						m.readByDoctor = true;
+						changed = true;
+					}
+				});
+				if (changed) {
+					saveMessages(all);
+					const remaining = doctorThreads().reduce((s, t) => s + t.unread, 0);
+					document.getElementById('countMessages').textContent = faNum(remaining);
+				}
+			}
+
+			const box = document.getElementById('chatMessages');
+			if (box) box.scrollTop = box.scrollHeight;
+		}
+
+		function openThread(key) {
+			activeThread = key;
+			renderChat();
+			const input = document.getElementById('chatInput');
+			if (input) input.focus();
+		}
+
+		function sendReply(event) {
+			event.preventDefault();
+			const input = document.getElementById('chatInput');
+			const text = input.value.trim();
+			if (!text || !activeThread) return;
+			const all = getMessages();
+			const head = doctorThreads().find(t => t.key === activeThread);
+			all.push({
+				id: 'M' + Date.now(),
+				threadKey: activeThread,
+				doctorId: currentDoctorId,
+				patientName: head ? head.patientName : 'بیمار',
+				from: 'doctor',
+				text,
+				at: new Date().toISOString(),
+				readByPatient: false,
+				readByDoctor: true
+			});
+			saveMessages(all);
+			renderChat();
+		}
+
+		/* ---------- Shared modal helpers ---------- */
+
+		function openModal(id) {
+			document.getElementById(id).classList.add('open');
+		}
+
+		function closeModal(id) {
+			document.getElementById(id).classList.remove('open');
+		}
+
+		/* ---------- Tabs, toast, doctor selection ---------- */
+
+		function switchTab(name) {
+			['appts', 'calendar', 'schedule', 'clinics', 'messages', 'info'].forEach(t => {
+				document.getElementById('tab-' + t).setAttribute('aria-selected', String(t === name));
+				document.getElementById('panel-' + t).hidden = t !== name;
+			});
+			if (name === 'info') fillInfoForm();
+			if (name === 'calendar') renderCalendar();
+			if (name === 'messages') renderChat();
+		}
+
+		function selectDoctor(id) {
+			if (!getDoctorById(id)) return;
+			currentDoctorId = id;
+			localStorage.setItem(CURRENT_DOCTOR_KEY, id);
+			calWeekOffset = 0;
+			activeThread = null;
+			applyAvailabilityGlobal();
+			renderHero();
+			renderStats();
+			renderAppointments();
+			renderSchedule();
+			renderCalendar();
+			renderClinics();
+			renderChat();
+			if (!document.getElementById('panel-info').hidden) fillInfoForm();
+		}
+
+		let toastTimer = null;
+		function showToast(message, ok = true) {
+			const toast = document.getElementById('toast');
+			document.getElementById('toastText').textContent = message;
+			document.getElementById('toastIcon').className = ok ? 'fas fa-circle-check' : 'fas fa-circle-exclamation';
+			toast.classList.toggle('toast-error', !ok);
+			toast.classList.add('show');
+			if (toastTimer) clearTimeout(toastTimer);
+			toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+		}
+
+		/* ---------- Init ---------- */
+
+		document.getElementById('confirmCancelBtn').addEventListener('click', confirmCancel);
+		document.getElementById('cancelModal').addEventListener('click', (e) => {
+			if (e.target === e.currentTarget) closeCancelModal();
+		});
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				closeCancelModal();
+				closeModal('visitModal');
+				closeModal('clinicModal');
+			}
+		});
+		['visitModal', 'clinicModal'].forEach(id => {
+			document.getElementById(id).addEventListener('click', (e) => {
+				if (e.target === e.currentTarget) closeModal(id);
+			});
+		});
+		document.getElementById('durationSelect').addEventListener('change', renderCapacity);
+
+		// Doctor identity for the prototype: URL param `?id=` (same convention as P02),
+		// falling back to the last doctor viewed in this browser, then doctor-001.
+		// In the final version the login page (P03) sets the identity instead.
+		const urlDoctor = new URLSearchParams(window.location.search).get('id');
+		if (urlDoctor && getDoctorById(urlDoctor)) {
+			currentDoctorId = urlDoctor;
+			localStorage.setItem(CURRENT_DOCTOR_KEY, urlDoctor);
+		} else {
+			const savedDoctor = localStorage.getItem(CURRENT_DOCTOR_KEY);
+			currentDoctorId = (savedDoctor && getDoctorById(savedDoctor)) ? savedDoctor : 'doctor-001';
+		}
+
+		applyAvailabilityGlobal();
+		renderHero();
+		renderStats();
+		renderAppointments();
+		renderSchedule();
+		renderCalendar();
+		renderClinics();
+		renderChat();
+	</script>
+</body>
+</html>

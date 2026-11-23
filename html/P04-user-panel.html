@@ -1,0 +1,2503 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="پنل کاربر نوبتینو - مدیریت نوبت‌ها و اطلاعات شخصی">
+	<title>پنل کاربر - نوبتینو</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<style>
+		:root {
+			--primary: #3262CE;
+			--primary-light: #E7F0FB;
+			--dark: #111B30;
+			--text-primary: #111827;
+			--text-secondary: #526174;
+			--bg: #F5F8FA;
+			--card-bg: #FAFDFE;
+			--border: #DCE6EB;
+			--input-border: #788BA2;
+			--mint: #E6F6EB;
+			--success: #10B981;
+			--white: #FFFFFF;
+			--error: #DC2626;
+			--error-light: #FEE2E2;
+			--amber-bg: #FFF4DF;
+			--amber-text: #92400E;
+			--purple-bg: #F1EAFB;
+			--purple-text: #6D28D9;
+			--pink-bg: #FCE9EE;
+			--pink-text: #B91C1C;
+			--green-bg: #DCFCE7;
+			--green-text: #047857;
+			--gray-bg: #E2E8F0;
+			--gray-text: #475569;
+			--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+			--shadow: 0 4px 16px rgba(17, 27, 48, 0.05);
+			--shadow-lg: 0 8px 24px rgba(17, 27, 48, 0.08);
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			background: linear-gradient(180deg, #DCEBFC 0%, #E5F5F0 100%);
+			background-attachment: fixed;
+			min-height: 100vh;
+			color: var(--text-primary);
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 16px;
+			line-height: 1.6;
+		}
+
+		h1, h2, h3, h4 {
+			color: var(--text-primary);
+			margin-bottom: 12px;
+		}
+
+		h2 { font-size: 20px; font-weight: 700; }
+		h3 { font-size: 18px; font-weight: 600; }
+		h4 { font-size: 16px; font-weight: 600; }
+
+		p {
+			font-size: 15px;
+			color: var(--text-secondary);
+		}
+
+		a { color: var(--primary); text-decoration: none; }
+		a:hover { text-decoration: underline; }
+
+		.container {
+			max-width: 1080px;
+			margin: 0 auto;
+			padding: 0 20px;
+		}
+
+		/* Header */
+		header {
+			background: var(--white);
+			border-bottom: 1px solid var(--border);
+			position: sticky;
+			top: 0;
+			z-index: 100;
+		}
+
+		.header-content {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 12px 0;
+			gap: 12px;
+		}
+
+		.logo {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			text-decoration: none;
+		}
+
+		.logo:hover { text-decoration: none; }
+
+		.header-actions {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		/* Buttons */
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 11px 24px;
+			border-radius: 999px;
+			font-size: 15px;
+			font-weight: 600;
+			border: none;
+			cursor: pointer;
+			transition: background-color 0.2s, box-shadow 0.2s, color 0.2s;
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			min-height: 44px;
+			text-decoration: none;
+		}
+
+		.btn:hover { text-decoration: none; }
+
+		.btn-primary {
+			background-color: var(--primary);
+			color: var(--white);
+		}
+
+		.btn-primary:hover:not(:disabled) {
+			background-color: #2654b8;
+			box-shadow: var(--shadow-lg);
+		}
+
+		.btn-secondary {
+			background-color: transparent;
+			color: var(--primary);
+			border: 1.5px solid var(--primary);
+		}
+
+		.btn-secondary:hover:not(:disabled) {
+			background-color: var(--primary-light);
+		}
+
+		.btn-danger {
+			background-color: transparent;
+			color: var(--error);
+			border: 1.5px solid var(--error);
+		}
+
+		.btn-danger:hover:not(:disabled) {
+			background-color: var(--error-light);
+		}
+
+		.btn-ghost {
+			background-color: var(--primary-light);
+			color: var(--primary);
+		}
+
+		.btn-ghost:hover:not(:disabled) {
+			background-color: #d8e6f8;
+		}
+
+		.btn-small {
+			padding: 8px 16px;
+			font-size: 14px;
+			min-height: 44px;
+		}
+
+		.btn-block { width: 100%; }
+
+		.btn:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+
+		.btn:focus-visible,
+		button:focus-visible,
+		input:focus-visible,
+		textarea:focus-visible,
+		a:focus-visible,
+		[role="tab"]:focus-visible {
+			outline: 2px solid var(--primary);
+			outline-offset: 2px;
+		}
+
+		/* Page layout */
+		.page-content {
+			padding: 24px 20px 40px;
+		}
+
+		/* User hero card */
+		.user-hero {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow);
+			padding: 24px;
+			display: flex;
+			align-items: center;
+			gap: 20px;
+			flex-wrap: wrap;
+		}
+
+		.user-avatar {
+			width: 84px;
+			height: 84px;
+			border-radius: 50%;
+			background: var(--primary-light);
+			color: var(--primary);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 30px;
+			font-weight: 700;
+			flex-shrink: 0;
+			overflow: hidden;
+			border: 3px solid var(--white);
+			box-shadow: var(--shadow);
+		}
+
+		.user-avatar img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.user-hero-info {
+			flex: 1;
+			min-width: 220px;
+		}
+
+		.user-hero-info h1 {
+			font-size: 26px;
+			font-weight: 700;
+			margin-bottom: 4px;
+		}
+
+		.user-hero-meta {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			flex-wrap: wrap;
+			color: var(--text-secondary);
+			font-size: 14px;
+		}
+
+		.user-hero-actions {
+			display: flex;
+			gap: 8px;
+			flex-wrap: wrap;
+		}
+
+		/* Stat cards */
+		.stats-row {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 16px;
+			margin: 24px 0;
+		}
+
+		.stat-card {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow);
+			padding: 20px;
+			display: flex;
+			align-items: center;
+			gap: 16px;
+		}
+
+		.stat-icon {
+			width: 48px;
+			height: 48px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 20px;
+			flex-shrink: 0;
+		}
+
+		.stat-icon.blue { background: var(--primary-light); color: var(--primary); }
+		.stat-icon.green { background: var(--mint); color: var(--green-text); }
+		.stat-icon.amber { background: var(--amber-bg); color: var(--amber-text); }
+
+		.stat-value {
+			font-size: 26px;
+			font-weight: 700;
+			line-height: 1.3;
+		}
+
+		.stat-label {
+			font-size: 13px;
+			color: var(--text-secondary);
+		}
+
+		/* Tabs */
+		.tabs {
+			display: flex;
+			gap: 8px;
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 999px;
+			padding: 6px;
+			box-shadow: var(--shadow);
+			margin-bottom: 24px;
+			overflow-x: auto;
+		}
+
+		[role="tab"] {
+			flex: 1;
+			min-width: 130px;
+			padding: 10px 16px;
+			min-height: 44px;
+			border: none;
+			background: transparent;
+			border-radius: 999px;
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 15px;
+			font-weight: 600;
+			color: var(--text-secondary);
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			white-space: nowrap;
+			transition: background-color 0.2s, color 0.2s;
+		}
+
+		[role="tab"]:hover {
+			color: var(--primary);
+		}
+
+		[role="tab"][aria-selected="true"] {
+			background: var(--primary);
+			color: var(--white);
+		}
+
+		.tab-count {
+			background: var(--primary-light);
+			color: var(--primary);
+			border-radius: 999px;
+			font-size: 12px;
+			font-weight: 700;
+			padding: 1px 8px;
+			min-width: 24px;
+			text-align: center;
+		}
+
+		[role="tab"][aria-selected="true"] .tab-count {
+			background: rgba(255, 255, 255, 0.25);
+			color: var(--white);
+		}
+
+		[role="tabpanel"][hidden] {
+			display: none;
+		}
+
+		/* Appointment cards */
+		.appointment-card {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow);
+			padding: 20px;
+			margin-bottom: 16px;
+		}
+
+		.appointment-main {
+			display: flex;
+			gap: 16px;
+			align-items: flex-start;
+		}
+
+		.doctor-thumb {
+			width: 64px;
+			height: 64px;
+			border-radius: 20px;
+			background: var(--primary-light);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 24px;
+			color: var(--primary);
+			flex-shrink: 0;
+			overflow: hidden;
+		}
+
+		.doctor-thumb img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.appointment-info {
+			flex: 1;
+			min-width: 0;
+		}
+
+		.appointment-info h3 {
+			margin-bottom: 2px;
+			font-size: 17px;
+		}
+
+		.appointment-doctor-specialty {
+			font-size: 14px;
+			color: var(--text-secondary);
+			margin-bottom: 10px;
+		}
+
+		.appointment-details {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 20px;
+			font-size: 14px;
+			color: var(--text-secondary);
+		}
+
+		.appointment-details span {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.appointment-details i {
+			color: var(--primary);
+			font-size: 13px;
+		}
+
+		.appointment-side {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 10px;
+			flex-shrink: 0;
+		}
+
+		.appointment-fee {
+			font-size: 15px;
+			font-weight: 700;
+			color: var(--text-primary);
+			white-space: nowrap;
+		}
+
+		/* Status badge (non-interactive) */
+		.status-badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 5px 12px;
+			border-radius: 999px;
+			font-size: 13px;
+			font-weight: 600;
+			white-space: nowrap;
+		}
+
+		.status-HELD { background: var(--amber-bg); color: var(--amber-text); }
+		.status-AWAITING_PAYMENT { background: var(--purple-bg); color: var(--purple-text); }
+		.status-CONFIRMED { background: var(--mint); color: var(--green-text); }
+		.status-DONE { background: var(--primary-light); color: var(--primary); }
+		.status-CANCELLED { background: var(--gray-bg); color: var(--gray-text); }
+		.status-EXPIRED { background: var(--gray-bg); color: var(--gray-text); }
+		.status-PAYMENT_FAILED { background: var(--pink-bg); color: var(--pink-text); }
+
+		/* Countdown strip */
+		.countdown-strip {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			background: var(--amber-bg);
+			color: var(--amber-text);
+			border-radius: 20px;
+			padding: 10px 16px;
+			font-size: 14px;
+			font-weight: 600;
+			margin-top: 14px;
+		}
+
+		.countdown-strip .count {
+			font-size: 18px;
+			font-weight: 700;
+			direction: ltr;
+			font-variant-numeric: tabular-nums;
+		}
+
+		.appointment-actions {
+			display: flex;
+			gap: 8px;
+			margin-top: 14px;
+			flex-wrap: wrap;
+		}
+
+		.appointment-actions .btn {
+			min-height: 44px;
+		}
+
+		/* History timeline */
+		.timeline {
+			position: relative;
+			padding-right: 20px;
+		}
+
+		.timeline::before {
+			content: '';
+			position: absolute;
+			right: 5px;
+			top: 8px;
+			bottom: 8px;
+			width: 2px;
+			background: var(--border);
+		}
+
+		.timeline-item {
+			position: relative;
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			box-shadow: var(--shadow-sm);
+			padding: 16px;
+			margin-bottom: 12px;
+		}
+
+		.timeline-item::before {
+			content: '';
+			position: absolute;
+			right: -20px;
+			top: 22px;
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background: var(--white);
+			border: 3px solid var(--primary);
+		}
+
+		.timeline-item.tl-cancelled::before { border-color: var(--gray-text); }
+		.timeline-item.tl-failed::before { border-color: var(--pink-text); }
+		.timeline-item.tl-expired::before { border-color: var(--gray-text); }
+		.timeline-item.tl-done::before { border-color: var(--primary); }
+
+		.timeline-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 12px;
+			flex-wrap: wrap;
+		}
+
+		.timeline-date {
+			font-size: 13px;
+			color: var(--text-secondary);
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			margin-top: 6px;
+		}
+
+		/* Profile form */
+		.profile-card {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow);
+			padding: 24px;
+		}
+
+		.avatar-edit-row {
+			display: flex;
+			align-items: center;
+			gap: 16px;
+			margin-bottom: 24px;
+			flex-wrap: wrap;
+		}
+
+		.avatar-edit-row .user-avatar {
+			width: 72px;
+			height: 72px;
+			font-size: 26px;
+		}
+
+		.avatar-buttons {
+			display: flex;
+			gap: 8px;
+			flex-wrap: wrap;
+		}
+
+		.form-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 16px 20px;
+		}
+
+		.form-field {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		.form-field.full { grid-column: 1 / -1; }
+
+		.form-field label {
+			font-size: 14px;
+			font-weight: 600;
+			color: var(--text-primary);
+		}
+
+		.form-field label .required {
+			color: var(--error);
+		}
+
+		.form-field input,
+		.form-field textarea {
+			background: var(--white);
+			border: 1.5px solid var(--input-border);
+			border-radius: 20px;
+			padding: 11px 16px;
+			font-family: 'Vazirmatn', system-ui, sans-serif;
+			font-size: 15px;
+			color: var(--text-primary);
+			min-height: 46px;
+			transition: border-color 0.2s;
+			width: 100%;
+		}
+
+		.form-field input:focus,
+		.form-field textarea:focus {
+			border-color: var(--primary);
+		}
+
+		.form-field input[aria-invalid="true"],
+		.form-field textarea[aria-invalid="true"] {
+			border-color: var(--error);
+			background: #FFFBFB;
+		}
+
+		.field-error {
+			font-size: 13px;
+			color: var(--error);
+			display: none;
+		}
+
+		.field-error.visible { display: block; }
+
+		.field-hint {
+			font-size: 13px;
+			color: var(--text-secondary);
+		}
+
+		.form-actions {
+			display: flex;
+			gap: 12px;
+			margin-top: 24px;
+			flex-wrap: wrap;
+		}
+
+		/* Empty states */
+		.empty-state {
+			text-align: center;
+			padding: 40px 16px;
+			color: var(--text-secondary);
+			background: var(--card-bg);
+			border: 1px dashed var(--border);
+			border-radius: 24px;
+		}
+
+		.empty-state i {
+			font-size: 40px;
+			color: var(--primary);
+			opacity: 0.6;
+			margin-bottom: 16px;
+			display: block;
+		}
+
+		.empty-state h3 {
+			font-size: 18px;
+		}
+
+		.empty-state .btn {
+			margin-top: 16px;
+		}
+
+		.seed-hint {
+			margin-top: 16px;
+			font-size: 13px;
+		}
+
+		.seed-hint button {
+			background: none;
+			border: none;
+			color: var(--primary);
+			font-family: inherit;
+			font-size: 13px;
+			cursor: pointer;
+			text-decoration: underline;
+			padding: 4px;
+			min-height: 32px;
+		}
+
+		/* Modal */
+		.modal-overlay {
+			position: fixed;
+			inset: 0;
+			background: rgba(17, 27, 48, 0.45);
+			display: none;
+			align-items: center;
+			justify-content: center;
+			z-index: 200;
+			padding: 20px;
+		}
+
+		.modal-overlay.open {
+			display: flex;
+		}
+
+		.modal {
+			background: var(--card-bg);
+			border-radius: 24px;
+			box-shadow: var(--shadow-lg);
+			padding: 24px;
+			max-width: 420px;
+			width: 100%;
+			text-align: center;
+		}
+
+		.modal-icon {
+			width: 56px;
+			height: 56px;
+			border-radius: 50%;
+			background: var(--error-light);
+			color: var(--error);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 24px;
+			margin: 0 auto 16px;
+		}
+
+		.modal h3 {
+			font-size: 18px;
+			margin-bottom: 8px;
+		}
+
+		.modal p {
+			font-size: 14px;
+			margin-bottom: 20px;
+		}
+
+		.modal-actions {
+			display: flex;
+			gap: 8px;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+
+		/* Toast */
+		.toast {
+			position: fixed;
+			bottom: 24px;
+			right: 50%;
+			transform: translate(50%, 100px);
+			background: var(--dark);
+			color: var(--white);
+			border-radius: 999px;
+			padding: 12px 24px;
+			font-size: 14px;
+			font-weight: 600;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			box-shadow: var(--shadow-lg);
+			z-index: 300;
+			opacity: 0;
+			transition: transform 0.25s, opacity 0.25s;
+			max-width: calc(100vw - 40px);
+		}
+
+		.toast.show {
+			transform: translate(50%, 0);
+			opacity: 1;
+		}
+
+		.toast i {
+			color: #6EE7B7;
+		}
+
+		.toast.toast-error i {
+			color: #FCA5A5;
+		}
+
+		/* Notifications */
+		.bell-wrap {
+			position: relative;
+		}
+
+		.bell-btn {
+			width: 44px;
+			height: 44px;
+			border-radius: 50%;
+			border: 1.5px solid var(--primary);
+			background: var(--white);
+			color: var(--primary);
+			cursor: pointer;
+			font-size: 16px;
+			position: relative;
+			flex-shrink: 0;
+			transition: background-color 0.2s;
+		}
+
+		.bell-btn:hover { background: var(--primary-light); }
+
+		.bell-badge {
+			position: absolute;
+			top: -4px;
+			inset-inline-start: -4px;
+			background: var(--error);
+			color: var(--white);
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 700;
+			min-width: 20px;
+			height: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0 5px;
+			border: 2px solid var(--white);
+		}
+
+		.notif-panel {
+			position: absolute;
+			top: calc(100% + 10px);
+			inset-inline-end: 0;
+			width: 340px;
+			max-width: calc(100vw - 32px);
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow-lg);
+			padding: 16px;
+			z-index: 150;
+			display: none;
+			max-height: 420px;
+			overflow-y: auto;
+		}
+
+		.notif-panel.open { display: block; }
+
+		.notif-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 8px;
+		}
+
+		.notif-item {
+			display: flex;
+			gap: 12px;
+			padding: 10px 8px;
+			border-radius: 16px;
+			align-items: flex-start;
+		}
+
+		.notif-item.unread { background: var(--primary-light); }
+
+		.notif-icon {
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 14px;
+			flex-shrink: 0;
+		}
+
+		.notif-body {
+			flex: 1;
+			font-size: 13px;
+			min-width: 0;
+			text-align: start;
+		}
+
+		.notif-time {
+			font-size: 12px;
+			color: var(--text-secondary);
+			margin-top: 2px;
+		}
+
+		/* Payments */
+		.payment-card {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 20px;
+			box-shadow: var(--shadow-sm);
+			padding: 16px 20px;
+			margin-bottom: 12px;
+			display: flex;
+			align-items: center;
+			gap: 16px;
+			flex-wrap: wrap;
+		}
+
+		.payment-icon {
+			width: 44px;
+			height: 44px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 17px;
+			flex-shrink: 0;
+		}
+
+		.payment-info { flex: 1; min-width: 200px; text-align: start; }
+
+		.payment-info h4 { margin-bottom: 2px; }
+
+		.payment-sub {
+			font-size: 13px;
+			color: var(--text-secondary);
+		}
+
+		.payment-side {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 8px;
+		}
+
+		.payment-amount {
+			font-size: 15px;
+			font-weight: 700;
+			white-space: nowrap;
+		}
+
+		.inv-row {
+			display: flex;
+			justify-content: space-between;
+			gap: 12px;
+			padding: 8px 0;
+			border-bottom: 1px dashed var(--border);
+			font-size: 14px;
+			text-align: start;
+		}
+
+		.inv-row.total {
+			font-weight: 700;
+			border-bottom: none;
+			font-size: 15px;
+		}
+
+		.inv-row span:first-child { color: var(--text-secondary); }
+
+		/* Chat */
+		.chat-card {
+			background: var(--card-bg);
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			box-shadow: var(--shadow);
+			overflow: hidden;
+			display: grid;
+			grid-template-columns: 280px 1fr;
+			min-height: 420px;
+		}
+
+		.contacts {
+			border-inline-end: 1px solid var(--border);
+			background: var(--white);
+			overflow-y: auto;
+			max-height: 560px;
+		}
+
+		.contact-item {
+			display: flex;
+			gap: 12px;
+			align-items: center;
+			width: 100%;
+			padding: 12px 16px;
+			background: none;
+			border: none;
+			border-bottom: 1px solid var(--border);
+			cursor: pointer;
+			font-family: inherit;
+			text-align: start;
+			min-height: 64px;
+			transition: background-color 0.15s;
+		}
+
+		.contact-item:hover { background: var(--primary-light); }
+		.contact-item.active { background: var(--primary-light); }
+
+		.contact-avatar {
+			width: 44px;
+			height: 44px;
+			border-radius: 50%;
+			object-fit: cover;
+			flex-shrink: 0;
+		}
+
+		.contact-meta {
+			flex: 1;
+			min-width: 0;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		.contact-name {
+			font-size: 14px;
+			font-weight: 600;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.contact-sub {
+			font-size: 12px;
+			color: var(--text-secondary);
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.contact-unread {
+			background: var(--primary);
+			color: var(--white);
+			border-radius: 999px;
+			font-size: 11px;
+			font-weight: 700;
+			min-width: 22px;
+			height: 22px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0 6px;
+			flex-shrink: 0;
+		}
+
+		.chat-main {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.chat-head {
+			padding: 12px 16px;
+			border-bottom: 1px solid var(--border);
+			background: var(--white);
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.chat-messages {
+			flex: 1;
+			padding: 16px;
+			overflow-y: auto;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			max-height: 420px;
+			background: linear-gradient(180deg, #F5F8FA, #FAFDFE);
+		}
+
+		.msg {
+			max-width: 75%;
+			padding: 10px 16px;
+			border-radius: 20px;
+			font-size: 14px;
+			line-height: 1.7;
+			box-shadow: var(--shadow-sm);
+		}
+
+		.msg.theirs {
+			align-self: flex-start;
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-start-start-radius: 6px;
+		}
+
+		.msg.mine {
+			align-self: flex-end;
+			background: var(--primary-light);
+			border: 1px solid #c8daf5;
+			border-start-end-radius: 6px;
+		}
+
+		.msg-time {
+			display: block;
+			font-size: 11px;
+			opacity: 0.7;
+			margin-top: 4px;
+		}
+
+		.chat-composer {
+			display: flex;
+			gap: 8px;
+			padding: 12px;
+			border-top: 1px solid var(--border);
+			background: var(--white);
+		}
+
+		.chat-composer input {
+			flex: 1;
+			border: 1.5px solid var(--input-border);
+			border-radius: 20px;
+			padding: 10px 16px;
+			font-family: inherit;
+			font-size: 14px;
+			min-height: 44px;
+			background: var(--card-bg);
+		}
+
+		.send-btn {
+			width: 44px;
+			height: 44px;
+			border-radius: 50%;
+			background: var(--dark);
+			color: var(--white);
+			border: none;
+			cursor: pointer;
+			font-size: 15px;
+			flex-shrink: 0;
+			transition: opacity 0.2s;
+		}
+
+		.send-btn:hover { opacity: 0.9; }
+
+		.chat-empty {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			color: var(--text-secondary);
+			padding: 40px 16px;
+			text-align: center;
+		}
+
+		.chat-empty i {
+			font-size: 28px;
+			color: var(--primary);
+			opacity: 0.6;
+		}
+
+		@media (max-width: 720px) {
+			.chat-card { grid-template-columns: 1fr; }
+
+			.contacts {
+				display: flex;
+				overflow-x: auto;
+				border-inline-end: none;
+				border-bottom: 1px solid var(--border);
+				max-height: none;
+			}
+
+			.contact-item {
+				border-bottom: none;
+				border-inline-end: 1px solid var(--border);
+				min-width: 180px;
+				flex-direction: column;
+				text-align: center;
+				gap: 6px;
+			}
+		}
+
+		/* Visit result modal */
+		.modal-wide { max-width: 500px; }
+
+		.visit-section {
+			text-align: start;
+			margin-bottom: 16px;
+		}
+
+		.visit-section h4 {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 6px;
+			font-size: 15px;
+		}
+
+		.visit-section h4 i { color: var(--primary); }
+
+		.visit-section p { font-size: 14px; }
+
+		.rx-list {
+			list-style: none;
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		.rx-list li {
+			background: var(--white);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 8px 12px;
+			font-size: 14px;
+			display: flex;
+			gap: 8px;
+			align-items: flex-start;
+			text-align: start;
+		}
+
+		.rx-list li i {
+			color: var(--primary);
+			margin-top: 4px;
+		}
+
+		/* Section headers */
+		.section-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			margin-bottom: 16px;
+			flex-wrap: wrap;
+		}
+
+		/* Responsive */
+		@media (max-width: 720px) {
+			.stats-row {
+				grid-template-columns: 1fr;
+				gap: 12px;
+			}
+
+			.user-hero {
+				flex-direction: column;
+				text-align: center;
+			}
+
+			.user-hero-meta {
+				justify-content: center;
+			}
+
+			.user-hero-actions {
+				justify-content: center;
+				width: 100%;
+			}
+
+			.appointment-main {
+				flex-direction: column;
+			}
+
+			.appointment-side {
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+			}
+
+			.form-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.appointment-actions .btn {
+				flex: 1;
+			}
+		}
+
+		@media (max-width: 400px) {
+			.container, .page-content {
+				padding-right: 12px;
+				padding-left: 12px;
+			}
+
+			.stat-card {
+				padding: 16px;
+			}
+
+			[role="tab"] {
+				min-width: 110px;
+				font-size: 14px;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after {
+				transition: none !important;
+				animation: none !important;
+			}
+		}
+	</style>
+</head>
+<body>
+	<!-- Header -->
+	<header>
+		<div class="container">
+			<div class="header-content">
+				<a href="P01-landing.html" class="logo" aria-label="نوبتینو - صفحهٔ اصلی">
+					<img src="../images/Logo.png" alt="لوگوی نوبتینو" style="height: 32px; object-fit: contain;">
+				</a>
+				<div class="header-actions">
+					<div class="bell-wrap">
+						<button type="button" class="bell-btn" onclick="toggleNotifPanel(event)" aria-label="اعلان‌ها" aria-expanded="false" id="bellBtn">
+							<i class="fas fa-bell" aria-hidden="true"></i>
+							<span class="bell-badge" id="bellBadge" hidden>۰</span>
+						</button>
+						<div class="notif-panel" id="notifPanel">
+							<div class="notif-head">
+								<h4 style="margin: 0;">اعلان‌ها</h4>
+								<button type="button" class="btn btn-ghost btn-small" onclick="markAllRead(event)">همه خوانده شد</button>
+							</div>
+							<div id="notifList"></div>
+						</div>
+					</div>
+					<a href="P05-doctor-panel.html" class="btn btn-secondary btn-small" title="برای نمایش پروتوتایپ - در نسخهٔ نهایی از طریق ورود جداگانه دسترسی دارد">پنل پزشک</a>
+					<a href="P01-landing.html" class="btn btn-ghost btn-small">بازگشت</a>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Main -->
+	<main class="container page-content">
+		<!-- User hero -->
+		<section class="user-hero" aria-label="خلاصهٔ حساب کاربری">
+			<div class="user-avatar" id="heroAvatar" aria-hidden="true"></div>
+			<div class="user-hero-info">
+				<h1 id="heroName">کاربر نوبتینو</h1>
+				<div class="user-hero-meta">
+					<span id="heroPhone"><i class="fas fa-mobile-screen"></i> —</span>
+					<span class="status-badge status-CONFIRMED"><i class="fas fa-circle-check"></i> حساب فعال</span>
+				</div>
+			</div>
+			<div class="user-hero-actions">
+				<button type="button" class="btn btn-secondary btn-small" onclick="switchTab('profile')">
+					<i class="fas fa-user-pen"></i> ویرایش اطلاعات
+				</button>
+				<a href="P01-landing.html" class="btn btn-primary btn-small">
+					<i class="fas fa-magnifying-glass"></i> رزرو نوبت جدید
+				</a>
+			</div>
+		</section>
+
+		<!-- Stats -->
+		<section class="stats-row" aria-label="خلاصهٔ نوبت‌ها">
+			<div class="stat-card">
+				<div class="stat-icon blue"><i class="fas fa-calendar-check"></i></div>
+				<div>
+					<div class="stat-value" id="statUpcoming">۰</div>
+					<div class="stat-label">نوبت پیش‌رو</div>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon green"><i class="fas fa-clock-rotate-left"></i></div>
+				<div>
+					<div class="stat-value" id="statDone">۰</div>
+					<div class="stat-label">نوبت انجام‌شده</div>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon amber"><i class="fas fa-hourglass-half"></i></div>
+				<div>
+					<div class="stat-value" id="statPending">۰</div>
+					<div class="stat-label">در انتظار پرداخت</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Tabs -->
+		<div class="tabs" role="tablist" aria-label="بخش‌های پنل کاربر">
+			<button type="button" role="tab" id="tab-upcoming" aria-selected="true" aria-controls="panel-upcoming" onclick="switchTab('upcoming')">
+				<i class="fas fa-calendar-day"></i> نوبت‌های پیش‌رو <span class="tab-count" id="countUpcoming">۰</span>
+			</button>
+			<button type="button" role="tab" id="tab-history" aria-selected="false" aria-controls="panel-history" onclick="switchTab('history')">
+				<i class="fas fa-clock-rotate-left"></i> تاریخچه <span class="tab-count" id="countHistory">۰</span>
+			</button>
+			<button type="button" role="tab" id="tab-payments" aria-selected="false" aria-controls="panel-payments" onclick="switchTab('payments')">
+				<i class="fas fa-money-check-dollar"></i> پرداخت‌ها <span class="tab-count" id="countPayments">۰</span>
+			</button>
+			<button type="button" role="tab" id="tab-messages" aria-selected="false" aria-controls="panel-messages" onclick="switchTab('messages')">
+				<i class="fas fa-comments"></i> پیام‌ها <span class="tab-count" id="countMessages">۰</span>
+			</button>
+			<button type="button" role="tab" id="tab-profile" aria-selected="false" aria-controls="panel-profile" onclick="switchTab('profile')">
+				<i class="fas fa-user-pen"></i> اطلاعات شخصی
+			</button>
+		</div>
+
+		<!-- Upcoming appointments -->
+		<section id="panel-upcoming" role="tabpanel" aria-labelledby="tab-upcoming">
+			<div id="upcomingList"></div>
+		</section>
+
+		<!-- History -->
+		<section id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden>
+			<div id="historyList" class="timeline"></div>
+		</section>
+
+		<!-- Payments -->
+		<section id="panel-payments" role="tabpanel" aria-labelledby="tab-payments" hidden>
+			<div id="paymentsList"></div>
+		</section>
+
+		<!-- Messages -->
+		<section id="panel-messages" role="tabpanel" aria-labelledby="tab-messages" hidden>
+			<div class="chat-card" id="chatCard"></div>
+		</section>
+
+		<!-- Profile -->
+		<section id="panel-profile" role="tabpanel" aria-labelledby="tab-profile" hidden>
+			<div class="profile-card">
+				<div class="avatar-edit-row">
+					<div class="user-avatar" id="formAvatar" aria-hidden="true"></div>
+					<div class="avatar-buttons">
+						<button type="button" class="btn btn-secondary btn-small" onclick="document.getElementById('avatarInput').click()">
+							<i class="fas fa-camera"></i> انتخاب عکس
+						</button>
+						<button type="button" class="btn btn-danger btn-small" id="removePhotoBtn" onclick="removePhoto()" hidden>
+							<i class="fas fa-trash-can"></i> حذف عکس
+						</button>
+						<input type="file" id="avatarInput" accept="image/*" hidden onchange="onAvatarSelected(event)" aria-label="انتخاب عکس پروفایل">
+					</div>
+				</div>
+
+				<form id="profileForm" novalidate onsubmit="saveProfile(event)">
+					<div class="form-grid">
+						<div class="form-field">
+							<label for="fullName">نام و نام خانوادگی <span class="required" aria-hidden="true">*</span></label>
+							<input type="text" id="fullName" name="fullName" autocomplete="name" required>
+							<span class="field-error" id="fullNameError">نام را وارد کنید.</span>
+						</div>
+						<div class="form-field">
+							<label for="phone">شمارهٔ موبایل <span class="required" aria-hidden="true">*</span></label>
+							<input type="tel" id="phone" name="phone" inputmode="tel" autocomplete="tel" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required>
+							<span class="field-error" id="phoneError">شمارهٔ موبایل معتبر وارد کنید (۱۱ رقم و با ۰۹ شروع شود).</span>
+						</div>
+						<div class="form-field full">
+							<label for="email">ایمیل</label>
+							<input type="email" id="email" name="email" autocomplete="email" dir="ltr" placeholder="name@example.com">
+							<span class="field-error" id="emailError">قالب ایمیل درست نیست.</span>
+						</div>
+						<div class="form-field full">
+							<label for="address">آدرس</label>
+							<input type="text" id="address" name="address" autocomplete="street-address" placeholder="مثلاً تهران، خیابان آزادی">
+							<span class="field-hint">برای یادآوری محل مراجعه در پیام‌های بعدی استفاده می‌شود.</span>
+						</div>
+					</div>
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary">
+							<i class="fas fa-floppy-disk"></i> ذخیرهٔ تغییرات
+						</button>
+						<button type="button" class="btn btn-secondary" onclick="resetProfileForm()">انصراف</button>
+					</div>
+				</form>
+			</div>
+		</section>
+	</main>
+
+	<!-- Cancel confirm modal -->
+	<div class="modal-overlay" id="cancelModal" role="dialog" aria-modal="true" aria-labelledby="cancelModalTitle">
+		<div class="modal">
+			<div class="modal-icon"><i class="fas fa-triangle-exclamation"></i></div>
+			<h3 id="cancelModalTitle">لغو نوبت</h3>
+			<p id="cancelModalText">آیا از لغو این نوبت مطمئن هستید؟</p>
+			<div class="modal-actions">
+				<button type="button" class="btn btn-danger" id="confirmCancelBtn">بله، لغو کن</button>
+				<button type="button" class="btn btn-secondary" onclick="closeCancelModal()">انصراف</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Visit result modal -->
+	<div class="modal-overlay" id="visitModal" role="dialog" aria-modal="true" aria-labelledby="visitModalTitle">
+		<div class="modal modal-wide">
+			<div class="modal-icon" style="background: var(--mint); color: var(--green-text);"><i class="fas fa-file-waveform" aria-hidden="true"></i></div>
+			<h3 id="visitModalTitle">نتیجهٔ ویزیت و نسخه</h3>
+			<div id="visitModalBody"></div>
+			<div class="modal-actions">
+				<button type="button" class="btn btn-secondary" onclick="closeModal('visitModal')">بستن</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Invoice modal -->
+	<div class="modal-overlay" id="invoiceModal" role="dialog" aria-modal="true" aria-labelledby="invoiceModalTitle">
+		<div class="modal modal-wide">
+			<div class="modal-icon" style="background: var(--primary-light); color: var(--primary);"><i class="fas fa-file-invoice-dollar" aria-hidden="true"></i></div>
+			<h3 id="invoiceModalTitle">فاکتور پرداخت</h3>
+			<div id="invoiceModalBody"></div>
+			<div class="modal-actions">
+				<button type="button" class="btn btn-secondary" onclick="closeModal('invoiceModal')">بستن</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Toast -->
+	<div class="toast" id="toast" role="status" aria-live="polite">
+		<i class="fas fa-circle-check" id="toastIcon"></i>
+		<span id="toastText"></span>
+	</div>
+
+	<!-- Scripts -->
+	<script src="../js/doctors-data.js"></script>
+	<script src="../js/reservation-system.js"></script>
+
+	<script>
+		'use strict';
+
+		/* ---------- Helpers ---------- */
+
+		const PROFILE_KEY = 'nobatino_user_profile';
+		const NOTIFS_KEY = 'nobatino_notifications';
+		const MESSAGES_KEY = 'nobatino_messages';
+		const VISITS_KEY = 'nobatino_visits';
+		let pendingCancelId = null;
+		let countdownInterval = null;
+
+		function faNum(str) {
+			const persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+			return String(str).replace(/\d/g, d => persian[d]);
+		}
+
+		function toEnDigits(str) {
+			return String(str)
+				.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+				.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+		}
+
+		function todayStr() {
+			const d = new Date();
+			return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+		}
+
+		function datePlus(days) {
+			const d = new Date();
+			d.setDate(d.getDate() + days);
+			return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+		}
+
+		function formatFaDate(dateStr) {
+			if (!dateStr) return '—';
+			const d = new Date(dateStr + 'T00:00:00');
+			return new Intl.DateTimeFormat('fa-IR', { weekday: 'long', day: 'numeric', month: 'long' }).format(d);
+		}
+
+		function formatFaDateFull(dateStr) {
+			if (!dateStr) return '—';
+			const d = new Date(dateStr + 'T00:00:00');
+			return new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }).format(d);
+		}
+
+		function formatFee(num) {
+			return faNum(Number(num || 0).toLocaleString('en-US')) + ' تومان';
+		}
+
+		function faTimeAgo(iso) {
+			if (!iso) return '—';
+			const diff = Date.now() - new Date(iso).getTime();
+			const mins = Math.floor(diff / 60000);
+			if (mins < 1) return 'همین حالا';
+			if (mins < 60) return `${faNum(mins)} دقیقه پیش`;
+			const hours = Math.floor(mins / 60);
+			if (hours < 24) return `${faNum(hours)} ساعت پیش`;
+			const days = Math.floor(hours / 24);
+			if (days < 7) return `${faNum(days)} روز پیش`;
+			return formatFaDateFull(iso.slice(0, 10));
+		}
+
+		const STATUS_META = {
+			HELD: { label: 'در انتظار پرداخت', cls: 'status-HELD', icon: 'fa-hourglass-half' },
+			AWAITING_PAYMENT: { label: 'در انتظار تأیید پرداخت', cls: 'status-AWAITING_PAYMENT', icon: 'fa-credit-card' },
+			CONFIRMED: { label: 'تأییدشده', cls: 'status-CONFIRMED', icon: 'fa-circle-check' },
+			DONE: { label: 'انجام‌شده', cls: 'status-DONE', icon: 'fa-check' },
+			CANCELLED: { label: 'لغوشده', cls: 'status-CANCELLED', icon: 'fa-ban' },
+			EXPIRED: { label: 'منقضی‌شده', cls: 'status-EXPIRED', icon: 'fa-hourglass-end' },
+			PAYMENT_FAILED: { label: 'پرداخت ناموفق', cls: 'status-PAYMENT_FAILED', icon: 'fa-xmark' }
+		};
+
+		function statusBadge(status) {
+			const meta = STATUS_META[status] || STATUS_META.CANCELLED;
+			return `<span class="status-badge ${meta.cls}"><i class="fas ${meta.icon}" aria-hidden="true"></i> ${meta.label}</span>`;
+		}
+
+		function escapeHtml(str) {
+			return String(str ?? '').replace(/[&<>"']/g, c => ({
+				'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+			}[c]));
+		}
+
+		/* ---------- Profile ---------- */
+
+		function getProfile() {
+			try {
+				const raw = localStorage.getItem(PROFILE_KEY);
+				if (raw) return JSON.parse(raw);
+			} catch (e) { /* ignore corrupt data */ }
+			return { fullName: 'کاربر نوبتینو', phone: '', email: '', address: '', photo: null };
+		}
+
+		function initials(name) {
+			return String(name || 'ک').trim().charAt(0) || 'ک';
+		}
+
+		function renderAvatar(el, profile) {
+			if (profile.photo) {
+				el.innerHTML = `<img src="${profile.photo}" alt="">`;
+			} else {
+				el.textContent = initials(profile.fullName);
+			}
+		}
+
+		function renderHero() {
+			const p = getProfile();
+			document.getElementById('heroName').textContent = p.fullName || 'کاربر نوبتینو';
+			document.getElementById('heroPhone').innerHTML =
+				`<i class="fas fa-mobile-screen" aria-hidden="true"></i> ${p.phone ? faNum(p.phone) : 'شماره ثبت نشده'}`;
+			renderAvatar(document.getElementById('heroAvatar'), p);
+		}
+
+		function fillProfileForm() {
+			const p = getProfile();
+			document.getElementById('fullName').value = p.fullName || '';
+			document.getElementById('phone').value = p.phone || '';
+			document.getElementById('email').value = p.email || '';
+			document.getElementById('address').value = p.address || '';
+			clearFieldErrors();
+			renderAvatar(document.getElementById('formAvatar'), p);
+			document.getElementById('removePhotoBtn').hidden = !p.photo;
+		}
+
+		function clearFieldErrors() {
+			['fullName', 'phone', 'email'].forEach(id => {
+				document.getElementById(id).setAttribute('aria-invalid', 'false');
+				document.getElementById(id + 'Error').classList.remove('visible');
+			});
+		}
+
+		function resetProfileForm() {
+			fillProfileForm();
+			showToast('تغییرات ذخیره نشد', false);
+		}
+
+		function saveProfile(event) {
+			event.preventDefault();
+			clearFieldErrors();
+
+			const fullName = document.getElementById('fullName').value.trim();
+			const phone = toEnDigits(document.getElementById('phone').value).replace(/[\s-]/g, '');
+			const email = document.getElementById('email').value.trim();
+			const address = document.getElementById('address').value.trim();
+
+			let valid = true;
+			if (!fullName) {
+				markInvalid('fullName');
+				valid = false;
+			}
+			if (!/^09\d{9}$/.test(phone)) {
+				markInvalid('phone');
+				valid = false;
+			}
+			if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+				markInvalid('email');
+				valid = false;
+			}
+			if (!valid) {
+				showToast('لطفاً خطاهای فرم را برطرف کنید', false);
+				return;
+			}
+
+			const p = getProfile();
+			p.fullName = fullName;
+			p.phone = phone;
+			p.email = email;
+			p.address = address;
+			p.updatedAt = new Date().toISOString();
+			localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
+
+			renderHero();
+			renderAvatar(document.getElementById('formAvatar'), p);
+			document.getElementById('removePhotoBtn').hidden = !p.photo;
+			showToast('اطلاعات با موفقیت ذخیره شد');
+		}
+
+		function markInvalid(id) {
+			document.getElementById(id).setAttribute('aria-invalid', 'true');
+			document.getElementById(id + 'Error').classList.add('visible');
+		}
+
+		function onAvatarSelected(event) {
+			const file = event.target.files && event.target.files[0];
+			if (!file) return;
+			if (!file.type.startsWith('image/')) {
+				showToast('فایل انتخاب‌شده تصویر نیست', false);
+				return;
+			}
+			if (file.size > 1.5 * 1024 * 1024) {
+				showToast('حجم تصویر باید کمتر از ۱.۵ مگابایت باشد', false);
+				return;
+			}
+			const reader = new FileReader();
+			reader.onload = () => {
+				const p = getProfile();
+				p.photo = reader.result;
+				localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
+				renderAvatar(document.getElementById('formAvatar'), p);
+				document.getElementById('removePhotoBtn').hidden = false;
+				renderHero();
+				showToast('عکس پروفایل به‌روزرسانی شد');
+			};
+			reader.readAsDataURL(file);
+			event.target.value = '';
+		}
+
+		function removePhoto() {
+			const p = getProfile();
+			p.photo = null;
+			localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
+			renderAvatar(document.getElementById('formAvatar'), p);
+			document.getElementById('removePhotoBtn').hidden = true;
+			renderHero();
+			showToast('عکس پروفایل حذف شد');
+		}
+
+		/* ---------- Appointments ---------- */
+
+		function getReservations() {
+			// Refresh held/awaiting reservations so countdowns and expirations stay truthful
+			const all = ReservationSystem.getAllReservations();
+			for (const id in all) {
+				const res = all[id];
+				if (res.status === 'HELD' || res.status === 'AWAITING_PAYMENT') {
+					ReservationSystem.checkExpiration(id);
+				}
+			}
+			return ReservationSystem.getAllReservations();
+		}
+
+		function splitReservations() {
+			const all = getReservations();
+			const today = todayStr();
+			const upcoming = [];
+			const history = [];
+
+			for (const id in all) {
+				const res = all[id];
+				const isActive = res.status === 'HELD' || res.status === 'AWAITING_PAYMENT' || res.status === 'CONFIRMED';
+				if (isActive && res.appointmentDate >= today) {
+					upcoming.push(res);
+				} else {
+					const item = { ...res };
+					if (item.status === 'CONFIRMED') item.status = 'DONE';
+					history.push(item);
+				}
+			}
+
+			upcoming.sort((a, b) => (a.appointmentDate + a.startTime).localeCompare(b.appointmentDate + b.startTime));
+			history.sort((a, b) => (b.appointmentDate + b.startTime).localeCompare(a.appointmentDate + a.startTime));
+			return { upcoming, history };
+		}
+
+		function doctorOf(res) {
+			return getDoctorById(res.doctorId);
+		}
+
+		function doctorThumbHtml(doc) {
+			if (doc && doc.photo) {
+				return `<img src="../images/${doc.photo}" alt="">`;
+			}
+			return '<i class="fas fa-user-doctor" aria-hidden="true"></i>';
+		}
+
+		function renderUpcoming() {
+			const { upcoming } = splitReservations();
+			const listEl = document.getElementById('upcomingList');
+
+			if (upcoming.length === 0) {
+				listEl.innerHTML = `
+					<div class="empty-state">
+						<i class="fas fa-calendar-plus" aria-hidden="true"></i>
+						<h3>هنوز نوبتی ندارید</h3>
+						<p>همین حالا پزشک موردنظرتان را پیدا کنید و نوبت بگیرید.</p>
+						<a href="P01-landing.html" class="btn btn-primary"><i class="fas fa-magnifying-glass"></i> جستجوی پزشک</a>
+						<div class="seed-hint">
+							برای دیدن ظاهر پنل با دادهٔ نمونه:
+							<button type="button" onclick="seedDemoData()">بارگذاری دادهٔ نمونه</button>
+						</div>
+					</div>`;
+				return;
+			}
+
+			listEl.innerHTML = upcoming.map(res => {
+				const doc = doctorOf(res);
+				const docName = doc ? doc.name : 'پزشک حذف‌شده';
+				const docSpec = doc ? doc.specialty : '—';
+				const payNeeded = res.status === 'HELD' || res.status === 'AWAITING_PAYMENT';
+				const showCountdown = payNeeded;
+
+				return `
+				<article class="appointment-card" data-res-id="${res.id}">
+					<div class="appointment-main">
+						<div class="doctor-thumb">${doctorThumbHtml(doc)}</div>
+						<div class="appointment-info">
+							<h3>${escapeHtml(docName)}</h3>
+							<div class="appointment-doctor-specialty">${escapeHtml(docSpec)}</div>
+							<div class="appointment-details">
+								<span><i class="fas fa-calendar" aria-hidden="true"></i> ${formatFaDateFull(res.appointmentDate)}</span>
+								<span><i class="fas fa-clock" aria-hidden="true"></i> ${faNum(res.startTime)} تا ${faNum(res.endTime)}</span>
+								<span><i class="fas fa-file-invoice" aria-hidden="true"></i> کد رهگیری: ${faNum(res.id.replace('RES-', ''))}</span>
+							</div>
+							${showCountdown ? `
+							<div class="countdown-strip">
+								<i class="fas fa-hourglass-half" aria-hidden="true"></i>
+								<span>مهلت پرداخت (دقیقه:ثانیه):</span>
+								<span class="count" data-countdown-for="${res.id}">--:--</span>
+							</div>` : ''}
+						</div>
+						<div class="appointment-side">
+							${statusBadge(res.status)}
+							<span class="appointment-fee">${formatFee(res.consultationFee)}</span>
+						</div>
+					</div>
+					<div class="appointment-actions">
+						${payNeeded ? `<button type="button" class="btn btn-primary btn-small" onclick="payReservation('${res.id}')">
+							<i class="fas fa-credit-card" aria-hidden="true"></i> پرداخت (شبیه‌سازی)
+						</button>` : ''}
+						${res.status === 'CONFIRMED' && doc ? `<a class="btn btn-ghost btn-small" href="P02-doctor-details.html?id=${doc.id}">
+							<i class="fas fa-user-doctor" aria-hidden="true"></i> صفحهٔ پزشک
+						</a>` : ''}
+						${res.status !== 'CANCELLED' ? `<button type="button" class="btn btn-danger btn-small" onclick="askCancel('${res.id}')">
+							<i class="fas fa-times" aria-hidden="true"></i> لغو نوبت
+						</button>` : ''}
+					</div>
+				</article>`;
+			}).join('');
+		}
+
+		function renderHistory() {
+			const { history } = splitReservations();
+			const visits = getVisits();
+			const listEl = document.getElementById('historyList');
+
+			if (history.length === 0) {
+				listEl.innerHTML = `
+					<div class="empty-state">
+						<i class="fas fa-clock-rotate-left" aria-hidden="true"></i>
+						<h3>تاریخچه‌ای موجود نیست</h3>
+						<p>نوبت‌های گذشته، لغوشده و منقضی‌شدهٔ شما اینجا نمایش داده می‌شوند.</p>
+					</div>`;
+				return;
+			}
+
+			listEl.innerHTML = history.map(res => {
+				const doc = doctorOf(res);
+				const docName = doc ? doc.name : 'پزشک حذف‌شده';
+				const docSpec = doc ? doc.specialty : '—';
+				const tlClass = {
+					CANCELLED: 'tl-cancelled',
+					EXPIRED: 'tl-expired',
+					PAYMENT_FAILED: 'tl-failed',
+					DONE: 'tl-done'
+				}[res.status] || 'tl-cancelled';
+
+				return `
+				<article class="timeline-item ${tlClass}">
+					<div class="timeline-head">
+						<div>
+							<h4>${escapeHtml(docName)}</h4>
+							<div class="appointment-doctor-specialty">${escapeHtml(docSpec)}</div>
+							<div class="timeline-date">
+								<i class="fas fa-calendar" aria-hidden="true"></i> ${formatFaDate(res.appointmentDate)}
+								&middot; ${faNum(res.startTime)}
+							</div>
+						</div>
+						<div class="appointment-side">
+							${statusBadge(res.status)}
+							<span class="appointment-fee">${formatFee(res.consultationFee)}</span>
+						</div>
+					</div>
+					${visits[res.id] ? `<button type="button" class="btn btn-ghost btn-small" style="margin-top: 10px;" onclick="showVisit('${res.id}')">
+						<i class="fas fa-file-waveform" aria-hidden="true"></i> نتیجهٔ ویزیت و نسخه
+					</button>` : ''}
+				</article>`;
+			}).join('');
+		}
+
+		function renderStats() {
+			const { upcoming, history } = splitReservations();
+			const done = history.filter(r => r.status === 'DONE').length;
+			const pending = upcoming.filter(r => r.status === 'HELD' || r.status === 'AWAITING_PAYMENT').length;
+
+			document.getElementById('statUpcoming').textContent = faNum(upcoming.length);
+			document.getElementById('statDone').textContent = faNum(done);
+			document.getElementById('statPending').textContent = faNum(pending);
+			document.getElementById('countUpcoming').textContent = faNum(upcoming.length);
+			document.getElementById('countHistory').textContent = faNum(history.length);
+		}
+
+		function renderAll() {
+			renderStats();
+			renderUpcoming();
+			renderHistory();
+			renderPayments();
+			renderChat();
+			generateAutoNotifs();
+			startCountdownWatcher();
+		}
+
+		/* ---------- Countdown ---------- */
+
+		function startCountdownWatcher() {
+			if (countdownInterval) clearInterval(countdownInterval);
+
+			const tick = () => {
+				const all = ReservationSystem.getAllReservations();
+				let anyActive = false;
+
+				for (const id in all) {
+					const res = all[id];
+					if (res.status !== 'HELD' && res.status !== 'AWAITING_PAYMENT') continue;
+					anyActive = true;
+
+					const remainingMs = new Date(res.expiresAt).getTime() - Date.now();
+					const el = document.querySelector(`[data-countdown-for="${id}"]`);
+					if (el) {
+						if (remainingMs <= 0) {
+							el.textContent = '۰۰:۰۰';
+						} else {
+							const mins = Math.floor(remainingMs / 60000);
+							const secs = Math.floor((remainingMs % 60000) / 1000);
+							el.textContent = `${faNum(String(mins).padStart(2, '0'))}:${faNum(String(secs).padStart(2, '0'))}`;
+						}
+					}
+				}
+
+				// If a hold just expired, refresh statuses once
+				for (const id in all) {
+					const res = all[id];
+					if ((res.status === 'HELD' || res.status === 'AWAITING_PAYMENT')) {
+						if (new Date(res.expiresAt).getTime() - Date.now() <= 0) {
+							renderAll();
+							showToast('مهلت پرداخت یک نوبت تمام شد', false);
+							return;
+						}
+					}
+				}
+
+				if (!anyActive && countdownInterval) {
+					clearInterval(countdownInterval);
+					countdownInterval = null;
+				}
+			};
+
+			tick();
+			countdownInterval = setInterval(tick, 1000);
+		}
+
+		/* ---------- Actions ---------- */
+
+		function payReservation(id) {
+			const init = ReservationSystem.initiatePayment(id);
+			if (!init.success) {
+				showToast(init.message || 'مهلت پرداخت به پایان رسیده است', false);
+				renderAll();
+				return;
+			}
+			// Prototype: simulate a successful gateway callback
+			const result = ReservationSystem.confirmPayment(id, 'TRX-' + Date.now());
+			if (result.success) {
+				const res = ReservationSystem.getReservation(id);
+				const doc = res ? doctorOf(res) : null;
+				showToast('پرداخت با موفقیت انجام شد و نوبت شما قطعی شد');
+				addNotif('success', `پرداخت ${formatFee(res.consultationFee)} برای نوبت ${doc ? doc.name : 'پزشک'} تأیید شد`, 'pay-' + id);
+			} else {
+				showToast(result.message || 'پرداخت انجام نشد', false);
+			}
+			renderAll();
+		}
+
+		function askCancel(id) {
+			pendingCancelId = id;
+			const res = ReservationSystem.getReservation(id);
+			const doc = res ? doctorOf(res) : null;
+			const when = res ? `${formatFaDate(res.appointmentDate)} ساعت ${faNum(res.startTime)}` : '';
+			document.getElementById('cancelModalText').innerHTML =
+				`آیا از لغو نوبت ${doc ? 'با <strong>' + escapeHtml(doc.name) + '</strong>' : ''} در ${when} مطمئن هستید؟`;
+			document.getElementById('cancelModal').classList.add('open');
+			document.getElementById('confirmCancelBtn').focus();
+		}
+
+		function closeCancelModal() {
+			document.getElementById('cancelModal').classList.remove('open');
+			pendingCancelId = null;
+		}
+
+		function confirmCancel() {
+			if (!pendingCancelId) return;
+			const res = ReservationSystem.getReservation(pendingCancelId);
+			const doc = res ? doctorOf(res) : null;
+			const result = ReservationSystem.cancel(pendingCancelId);
+			closeCancelModal();
+			if (result.success) {
+				showToast('نوبت لغو شد');
+				addNotif('warning', `نوبت شما با ${doc ? doc.name : 'پزشک'} لغو شد`, 'cancel-' + pendingCancelId);
+			} else {
+				showToast('لغو نوبت انجام نشد', false);
+			}
+			renderAll();
+		}
+
+		/* ---------- Demo data (prototype only) ---------- */
+
+		function seedDemoData() {
+			const patient = getProfile().fullName || 'کاربر نوبتینو';
+
+			// 1) A held reservation with a live 10-minute countdown (real API)
+			const hold = ReservationSystem.createTemporaryHold('doctor-002', datePlus(2), '10:00', '10:45', 300000);
+			if (hold.success) {
+				hold.reservation.patientName = patient;
+				ReservationSystem.saveReservation(hold.reservation);
+			}
+
+			// 2) A confirmed future reservation
+			const conf = ReservationSystem.createTemporaryHold('doctor-003', datePlus(4), '11:00', '11:20', 250000);
+			if (conf.success) {
+				conf.reservation.patientName = patient;
+				ReservationSystem.saveReservation(conf.reservation);
+				ReservationSystem.confirmPayment(conf.reservation.id, 'TRX-DEMO-CONF');
+			}
+
+			// 3) A completed visit in the past
+			const past = {
+				id: ReservationSystem.generateReservationId(),
+				doctorId: 'doctor-004',
+				patientName: patient,
+				appointmentDate: datePlus(-6),
+				startTime: '17:00',
+				endTime: '17:25',
+				consultationFee: 200000,
+				status: ReservationSystem.STATES.CONFIRMED,
+				createdAt: new Date(Date.now() - 7 * 86400000).toISOString(),
+				expiresAt: new Date(Date.now() - 7 * 86400000 + 600000).toISOString(),
+				paymentStatus: 'PAID',
+				transactionId: 'TRX-DEMO-PAST'
+			};
+			ReservationSystem.saveReservation(past);
+
+			// 4) A cancelled one
+			const cancelled = {
+				id: ReservationSystem.generateReservationId(),
+				doctorId: 'doctor-001',
+				patientName: patient,
+				appointmentDate: datePlus(-12),
+				startTime: '09:30',
+				endTime: '10:00',
+				consultationFee: 250000,
+				status: ReservationSystem.STATES.CANCELLED,
+				createdAt: new Date(Date.now() - 13 * 86400000).toISOString(),
+				expiresAt: new Date(Date.now() - 13 * 86400000 + 600000).toISOString(),
+				paymentStatus: null,
+				cancelledAt: new Date(Date.now() - 13 * 86400000).toISOString()
+			};
+			ReservationSystem.saveReservation(cancelled);
+
+			// 5) A failed payment in the past (shows in the payments tab)
+			const failed = {
+				id: ReservationSystem.generateReservationId(),
+				doctorId: 'doctor-001',
+				patientName: patient,
+				appointmentDate: datePlus(-9),
+				startTime: '10:30',
+				endTime: '11:00',
+				consultationFee: 250000,
+				status: ReservationSystem.STATES.PAYMENT_FAILED,
+				createdAt: new Date(Date.now() - 10 * 86400000).toISOString(),
+				expiresAt: new Date(Date.now() - 10 * 86400000 + 600000).toISOString(),
+				paymentStatus: 'FAILED',
+				failureReason: 'خطای درگاه پرداخت'
+			};
+			ReservationSystem.saveReservation(failed);
+
+			// 6) A visit result recorded by the doctor for the completed visit
+			const visits = getVisits();
+			visits[past.id] = {
+				reservationId: past.id,
+				doctorId: 'doctor-004',
+				patientName: patient,
+				diagnosis: 'بازبینی پوست و کنترل دورهٔ درمان',
+				notes: 'وضعیت پوست بهبود خوبی داشته است. ادامهٔ کرم مرطوب‌کننده و پرهیز از آفتاب مستقیم توصیه می‌شود.',
+				prescription: [
+					'کرم مرطوب‌کننده — روزی ۲ بار',
+					'ضدآفتاب SPF 50 — هر ۳ ساعت در نور روز',
+					'ویزیت بعدی حضوری'
+				],
+				followUpDate: datePlus(30),
+				recordedAt: new Date().toISOString()
+			};
+			localStorage.setItem(VISITS_KEY, JSON.stringify(visits));
+
+			// 7) An unread message from the doctor
+			const msgs = getMessages();
+			msgs.push({
+				id: 'M-seed-1',
+				threadKey: 'doctor-002__me',
+				doctorId: 'doctor-002',
+				patientName: patient,
+				from: 'doctor',
+				text: 'سلام! نوبت شما ثبت شد. اگر نیاز به تغییر ساعت دارید پیام بدهید.',
+				at: new Date(Date.now() - 3600000).toISOString(),
+				readByPatient: false,
+				readByDoctor: true
+			});
+			localStorage.setItem(MESSAGES_KEY, JSON.stringify(msgs));
+
+			renderAll();
+			showToast('دادهٔ نمونه بارگذاری شد');
+		}
+
+		/* ---------- Notifications ---------- */
+
+		function getNotifs() {
+			try {
+				return JSON.parse(localStorage.getItem(NOTIFS_KEY)) || [];
+			} catch (e) { return []; }
+		}
+
+		function saveNotifs(list) {
+			localStorage.setItem(NOTIFS_KEY, JSON.stringify(list));
+		}
+
+		function addNotif(type, text, key) {
+			const list = getNotifs();
+			if (key && list.some(n => n.key === key)) return;
+			list.unshift({
+				id: 'N' + Date.now() + Math.random().toString(36).slice(2, 6),
+				type, text,
+				key: key || null,
+				at: new Date().toISOString(),
+				read: false
+			});
+			if (list.length > 40) list.length = 40;
+			saveNotifs(list);
+			updateNotifUI();
+		}
+
+		const NOTIF_STYLE = {
+			success: { icon: 'fa-circle-check', bg: 'var(--mint)', color: 'var(--green-text)' },
+			info: { icon: 'fa-bell', bg: 'var(--primary-light)', color: 'var(--primary)' },
+			warning: { icon: 'fa-triangle-exclamation', bg: 'var(--amber-bg)', color: 'var(--amber-text)' },
+			message: { icon: 'fa-comment-dots', bg: 'var(--purple-bg)', color: 'var(--purple-text)' }
+		};
+
+		function renderNotifs() {
+			const el = document.getElementById('notifList');
+			const list = getNotifs();
+			if (list.length === 0) {
+				el.innerHTML = '<p class="field-hint" style="text-align: center; padding: 16px 0;">اعلانی وجود ندارد.</p>';
+				return;
+			}
+			el.innerHTML = list.slice(0, 15).map(n => {
+				const s = NOTIF_STYLE[n.type] || NOTIF_STYLE.info;
+				return `
+				<div class="notif-item ${n.read ? '' : 'unread'}">
+					<span class="notif-icon" style="background:${s.bg}; color:${s.color};"><i class="fas ${s.icon}" aria-hidden="true"></i></span>
+					<div class="notif-body">
+						<div>${escapeHtml(n.text)}</div>
+						<div class="notif-time">${faTimeAgo(n.at)}</div>
+					</div>
+				</div>`;
+			}).join('');
+		}
+
+		function updateNotifUI() {
+			const unread = getNotifs().filter(n => !n.read).length;
+			const badge = document.getElementById('bellBadge');
+			badge.hidden = unread === 0;
+			badge.textContent = faNum(unread);
+			renderNotifs();
+		}
+
+		function toggleNotifPanel(event) {
+			event.stopPropagation();
+			const panel = document.getElementById('notifPanel');
+			const open = panel.classList.toggle('open');
+			document.getElementById('bellBtn').setAttribute('aria-expanded', String(open));
+			renderNotifs();
+		}
+
+		function markAllRead(event) {
+			event.stopPropagation();
+			saveNotifs(getNotifs().map(n => ({ ...n, read: true })));
+			updateNotifUI();
+		}
+
+		function generateAutoNotifs() {
+			const { upcoming, history } = splitReservations();
+			// Reminders for confirmed appointments within the next 2 days
+			const soon = datePlus(2);
+			upcoming.filter(r => r.status === 'CONFIRMED' && r.appointmentDate <= soon).forEach(r => {
+				const doc = doctorOf(r);
+				addNotif('info', `یادآوری: نوبت شما با ${doc ? doc.name : 'پزشک'} در ${formatFaDate(r.appointmentDate)} ساعت ${faNum(r.startTime)}`, 'reminder-' + r.id);
+			});
+			// Visit results ready
+			const visits = getVisits();
+			history.filter(r => r.status === 'DONE' && visits[r.id]).forEach(r => {
+				const doc = doctorOf(r);
+				addNotif('success', `نتیجهٔ ویزیت و نسخهٔ ${doc ? doc.name : 'پزشک'} آماده شد`, 'visit-' + r.id);
+			});
+			// Unread doctor messages
+			const msgs = getMessages();
+			getAllDoctors().forEach(doc => {
+				const unread = msgs.filter(m => m.doctorId === doc.id && m.from === 'doctor' && !m.readByPatient).length;
+				if (unread > 0) {
+					addNotif('message', `${faNum(unread)} پیام خوانده‌نشده از ${doc.name}`, 'msg-' + doc.id);
+				}
+			});
+		}
+
+		/* ---------- Visit results (written by the doctor panel) ---------- */
+
+		function getVisits() {
+			try {
+				return JSON.parse(localStorage.getItem(VISITS_KEY)) || {};
+			} catch (e) { return {}; }
+		}
+
+		function showVisit(resId) {
+			const visit = getVisits()[resId];
+			const res = ReservationSystem.getReservation(resId);
+			if (!visit || !res) return;
+			const doc = doctorOf(res);
+			const rx = (visit.prescription || []).map(item =>
+				`<li><i class="fas fa-capsules" aria-hidden="true"></i><span>${escapeHtml(item)}</span></li>`).join('');
+			document.getElementById('visitModalBody').innerHTML = `
+				<div class="inv-row"><span>پزشک:</span><span>${escapeHtml(doc ? doc.name : '—')}</span></div>
+				<div class="inv-row"><span>تاریخ ویزیت:</span><span>${formatFaDate(res.appointmentDate)}</span></div>
+				<div class="visit-section">
+					<h4><i class="fas fa-stethoscope" aria-hidden="true"></i> تشخیص</h4>
+					<p>${escapeHtml(visit.diagnosis || 'ثبت نشده')}</p>
+				</div>
+				<div class="visit-section">
+					<h4><i class="fas fa-notes-medical" aria-hidden="true"></i> توضیحات پزشک</h4>
+					<p>${escapeHtml(visit.notes || 'ثبت نشده')}</p>
+				</div>
+				<div class="visit-section">
+					<h4><i class="fas fa-prescription" aria-hidden="true"></i> نسخه</h4>
+					${rx ? `<ul class="rx-list">${rx}</ul>` : '<p>نسخه‌ای ثبت نشده است.</p>'}
+				</div>
+				${visit.followUpDate ? `<div class="inv-row"><span>ویزیت بعدی:</span><span>${formatFaDate(visit.followUpDate)}</span></div>` : ''}`;
+			openModal('visitModal');
+		}
+
+		/* ---------- Payments & invoices ---------- */
+
+		function renderPayments() {
+			const all = ReservationSystem.getAllReservations();
+			const rows = Object.values(all)
+				.filter(r => r.paymentStatus === 'PAID' || r.status === 'PAYMENT_FAILED')
+				.sort((a, b) => String(b.paidAt || b.createdAt || '').localeCompare(String(a.paidAt || a.createdAt || '')));
+
+			const el = document.getElementById('paymentsList');
+			document.getElementById('countPayments').textContent = faNum(rows.length);
+
+			if (rows.length === 0) {
+				el.innerHTML = `
+					<div class="empty-state">
+						<i class="fas fa-money-check-dollar" aria-hidden="true"></i>
+						<h3>پرداختی ثبت نشده است</h3>
+						<p>پس از پرداخت نوبت، فاکتور و جزئیات تراکنش اینجا نمایش داده می‌شود.</p>
+						<a href="P01-landing.html" class="btn btn-primary"><i class="fas fa-magnifying-glass"></i> شروع رزرو نوبت</a>
+					</div>`;
+				return;
+			}
+
+			el.innerHTML = rows.map(res => {
+				const doc = doctorOf(res);
+				const paid = res.paymentStatus === 'PAID';
+				return `
+				<article class="payment-card">
+					<span class="payment-icon" style="background: ${paid ? 'var(--mint)' : 'var(--pink-bg)'}; color: ${paid ? 'var(--green-text)' : 'var(--pink-text)'};">
+						<i class="fas ${paid ? 'fa-circle-check' : 'fa-circle-xmark'}" aria-hidden="true"></i>
+					</span>
+					<div class="payment-info">
+						<h4>${escapeHtml(doc ? doc.name : 'پزشک حذف‌شده')}</h4>
+						<div class="payment-sub">${escapeHtml(doc ? doc.specialty : '—')}</div>
+						<div class="payment-sub">ویزیت ${formatFaDate(res.appointmentDate)} — ${faNum(res.startTime)}${res.paidAt ? ' &middot; پرداخت ' + faTimeAgo(res.paidAt) : ''}</div>
+					</div>
+					<div class="payment-side">
+						<span class="payment-amount">${formatFee(res.consultationFee)}</span>
+						<span class="status-badge ${paid ? 'status-CONFIRMED' : 'status-PAYMENT_FAILED'}">
+							<i class="fas ${paid ? 'fa-circle-check' : 'fa-circle-xmark'}" aria-hidden="true"></i> ${paid ? 'پرداخت موفق' : 'پرداخت ناموفق'}
+						</span>
+						${paid ? `<button type="button" class="btn btn-ghost btn-small" onclick="showInvoice('${res.id}')">
+							<i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> مشاهدهٔ فاکتور
+						</button>` : '<span class="payment-sub">در صورت نیاز، دوباره رزرو کنید.</span>'}
+					</div>
+				</article>`;
+			}).join('');
+		}
+
+		function showInvoice(resId) {
+			const res = ReservationSystem.getReservation(resId);
+			if (!res) return;
+			const doc = doctorOf(res);
+			const p = getProfile();
+			document.getElementById('invoiceModalBody').innerHTML = `
+				<div class="inv-row"><span>پزشک:</span><span>${escapeHtml(doc ? doc.name : '—')}</span></div>
+				<div class="inv-row"><span>بیمار:</span><span>${escapeHtml(res.patientName || p.fullName)}</span></div>
+				<div class="inv-row"><span>تاریخ ویزیت:</span><span>${formatFaDate(res.appointmentDate)} — ${faNum(res.startTime)}</span></div>
+				<div class="inv-row"><span>خدمت:</span><span>ویزیت و مشاورهٔ ${escapeHtml(doc ? doc.specialty : 'پزشک')}</span></div>
+				<div class="inv-row"><span>کد رهگیری نوبت:</span><span>${faNum(res.id.replace('RES-', ''))}</span></div>
+				<div class="inv-row"><span>کد تراکنش:</span><span dir="ltr">${escapeHtml(res.transactionId || '—')}</span></div>
+				<div class="inv-row"><span>تاریخ پرداخت:</span><span>${res.paidAt ? formatFaDateFull(String(res.paidAt).slice(0, 10)) : '—'}</span></div>
+				<div class="inv-row total"><span>مبلغ پرداخت‌شده:</span><span>${formatFee(res.consultationFee)}</span></div>`;
+			openModal('invoiceModal');
+		}
+
+		/* ---------- Chat with doctors ---------- */
+
+		function getMessages() {
+			try {
+				return JSON.parse(localStorage.getItem(MESSAGES_KEY)) || [];
+			} catch (e) { return []; }
+		}
+
+		function saveMessages(list) {
+			localStorage.setItem(MESSAGES_KEY, JSON.stringify(list));
+		}
+
+		let activeChatDoctor = null;
+
+		function chatThreadKey(doctorId) {
+			return doctorId + '__me';
+		}
+
+		function unreadFromDoctor(doctorId) {
+			return getMessages().filter(m =>
+				m.doctorId === doctorId &&
+				m.threadKey === chatThreadKey(doctorId) &&
+				m.from === 'doctor' &&
+				!m.readByPatient
+			).length;
+		}
+
+		function renderChat() {
+			const doctors = getAllDoctors();
+			if (!activeChatDoctor || !getDoctorById(activeChatDoctor)) {
+				activeChatDoctor = doctors[0] ? doctors[0].id : null;
+			}
+			const totalUnread = doctors.reduce((s, d) => s + unreadFromDoctor(d.id), 0);
+			document.getElementById('countMessages').textContent = faNum(totalUnread);
+
+			const contacts = doctors.map(doc => `
+				<button type="button" class="contact-item ${doc.id === activeChatDoctor ? 'active' : ''}" onclick="openThread('${doc.id}')" aria-pressed="${doc.id === activeChatDoctor}">
+					<img class="contact-avatar" src="../images/${doc.photo}" alt="">
+					<span class="contact-meta">
+						<span class="contact-name">${escapeHtml(doc.name)}</span>
+						<span class="contact-sub">${escapeHtml(doc.specialty)}</span>
+					</span>
+					${unreadFromDoctor(doc.id) ? `<span class="contact-unread">${faNum(unreadFromDoctor(doc.id))}</span>` : ''}
+				</button>`).join('');
+
+			const doc = getDoctorById(activeChatDoctor);
+			if (!doc) return;
+
+			const msgs = getMessages().filter(m => m.threadKey === chatThreadKey(activeChatDoctor));
+			const thread = msgs.length ? msgs.map(m => `
+				<div class="msg ${m.from === 'patient' ? 'mine' : 'theirs'}">
+					${escapeHtml(m.text)}
+					<span class="msg-time">${faTimeAgo(m.at)}</span>
+				</div>`).join('') : `
+				<div class="chat-empty">
+					<i class="fas fa-comments" aria-hidden="true"></i>
+					<p>گفتگو با ${escapeHtml(doc.name)} — پیام اول را بفرستید.</p>
+				</div>`;
+
+			document.getElementById('chatCard').innerHTML = `
+				<div class="contacts" aria-label="فهرست پزشکان برای گفتگو">${contacts}</div>
+				<div class="chat-main">
+					<div class="chat-head">
+						<img class="contact-avatar" src="../images/${doc.photo}" alt="">
+						<div>
+							<span class="contact-name" style="display: block;">${escapeHtml(doc.name)}</span>
+							<span class="contact-sub">${escapeHtml(doc.specialty)}</span>
+						</div>
+					</div>
+					<div class="chat-messages" id="chatMessages">${thread}</div>
+					<form class="chat-composer" onsubmit="sendChatMessage(event)">
+						<label class="field-hint" for="chatInput" style="display: none;">متن پیام</label>
+						<input type="text" id="chatInput" placeholder="پیام خود را بنویسید…" autocomplete="off">
+						<button type="submit" class="send-btn" aria-label="ارسال پیام"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
+					</form>
+				</div>`;
+
+			// Mark this thread's doctor messages as read
+			if (msgs.length) {
+				let changed = false;
+				const list = getMessages();
+				list.forEach(m => {
+					if (m.threadKey === chatThreadKey(activeChatDoctor) && m.from === 'doctor' && !m.readByPatient) {
+						m.readByPatient = true;
+						changed = true;
+					}
+				});
+				if (changed) {
+					saveMessages(list);
+					// Drop the stale "unread message" notification for this doctor
+					saveNotifs(getNotifs().filter(n => n.key !== 'msg-' + activeChatDoctor));
+					updateNotifUI();
+				}
+			}
+
+			const box = document.getElementById('chatMessages');
+			if (box) box.scrollTop = box.scrollHeight;
+		}
+
+		function openThread(doctorId) {
+			activeChatDoctor = doctorId;
+			renderChat();
+			const input = document.getElementById('chatInput');
+			if (input) input.focus();
+		}
+
+		function sendChatMessage(event) {
+			event.preventDefault();
+			const input = document.getElementById('chatInput');
+			const text = input.value.trim();
+			if (!text || !activeChatDoctor) return;
+			const list = getMessages();
+			list.push({
+				id: 'M' + Date.now(),
+				threadKey: chatThreadKey(activeChatDoctor),
+				doctorId: activeChatDoctor,
+				patientName: getProfile().fullName,
+				from: 'patient',
+				text,
+				at: new Date().toISOString(),
+				readByPatient: true,
+				readByDoctor: false
+			});
+			saveMessages(list);
+			renderChat();
+		}
+
+		/* ---------- Shared modal helpers ---------- */
+
+		function openModal(id) {
+			document.getElementById(id).classList.add('open');
+		}
+
+		function closeModal(id) {
+			document.getElementById(id).classList.remove('open');
+		}
+
+		/* ---------- Tabs & toast ---------- */
+
+		function switchTab(name) {
+			const tabs = ['upcoming', 'history', 'payments', 'messages', 'profile'];
+			tabs.forEach(t => {
+				document.getElementById('tab-' + t).setAttribute('aria-selected', String(t === name));
+				document.getElementById('panel-' + t).hidden = t !== name;
+			});
+			if (name === 'profile') fillProfileForm();
+		}
+
+		let toastTimer = null;
+		function showToast(message, ok = true) {
+			const toast = document.getElementById('toast');
+			document.getElementById('toastText').textContent = message;
+			document.getElementById('toastIcon').className = ok ? 'fas fa-circle-check' : 'fas fa-circle-exclamation';
+			toast.classList.toggle('toast-error', !ok);
+			toast.classList.add('show');
+			if (toastTimer) clearTimeout(toastTimer);
+			toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+		}
+
+		/* ---------- Init ---------- */
+
+		document.getElementById('confirmCancelBtn').addEventListener('click', confirmCancel);
+		document.getElementById('cancelModal').addEventListener('click', (e) => {
+			if (e.target === e.currentTarget) closeCancelModal();
+		});
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				closeCancelModal();
+				closeModal('visitModal');
+				closeModal('invoiceModal');
+				document.getElementById('notifPanel').classList.remove('open');
+			}
+		});
+		document.addEventListener('click', (e) => {
+			const panel = document.getElementById('notifPanel');
+			if (panel.classList.contains('open') && !e.target.closest('.bell-wrap')) {
+				panel.classList.remove('open');
+				document.getElementById('bellBtn').setAttribute('aria-expanded', 'false');
+			}
+		});
+
+		renderHero();
+		fillProfileForm();
+		renderAll();
+	</script>
+</body>
+</html>
