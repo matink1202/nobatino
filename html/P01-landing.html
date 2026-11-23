@@ -171,6 +171,11 @@
 			align-items: center;
 		}
 
+		.auth-buttons .btn {
+			line-height: normal;
+			text-decoration: none;
+		}
+
 		.btn {
 			display: inline-flex;
 			align-items: center;
@@ -396,6 +401,22 @@
 
 			.menu-toggle {
 				display: block;
+				position: relative;
+			}
+
+			.menu-toggle::after {
+				content: '';
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				width: 44px;
+				height: 44px;
+				transform: translate(-50%, -50%);
+			}
+
+			.header-content:has(> .p03-account:not([hidden])) > .menu-toggle {
+				margin-inline-start: auto;
+				margin-inline-end: 20px;
 			}
 
 			.nav-mobile a {
@@ -506,6 +527,7 @@
 
 			.dropdown-menu {
 				max-height: 250px !important;
+				min-width: 0;
 				max-width: 90vw;
 			}
 		}
@@ -991,7 +1013,17 @@
 				margin-top: 16px;
 			}
 		}
+
+		@media (max-width: 359px) {
+			.logo img { height: 40px; }
+			.auth-buttons { gap: 8px; }
+			.auth-buttons .btn { padding-inline: 12px; }
+			.hero-content, .search-row { grid-template-columns: minmax(0, 1fr); }
+			.dropdown-trigger-input { min-width: 0; }
+		}
 	</style>
+	<link rel="stylesheet" href="../css/P03-account.css">
+	<script src="../js/P03-session.js"></script>
 </head>
 <body>
 	<!-- Header -->
@@ -1009,14 +1041,14 @@
 					<a href="#contact">تماس</a>
 				</nav>
 
-				<div class="auth-buttons">
-					<button class="btn btn-secondary btn-small">ورود</button>
-					<button class="btn btn-primary btn-small">ثبت‌نام</button>
+				<div class="auth-buttons" data-p03-guest>
+					<a class="btn btn-secondary btn-small" href="P03-auth.html" data-p03-auth="login">ورود</a>
+					<a class="btn btn-primary btn-small" href="P03-auth.html?mode=register" data-p03-auth="register">ثبت‌نام</a>
 				</div>
-
-				<button class="menu-toggle" id="menuToggle">
-					<i class="fas fa-bars"></i>
+				<button class="menu-toggle" id="menuToggle" type="button" aria-label="منوی سایت" aria-controls="navMobile" aria-expanded="false">
+					<i class="fas fa-bars" aria-hidden="true"></i>
 				</button>
+				<div class="p03-account" data-p03-account hidden></div>
 			</div>
 
 			<nav class="nav-mobile" id="navMobile">
@@ -1393,8 +1425,17 @@
 		const menuToggle = document.getElementById('menuToggle');
 		const navMobile = document.getElementById('navMobile');
 
+		function setMobileMenu(open) {
+			navMobile.classList.toggle('active', open);
+			menuToggle.setAttribute('aria-expanded', String(open));
+		}
 		menuToggle?.addEventListener('click', () => {
-			navMobile.classList.toggle('active');
+			setMobileMenu(!navMobile.classList.contains('active'));
+		});
+		document.addEventListener('click', (event) => {
+			if (navMobile.classList.contains('active') && !menuToggle.contains(event.target) && !navMobile.contains(event.target)) {
+				setMobileMenu(false);
+			}
 		});
 
 		// Close menu on link click and handle smooth scrolling
@@ -1403,7 +1444,7 @@
 				const href = link.getAttribute('href');
 				// Close mobile menu on any navigation link click
 				if (navMobile && navMobile.classList.contains('active')) {
-					navMobile.classList.remove('active');
+				setMobileMenu(false);
 				}
 				// Smooth scroll is handled by CSS scroll-behavior: smooth
 				// and scroll-margin-top offsets
@@ -1636,7 +1677,7 @@
 				// Close on outside click
 				document.addEventListener('click', (e) => {
 					if (!this.container.contains(e.target)) {
-						this.close();
+						this.close(false);
 					}
 				});
 
@@ -1673,7 +1714,7 @@
 					const otherContainer = document.getElementById(activeDropdown);
 					if (otherContainer) {
 						const otherDropdown = otherContainer.customDropdownInstance;
-						if (otherDropdown) otherDropdown.close();
+						if (otherDropdown) otherDropdown.close(false);
 					}
 				}
 
@@ -1686,10 +1727,11 @@
 				// Attach scroll listener to keep dropdown attached during scrolling
 				document.addEventListener('scroll', this.scrollHandler, true);
 
-				setTimeout(() => this.triggerInput.focus(), 50);
+				setTimeout(() => { if (this.isOpen) this.triggerInput.focus(); }, 50);
 			}
 
-			close() {
+			close(restoreFocus = true) {
+				if (!this.isOpen) return;
 				this.isOpen = false;
 				if (activeDropdown === this.containerId) {
 					activeDropdown = null;
@@ -1699,7 +1741,7 @@
 				this.triggerInput.value = '';
 				this.allItems.forEach(item => item.classList.remove('hidden'));
 				this.updateIconDisplay();
-				this.trigger.focus();
+				if (restoreFocus) this.trigger.focus();
 
 				// Remove scroll listener and cancel pending animation frame
 				document.removeEventListener('scroll', this.scrollHandler, true);
