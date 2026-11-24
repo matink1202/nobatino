@@ -155,6 +155,8 @@
 			min-height: 24px;
 		}
 
+		[hidden] { display: none !important; }
+
 		@media (max-width: 480px) {
 			.container { padding: 0 16px; }
 			.page-content { padding: 24px 0 32px; }
@@ -188,7 +190,7 @@
 
 			<div class="result-actions">
 				<a class="btn btn-primary" id="retryLink" href="P07-payment-gateway.html">
-					<i class="fas fa-rotate-right" aria-hidden="true"></i> تلاش دوباره برای پرداخت
+					<i class="fas fa-rotate-right" aria-hidden="true"></i> تلاش دوباره برای رزرو و پرداخت
 				</a>
 				<a class="btn btn-secondary" id="doctorLink" href="P02-doctor-details.html">
 					انتخاب زمان دیگری برای نوبت
@@ -204,49 +206,41 @@
 	<script src="../js/payment-flow.js"></script>
 	<script>
 		(function () {
-			const { reservation } = PaymentFlow.getReservation();
-			const info = PaymentFlow.describe(reservation);
+			const { reservation, demo } = PaymentFlow.getReservation();
+			const retry = document.getElementById('retryLink');
+			const doctor = document.getElementById('doctorLink');
+			doctor.href = PaymentFlow.doctorUrl(reservation);
 
-			PaymentFlow.fill('receiptDoctor', info.doctorName);
-			PaymentFlow.fill('receiptTime', `${info.dateText}، ساعت ${info.timeText}`);
-			PaymentFlow.fill('receiptReservation', reservation.id);
-			document.getElementById('retryLink').href = PaymentFlow.url(PaymentFlow.GATEWAY, reservation.id);
-			const doctorLink = document.getElementById('doctorLink');
-			doctorLink.href = 'P02-doctor-details.html?id=' + encodeURIComponent(reservation.doctorId);
-
-			// مهلت نگهداری تمام شده باشد، تلاش دوباره برای همین نوبت ممکن نیست.
-			const params = new URLSearchParams(location.search);
-			const expired = params.get('reason') === 'expired';
-			if (expired) {
-				document.getElementById('resultMessage').textContent = 'مهلت نگهداری نوبت تمام شد. لطفاً زمان ویزیت را دوباره انتخاب کنید.';
-				const retry = document.getElementById('retryLink');
-				retry.removeAttribute('href');
-				retry.setAttribute('aria-disabled', 'true');
-				retry.style.opacity = '0.5';
-				retry.style.pointerEvents = 'none';
+			if (demo) {
+				PaymentFlow.fill('resultMessage', 'پرداخت آزمایشی ناموفق بود و نوبتی ثبت نشده است.');
+				PaymentFlow.fillReceipt('receipt', null);
+				PaymentFlow.fill('doctorLink', 'جست‌وجوی پزشکان');
+				return;
+			}
+			if (!reservation) {
+				PaymentFlow.fill('resultMessage', 'رزرو پیدا نشد. برای رزرو، زمان تازه‌ای انتخاب کنید.');
+				PaymentFlow.fill('doctorLink', 'جست‌وجوی پزشکان');
+				document.querySelector('.receipt').hidden = true;
+				retry.hidden = true;
+				return;
+			}
+			if (reservation.status === ReservationSystem.STATES.CONFIRMED) {
+				location.replace(PaymentFlow.url(PaymentFlow.SUCCESS, reservation));
+				return;
 			}
 
-			// بازگشت خودکار به سایت پس از چند ثانیه
-			const target = doctorLink.href;
-			const note = document.getElementById('autoReturn');
-			let remaining = 10;
+			PaymentFlow.fillReceipt('receipt', reservation);
+			const reason = new URLSearchParams(location.search).get('reason');
+			if (reason === 'expired' || reservation.status === ReservationSystem.STATES.EXPIRED) {
+				PaymentFlow.fill('resultMessage', 'مهلت نگهداری نوبت تمام شد. لطفاً زمان ویزیت را دوباره انتخاب کنید.');
+			} else if (reason === 'unavailable') {
+				PaymentFlow.fill('resultMessage', 'این رزرو دیگر قابل پرداخت نیست. لطفاً زمان ویزیت را دوباره انتخاب کنید.');
+			}
+			if (reservation.visitDate) retry.href = PaymentFlow.doctorUrl(reservation, true);
+			else retry.hidden = true;
 
-			const tick = () => {
-				note.textContent = `در حال انتقال خودکار به نوبتینو (${String(remaining).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d])})…`;
-				if (remaining === 0) {
-					location.href = target;
-					return;
-				}
-				remaining -= 1;
-				timer = setTimeout(tick, 1000);
-			};
-
-			let timer = setTimeout(tick, 1000);
-			document.addEventListener('click', e => {
-				if (e.target.closest('a')) clearTimeout(timer);
-			});
+			PaymentFlow.autoReturn(doctor.href, 10);
 		})();
 	</script>
-	<script src="../js/site-header.js"></script>
 </body>
 </html>

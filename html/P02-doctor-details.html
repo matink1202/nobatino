@@ -1197,18 +1197,15 @@
 
 					<!-- Action Buttons -->
 					<div class="action-buttons">
-						<a href="./P07-payment-gateway.html">
-
-							<button class="btn btn-primary btn-block" id="reserveBtn" style="display: none;" onclick="createReservation()" aria-label="رزرو و ادامه پرداخت">
-								<i class="fas fa-lock"></i>
-								رزرو و ادامه پرداخت
-							</button>
-						</a>
+						<button type="button" class="btn btn-primary btn-block" id="reserveBtn" style="display: none;">
+							<i class="fas fa-lock" aria-hidden="true"></i>
+							رزرو و ادامه پرداخت
+						</button>
 						<button type="button" class="btn btn-primary btn-block" id="paymentBtn" style="display: none;" aria-label="پرداخت">
 							<i class="fas fa-credit-card"></i>
 							پرداخت
 						</button>
-						<button class="btn btn-secondary btn-block" id="cancelBtn" style="display: none;" onclick="cancelReservation()" aria-label="لغو رزرو">
+						<button type="button" class="btn btn-secondary btn-block" id="cancelBtn" style="display: none;" aria-label="لغو رزرو">
 							<i class="fas fa-times"></i>
 							لغو رزرو
 						</button>
@@ -1238,6 +1235,7 @@
 	<script src="../js/doctors-data.js"></script>
 	<script src="../js/appointment-availability.js"></script>
 	<script src="../js/reservation-system.js"></script>
+	<script src="../js/payment-flow.js"></script>
 
 	<script>
 		let currentDoctorId = null;
@@ -1273,14 +1271,19 @@
 
 			ReservationSystem.init();
 			loadDoctorProfile(currentDoctor);
-			renderCalendar();
-			selectTodayIfAvailable();
+			if (!restoreReservation(params.get('reservationId'))) {
+				renderCalendar();
+				selectTodayIfAvailable();
+			}
 			setupEventListeners();
 		}
 
 		function setupEventListeners() {
 			document.getElementById('prevMonth').onclick = () => previousMonth();
 			document.getElementById('nextMonth').onclick = () => nextMonth();
+			document.getElementById('reserveBtn').onclick = createReservation;
+			document.getElementById('paymentBtn').onclick = handlePaymentClick;
+			document.getElementById('cancelBtn').onclick = cancelReservation;
 		}
 
 		function loadDoctorProfile(doctor) {
@@ -1463,6 +1466,7 @@
 		}
 
 		function selectDate(dateStr) {
+			if (currentReservation) return;
 			selectedDate = dateStr;
 			selectedTime = null;
 			clearError();
@@ -1500,6 +1504,7 @@
 		}
 
 		function selectTime(time) {
+			if (currentReservation) return;
 			selectedTime = time;
 			document.querySelectorAll('.time-slot').forEach(btn => {
 				btn.classList.toggle('selected', btn.dataset.time === time && !btn.disabled);
@@ -1529,7 +1534,7 @@
 		}
 
 		function createReservation() {
-			if (!selectedDate || !selectedTime) return;
+			if (currentReservation || !selectedDate || !selectedTime) return;
 
 			const startTime = selectedTime;
 			const date = new Date(selectedDate + 'T00:00:00');
@@ -1549,7 +1554,8 @@
 				appointmentDateKey(date),
 				startTime,
 				endTime,
-				currentDoctor.consultationFeeNumeric
+				currentDoctor.consultationFeeNumeric,
+				selectedDate
 			);
 
 			if (!result.success) {
@@ -1557,18 +1563,44 @@
 				return;
 			}
 
-			currentReservation = result.reservation;
+			showHeldReservation(result.reservation);
+			handlePaymentClick();
+		}
+
+		function restoreReservation(id) {
+			if (!id) return false;
+			const reservation = ReservationSystem.getReservation(id);
+			if (reservation?.doctorId !== currentDoctorId || !reservation.visitDate) return false;
+			const date = new Date(reservation.visitDate + 'T00:00:00');
+			if (!Number.isFinite(date.getTime()) || reservation.visitDate < dateToString(new Date())) return false;
+
+			currentCalendarDate = date;
+			selectDate(reservation.visitDate);
+			renderCalendar();
+			if (PaymentFlow.canPay(reservation)) {
+				selectedTime = reservation.startTime;
+				updateUI();
+				showHeldReservation(reservation);
+			} else if (getPublicAppointmentSlots(currentDoctorId, date)
+				.some(slot => slot.time === reservation.startTime && slot.canBook)) {
+				selectTime(reservation.startTime);
+			}
+			return true;
+		}
+
+		function showHeldReservation(reservation) {
+			currentReservation = reservation;
 			document.getElementById('reserveBtn').style.display = 'none';
 			document.getElementById('paymentBtn').style.display = 'flex';
 			document.getElementById('cancelBtn').style.display = 'flex';
 			document.getElementById('countdownContainer').classList.add('active');
 			document.getElementById('paymentSection').classList.add('active');
 
-			document.querySelectorAll('.time-slot').forEach(btn => {
-				if (btn.dataset.time === selectedTime) {
-					btn.classList.remove('selected');
-					btn.classList.add('held');
-					btn.disabled = true;
+			document.querySelectorAll('.time-slot').forEach(button => {
+				button.disabled = true;
+				if (button.dataset.time === reservation.startTime) {
+					button.classList.remove('selected', 'disabled');
+					button.classList.add('held');
 				}
 			});
 
@@ -1577,73 +1609,46 @@
 		}
 
 		function startCountdown() {
-			const timer = setInterval(() => {
-				if (!currentReservation) {
-					clearInterval(timer);
-					return;
+			const reservationId = currentReservation.id;
+			function tick() {
+				if (currentReservation?.id !== reservationId) return false;
+				const latest = ReservationSystem.getReservation(reservationId);
+				if (!PaymentFlow.canPay(latest)) {
+					clearHoldDisplay();
+					if (ReservationSystem.isPaymentPending(latest) || latest?.status === ReservationSystem.STATES.EXPIRED) {
+						showError('مهلت نگهداری اتمام یافت. لطفاً دوباره سعی کنید.');
+					}
+					return false;
 				}
-
-				const now = new Date().getTime();
-				const expiry = new Date(currentReservation.expiresAt).getTime();
-				const remaining = Math.max(0, expiry - now);
-
-				const mins = Math.floor((remaining / 1000) / 60);
-				const secs = Math.floor((remaining / 1000) % 60);
-				const display = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-
-				document.getElementById('countdownTimer').textContent = display;
-
-				if (remaining === 0) {
-					clearInterval(timer);
-					onReservationExpired();
-				}
-			}, 1000);
+				const seconds = Math.ceil((Date.parse(latest.expiresAt) - Date.now()) / 1000);
+				document.getElementById('countdownTimer').textContent = ReservationSystem.formatRemainingTime(seconds);
+				return true;
+			}
+			if (!tick()) return;
+			const timer = setInterval(() => { if (!tick()) clearInterval(timer); }, 1000);
 		}
 
-		function onReservationExpired() {
+		function clearHoldDisplay() {
+			currentReservation = null;
+			selectedTime = null;
 			document.getElementById('countdownContainer').classList.remove('active');
 			document.getElementById('paymentSection').classList.remove('active');
 			document.getElementById('paymentBtn').style.display = 'none';
 			document.getElementById('cancelBtn').style.display = 'none';
-			showError('مهلت نگهداری اتمام یافت. لطفاً دوباره سعی کنید.');
-
-			document.querySelectorAll('.time-slot').forEach(btn => {
-				if (btn.dataset.time === selectedTime) {
-					btn.classList.remove('held');
-					btn.disabled = false;
-				}
-			});
-
-			currentReservation = null;
+			showTimeSlots(selectedDate);
+			updateUI();
 		}
 
 		function handlePaymentClick() {
 			if (!currentReservation) return;
-
-			const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-			const methodName = selectedMethod === 'zarinpal' ? 'زرین‌پال' : 'آی‌دی‌پی';
-
-			alert(`در محیط تولیدی، شما به درگاه پرداخت امن ${methodName} هدایت می‌شوید.\n\nشماره رزرو: ${currentReservation.id}`);
+			location.assign(PaymentFlow.url(PaymentFlow.GATEWAY, currentReservation));
 		}
 
 		function cancelReservation() {
 			if (!currentReservation) return;
-
-			ReservationSystem.cancel(currentReservation.id);
-			document.getElementById('countdownContainer').classList.remove('active');
-			document.getElementById('paymentSection').classList.remove('active');
-			document.getElementById('paymentBtn').style.display = 'none';
-			document.getElementById('cancelBtn').style.display = 'none';
-			document.getElementById('reserveBtn').style.display = 'flex';
-
-			document.querySelectorAll('.time-slot').forEach(btn => {
-				if (btn.dataset.time === selectedTime) {
-					btn.classList.remove('held');
-					btn.disabled = false;
-				}
-			});
-
-			currentReservation = null;
+			const latest = ReservationSystem.getReservation(currentReservation.id);
+			if (PaymentFlow.canPay(latest)) ReservationSystem.cancel(latest.id);
+			clearHoldDisplay();
 			clearError();
 		}
 

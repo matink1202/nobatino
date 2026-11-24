@@ -264,6 +264,8 @@
 			to { transform: rotate(360deg); }
 		}
 
+		[hidden] { display: none !important; }
+
 		@media (max-width: 480px) {
 			.container { padding: 0 16px; }
 			.page-content { padding: 24px 0 32px; }
@@ -296,7 +298,7 @@
 
 			<div class="demo-note">
 				<i class="fas fa-flask" aria-hidden="true"></i>
-				<span>درگاه فرضی است؛ نتیجهٔ پرداخت را خودتان انتخاب کنید.</span>
+				<span id="gatewayMessage" role="status">درگاه فرضی است؛ نتیجهٔ پرداخت را خودتان انتخاب کنید.</span>
 			</div>
 
 			<div class="summary">
@@ -317,18 +319,12 @@
 				</div>
 
 				<div class="gateway-actions" id="gatewayActions">
-					<a href="./P07-payment-success.html">
-
-						<button type="submit" class="btn btn-success" data-result="success">
-							<i class="fas fa-circle-check" aria-hidden="true"></i> پرداخت موفق
-						</button>
-					</a>
-					<a href="./P07-payment-failure.html">
-
-						<button type="submit" class="btn btn-fail" data-result="failure">
-							<i class="fas fa-circle-xmark" aria-hidden="true"></i> پرداخت ناموفق
-						</button>
-					</a>
+					<button type="submit" class="btn btn-success" data-result="success">
+						<i class="fas fa-circle-check" aria-hidden="true"></i> پرداخت موفق
+					</button>
+					<button type="submit" class="btn btn-fail" data-result="failure">
+						<i class="fas fa-circle-xmark" aria-hidden="true"></i> پرداخت ناموفق
+					</button>
 				</div>
 			</form>
 
@@ -339,7 +335,7 @@
 
 			<div class="back-link">
 				<a class="btn btn-ghost" id="backLink" href="P02-doctor-details.html">
-					<i class="fas fa-arrow-right" aria-hidden="true"></i> بازگشت به صفحهٔ پزشک
+					<i class="fas fa-arrow-right" aria-hidden="true"></i> <span>بازگشت به صفحهٔ پزشک</span>
 				</a>
 			</div>
 		</section>
@@ -350,51 +346,89 @@
 	<script src="../js/payment-flow.js"></script>
 	<script>
 		(function () {
-			const { reservation, demo } = PaymentFlow.getReservation();
-			const info = PaymentFlow.describe(reservation);
-
-			PaymentFlow.fill('summaryDoctor', info.doctorName);
-			PaymentFlow.fill('summaryTime', `${info.dateText}، ساعت ${info.timeText}`);
-			PaymentFlow.fill('summaryReservation', reservation.id);
-			PaymentFlow.fill('summaryAmount', info.amountText);
-			document.getElementById('backLink').href = 'P02-doctor-details.html?id=' + encodeURIComponent(reservation.doctorId);
-
+			const { reservation, demo } = PaymentFlow.getReservation(true);
 			const form = document.getElementById('gatewayForm');
-			const actions = document.getElementById('gatewayActions');
+			const back = document.getElementById('backLink');
 			const processing = document.getElementById('processing');
+			const buttons = form.querySelectorAll('button');
 			let submitted = false;
 
-			form.addEventListener('submit', e => {
-				e.preventDefault();
-				if (submitted) return;
+			if (reservation || demo) PaymentFlow.fillReceipt('summary', reservation);
+			back.href = PaymentFlow.doctorUrl(reservation, true);
+			if (!reservation) back.querySelector('span').textContent = 'جست‌وجوی پزشکان';
+
+			function showInactive(record) {
+				if (record.status === ReservationSystem.STATES.CONFIRMED) {
+					location.replace(PaymentFlow.url(PaymentFlow.SUCCESS, record));
+					return;
+				}
+				const expired = record.status === ReservationSystem.STATES.EXPIRED ||
+					(ReservationSystem.isPaymentPending(record) && Date.parse(record.expiresAt) <= Date.now());
+				if (expired && ReservationSystem.isPaymentPending(record)) ReservationSystem.checkExpiration(record.id);
+				location.replace(PaymentFlow.url(PaymentFlow.FAILURE, record, expired ? 'expired' : 'unavailable'));
+			}
+
+			if (!reservation && !demo) {
+				form.hidden = true;
+				document.querySelector('.summary').hidden = true;
+				PaymentFlow.fill('gatewayMessage', 'رزرو پیدا نشد. زمان ویزیت را از صفحهٔ پزشک انتخاب کنید.');
+				return;
+			}
+			if (reservation && !PaymentFlow.canPay(reservation)) {
+				showInactive(reservation);
+				return;
+			}
+
+			form.addEventListener('submit', event => {
+				event.preventDefault();
+				const result = event.submitter?.dataset.result;
+				if (submitted || (result !== 'success' && result !== 'failure')) return;
 				submitted = true;
-
-				const success = e.submitter ? e.submitter.dataset.result === 'success' : true;
-				actions.querySelectorAll('button').forEach(btn => { btn.disabled = true; });
+				buttons.forEach(button => { button.disabled = true; });
 				processing.classList.add('active');
-				document.getElementById('processingText').textContent = success
-					? 'پرداخت با موفقیت انجام شد؛ در حال ثبت نوبت…'
-					: 'پرداخت تأیید نشد؛ در حال بازگشت…';
+				PaymentFlow.fill('processingText', 'در حال ثبت نتیجهٔ پرداخت آزمایشی…');
 
-				// در محیط واقعی این بخش وب‌سرویس درگاه است.
 				setTimeout(() => {
-					const next = PaymentFlow.url(success ? PaymentFlow.SUCCESS : PaymentFlow.FAILURE, reservation.id);
-					if (demo) return (location.href = next);
-
-					if (success) {
-						const initiated = ReservationSystem.initiatePayment(reservation.id);
-						const confirmed = initiated.success && ReservationSystem.confirmPayment(reservation.id, PaymentFlow.createTransactionId());
-						if (!confirmed) {
-							return (location.href = PaymentFlow.url(PaymentFlow.FAILURE, reservation.id) + '&reason=expired');
+					try {
+						const destination = result === 'success' ? PaymentFlow.SUCCESS : PaymentFlow.FAILURE;
+						if (demo) {
+							location.replace(PaymentFlow.url(destination, null));
+							return;
 						}
-					} else {
-						ReservationSystem.failPayment(reservation.id, 'تراکنش توسط کاربر رد شد');
+
+						const { reservation: current } = PaymentFlow.getReservation();
+						if (!current) throw new Error('Reservation unavailable');
+						if (!PaymentFlow.canPay(current)) {
+							showInactive(current);
+							return;
+						}
+
+						const initiated = ReservationSystem.initiatePayment(current.id);
+						if (!initiated.success) {
+							showInactive(ReservationSystem.getReservation(current.id) || current);
+							return;
+						}
+
+						const payment = result === 'success'
+							? ReservationSystem.confirmPayment(current.id, 'TRX-' + current.id.slice(4))
+							: ReservationSystem.failPayment(current.id, 'تراکنش آزمایشی رد شد');
+						if (!payment.success) {
+							if (payment.error === 'EXPIRED') {
+								location.replace(PaymentFlow.url(PaymentFlow.FAILURE, current, 'expired'));
+								return;
+							}
+							throw new Error('Could not save payment result');
+						}
+						location.replace(PaymentFlow.url(destination, current));
+					} catch {
+						processing.classList.remove('active');
+						PaymentFlow.fill('gatewayMessage', 'ثبت نتیجه ممکن نشد. دوباره تلاش کنید یا به صفحهٔ پزشک برگردید.');
+						buttons.forEach(button => { button.disabled = false; });
+						submitted = false;
 					}
-					location.href = next;
-				}, 1200);
+				}, 600);
 			});
 		})();
 	</script>
-	<script src="../js/site-header.js"></script>
 </body>
 </html>
