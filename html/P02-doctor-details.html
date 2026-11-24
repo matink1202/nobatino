@@ -1244,77 +1244,9 @@
 		let selectedTime = null;
 		let currentReservation = null;
 
-		const PersianDate = {
-			toPersian(gregorianDate) {
-				const gy = gregorianDate.getFullYear();
-				const gm = gregorianDate.getMonth() + 1;
-				const gd = gregorianDate.getDate();
-
-				const isLeap = (year) => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-				const daysInMonth = [31, (isLeap(gy) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-				let dayOfYear = gd;
-				for (let i = 0; i < gm - 1; i++) dayOfYear += daysInMonth[i];
-
-				const baseDate = new Date(1600, 0, 1);
-				const currentDate = new Date(gy, gm - 1, gd);
-				const daysSince1600 = Math.floor((currentDate - baseDate) / (24 * 60 * 60 * 1000));
-
-				const isJalaliLeap = (y) => (y % 33 === 1 || y % 33 === 5 || y % 33 === 9 || y % 33 === 13 || y % 33 === 17 || y % 33 === 22 || y % 33 === 26 || y % 33 === 30);
-
-				let jy = 979;
-				let daysLeft = daysSince1600;
-
-				while (daysLeft >= (isJalaliLeap(jy) ? 366 : 365)) {
-					daysLeft -= (isJalaliLeap(jy) ? 366 : 365);
-					jy++;
-				}
-
-				let jm, jd;
-				const dayInYear = daysLeft + 1;
-
-				if (dayInYear <= 186) {
-					jm = Math.ceil(dayInYear / 31);
-					jd = dayInYear - ((jm - 1) * 31);
-				} else {
-					jm = Math.ceil((dayInYear - 186) / 30) + 6;
-					jd = (dayInYear - 186) - ((jm - 7) * 30);
-				}
-
-				return { year: jy, month: jm, day: jd, dayOfWeek: gregorianDate.getDay() };
-			},
-
-			fromPersian(jy, jm, jd) {
-				const isJalaliLeap = (y) => (y % 33 === 1 || y % 33 === 5 || y % 33 === 9 || y % 33 === 13 || y % 33 === 17 || y % 33 === 22 || y % 33 === 26 || y % 33 === 30);
-
-				let dayOfYear = 0;
-				for (let m = 1; m < jm; m++) {
-					dayOfYear += (m <= 6 ? 31 : 30);
-				}
-				dayOfYear += jd - 1;
-
-				let daysFromBase = 0;
-				for (let y = 979; y < jy; y++) {
-					daysFromBase += (isJalaliLeap(y) ? 366 : 365);
-				}
-
-				daysFromBase += dayOfYear;
-
-				const baseDate = new Date(1600, 0, 1);
-				const result = new Date(baseDate.getTime() + daysFromBase * 24 * 60 * 60 * 1000);
-
-				return result;
-			}
-		};
-
 		function formatPersianNumber(num) {
 			const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 			return String(num).replace(/\d/g, d => persianDigits[d]);
-		}
-
-		function getDayName(dayOfWeek) {
-			const days = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
-			return days[dayOfWeek];
 		}
 
 		function getMonthName(month) {
@@ -1458,29 +1390,15 @@
 		}
 
 		function selectTodayIfAvailable() {
-			const today = PersianDate.toPersian(new Date());
-			const todayStr = `${String(today.year).padStart(4, '0')}-${String(today.month).padStart(2, '0')}-${String(today.day).padStart(2, '0')}`;
-
-			const persianDate = PersianDate.toPersian(currentCalendarDate);
-
-			if (today.year === persianDate.year && today.month === persianDate.month) {
-				const firstDay = PersianDate.fromPersian(today.year, today.month, 1);
-				const gregorianDayOfWeek = firstDay.getDay();
-				const firstDayOfWeek = (gregorianDayOfWeek + 1) % 7;
-				const dayOfWeek = (firstDayOfWeek + today.day - 1) % 7;
-				const isFriday = dayOfWeek === 6;
-
-				if (!isFriday) {
-					selectDate(todayStr);
-				}
-			}
+			const today = new Date();
+			if (today.getDay() !== 5) selectDate(dateToString(today));
 		}
 
 		function renderCalendar() {
 			const grid = document.getElementById('calendarGrid');
 			grid.innerHTML = '';
 
-			const persianDate = PersianDate.toPersian(currentCalendarDate);
+			const persianDate = getPersianDateParts(currentCalendarDate);
 			document.getElementById('monthTitle').textContent = `${getMonthName(persianDate.month)} ${formatPersianNumber(persianDate.year)}`;
 
 			const weekdays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
@@ -1491,27 +1409,28 @@
 				grid.appendChild(header);
 			});
 
-			const firstDay = PersianDate.fromPersian(persianDate.year, persianDate.month, 1);
+			const firstDay = getPersianMonthStart(currentCalendarDate);
 			const gregorianDayOfWeek = firstDay.getDay();
 			const firstDayOfWeek = (gregorianDayOfWeek + 1) % 7;
-			const daysInMonth = persianDate.month <= 6 ? 31 : 30;
+			const daysInMonth = getPersianMonthLength(firstDay);
 
 			for (let i = 0; i < firstDayOfWeek; i++) {
 				grid.appendChild(document.createElement('div'));
 			}
 
-			const today = PersianDate.toPersian(new Date());
+			const today = dateToString(new Date());
 			for (let day = 1; day <= daysInMonth; day++) {
 				const btn = document.createElement('button');
 				btn.className = 'date-btn';
 				btn.textContent = formatPersianNumber(day);
 
-				const dateStr = `${String(persianDate.year).padStart(4, '0')}-${String(persianDate.month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+				const date = new Date(firstDay);
+				date.setDate(date.getDate() + day - 1);
+				const dateStr = dateToString(date);
 				btn.dataset.date = dateStr;
 
-				const dayOfWeek = (firstDayOfWeek + day - 1) % 7;
-				const isFriday = dayOfWeek === 6;
-				const isPast = (persianDate.year < today.year) || (persianDate.year === today.year && persianDate.month < today.month) || (persianDate.year === today.year && persianDate.month === today.month && day < today.day);
+				const isFriday = date.getDay() === 5;
+				const isPast = dateStr < today;
 
 				if (isPast || isFriday) {
 					btn.classList.add('disabled');
@@ -1529,12 +1448,14 @@
 		}
 
 		function previousMonth() {
-			currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+			currentCalendarDate = getPersianMonthStart(currentCalendarDate);
+			currentCalendarDate.setDate(currentCalendarDate.getDate() - 1);
 			renderCalendar();
 		}
 
 		function nextMonth() {
-			currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+			currentCalendarDate = getPersianMonthStart(currentCalendarDate);
+			currentCalendarDate.setDate(currentCalendarDate.getDate() + getPersianMonthLength(currentCalendarDate));
 			renderCalendar();
 		}
 
@@ -1547,33 +1468,22 @@
 		}
 
 		function showTimeSlots(dateStr) {
-			const slots = getAvailableSlots(currentDoctorId, dateStr);
+			const date = new Date(dateStr + 'T00:00:00');
+			const slots = getPublicAppointmentSlots(currentDoctorId, date);
 			const grid = document.getElementById('timeSlotsGrid');
 			const container = document.getElementById('timeSlotsSection');
 			const display = document.getElementById('selectedDateDisplay');
 
-			const [year, month, day] = dateStr.split('-').map(Number);
-			const dateObj = new Date(year, month - 1, day);
-			const dayOfWeek = (dateObj.getDay() + 1) % 7;
-			const dayName = getDayName(dayOfWeek);
-			display.textContent = `زمان‌های آزادِ ${dayName}، ${day} ${getMonthName(month)} ${formatPersianNumber(year)}`;
+			display.textContent = `زمان‌های آزادِ ${formatPersianDate(date)}`;
 
 			grid.innerHTML = '';
-			const reservations = ReservationSystem.getReservationsForSlot(currentDoctorId, dateStr);
-
 			slots.forEach(slot => {
 				const btn = document.createElement('button');
 				btn.className = 'time-slot';
 				btn.dataset.time = slot.time;
 				btn.textContent = slot.displayTime;
 
-				const isReserved = reservations.some(res =>
-					res.startTime === slot.time &&
-					(res.status === ReservationSystem.STATES.TEMPORARY_HOLD ||
-					 res.status === ReservationSystem.STATES.CONFIRMED)
-				);
-
-				if (isReserved) {
+				if (!slot.canBook) {
 					btn.classList.add('disabled');
 					btn.disabled = true;
 				} else {
@@ -1599,14 +1509,15 @@
 				document.getElementById('bookingSummary').classList.add('active');
 				document.getElementById('reserveBtn').style.display = 'flex';
 
-				const dateStr = new Date(selectedDate).toLocaleDateString('fa-IR');
+				const dateStr = new Date(selectedDate + 'T00:00:00').toLocaleDateString('fa-IR');
 				const timeStr = formatTime24Hour(selectedTime);
 
 				document.getElementById('summaryDoctorName').textContent = currentDoctor.name;
 				document.getElementById('summarySpecialty').textContent = currentDoctor.specialty;
 				document.getElementById('summaryDate').textContent = dateStr;
 				document.getElementById('summaryTime').textContent = timeStr;
-				document.getElementById('summaryDuration').textContent = formatPersianNumber(currentDoctor.appointmentDuration) + ' دقیقه';
+				const duration = appointmentAvailability[currentDoctorId]?.appointmentDuration;
+				document.getElementById('summaryDuration').textContent = duration ? formatPersianNumber(duration) + ' دقیقه' : '—';
 				document.getElementById('summaryFee').textContent = currentDoctor.consultationFee;
 			} else {
 				document.getElementById('bookingSummary').classList.remove('active');
@@ -1618,13 +1529,21 @@
 			if (!selectedDate || !selectedTime) return;
 
 			const startTime = selectedTime;
-			const startDate = new Date(selectedDate + 'T' + startTime + ':00');
-			const endDate = new Date(startDate.getTime() + currentDoctor.appointmentDuration * 60 * 1000);
-			const endTime = timeToString(endDate);
+			const date = new Date(selectedDate + 'T00:00:00');
+			const slot = getPublicAppointmentSlots(currentDoctorId, date)
+				.find(candidate => candidate.time === startTime && candidate.canBook);
+			if (!slot) {
+				selectedTime = null;
+				showTimeSlots(selectedDate);
+				updateUI();
+				showError('این زمان دیگر در دسترس نیست. لطفاً زمان دیگری انتخاب کنید.');
+				return;
+			}
+			const endTime = slot.endDateTime.slice(11, 16);
 
 			const result = ReservationSystem.createTemporaryHold(
 				currentDoctorId,
-				selectedDate,
+				appointmentDateKey(date),
 				startTime,
 				endTime,
 				currentDoctor.consultationFeeNumeric
@@ -1730,12 +1649,6 @@
 			const hourStr = String(hours).padStart(2, '0');
 			const minuteStr = String(minutes).padStart(2, '0');
 			return `${formatPersianNumber(hourStr)}:${formatPersianNumber(minuteStr)}`;
-		}
-
-		function timeToString(date) {
-			const hours = String(date.getHours()).padStart(2, '0');
-			const minutes = String(date.getMinutes()).padStart(2, '0');
-			return `${hours}:${minutes}`;
 		}
 
 		function showError(message) {

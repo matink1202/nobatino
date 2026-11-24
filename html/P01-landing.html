@@ -921,6 +921,7 @@
 		.cta-section .btn {
 			background: var(--white);
 			color: var(--primary);
+			text-decoration: none;
 		}
 
 		.cta-section .btn:hover {
@@ -1123,7 +1124,7 @@
 							</div>
 
 							<div class="search-btn-container">
-								<button class="btn btn-primary search-btn">جست‌وجو</button>
+								<button class="btn btn-primary search-btn" type="button">جست‌وجو</button>
 							</div>
 						</div>
 					</div>
@@ -1373,7 +1374,7 @@
 		<section class="cta-section">
 			<h2>بیشتر منتظر نباش!</h2>
 			<p>امروز پزشک مورد نظرت رو پیدا کن و نوبت بگیر</p>
-			<button class="btn">جست‌وجو و رزرو</button>
+			<a class="btn" href="P02-search.html">جست‌وجو و رزرو</a>
 		</section>
 	</div>
 
@@ -1481,20 +1482,16 @@
 			toggle.classList.toggle('active');
 		}
 
-		// Search functionality - ONLY for search button, not doctor buttons
-		const searchBtn = document.querySelector('.search-btn');
-		if (searchBtn) {
-			searchBtn.addEventListener('click', () => {
-				const specialty = document.getElementById('specialty').value;
-				const city = document.getElementById('city').value;
-				if (specialty && city) {
-					console.log(`Searching for ${specialty} in ${city}`);
-					alert(`جستجو برای ${specialty} در ${city}`);
-				} else {
-					alert('لطفاً تخصص و شهر را انتخاب کنید');
-				}
-			});
-		}
+		document.querySelector('.search-btn').addEventListener('click', () => {
+			const specialty = document.getElementById('specialty').value;
+			const city = document.getElementById('city').value;
+			const selectedSpecialty = [...document.querySelectorAll('#specialty-dropdown .dropdown-item')]
+				.find(item => item.dataset.value === specialty);
+			const destination = new URL('P02-search.html', location.href);
+			if (specialty) destination.searchParams.set('specialty', selectedSpecialty?.textContent.trim() || specialty);
+			if (city) destination.searchParams.set('city', city);
+			location.assign(destination.href);
+		});
 
 		// Doctor booking - now handled by links in P02-doctor-details.html
 		// No action needed here

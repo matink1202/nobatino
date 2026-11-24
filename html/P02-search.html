@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>جست‌وجوی پزشکان | نوبتینو</title>
+	<link rel="icon" type="image/png" href="../images/Logo.png">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../css/P02-search.css">
+	<link rel="stylesheet" href="../css/P03-account.css">
+	<script src="../js/P03-session.js" defer></script>
+	<script src="../js/doctors-data.js" defer></script>
+	<script src="../js/appointment-availability.js" defer></script>
+	<script src="../js/reservation-system.js" defer></script>
+	<script src="../js/P02-search.js" defer></script>
+</head>
+<body>
+	<header class="site-header">
+		<div class="page-shell header-content">
+			<a class="brand" href="P01-landing.html">
+				<img src="../images/Logo.png" alt="نوبتینو" width="112" height="42">
+			</a>
+			<div class="p03-header-tools">
+				<a class="button button-secondary" href="P01-landing.html">صفحهٔ اصلی</a>
+				<a class="button button-primary" href="P03-auth.html" data-p03-auth="login" data-p03-guest>ورود</a>
+				<div class="p03-account" data-p03-account hidden></div>
+			</div>
+		</div>
+	</header>
+
+	<main class="page-shell main-content">
+		<h1>جست‌وجوی پزشکان</h1>
+		<form class="filters" id="doctor-filters" aria-label="فیلتر پزشکان">
+			<div class="filter-field">
+				<label for="doctor-name">نام پزشک</label>
+				<input type="search" id="doctor-name" name="q" placeholder="مثلاً علی‌پور" autocomplete="off" maxlength="100">
+			</div>
+			<div class="filter-field">
+				<label for="doctor-specialty">تخصص</label>
+				<select id="doctor-specialty" name="specialty">
+					<option value="">همهٔ تخصص‌ها</option>
+				</select>
+			</div>
+			<div class="filter-field">
+				<label for="doctor-city">شهر</label>
+				<select id="doctor-city" name="city">
+					<option value="">همهٔ شهرها</option>
+				</select>
+			</div>
+			<div class="filter-field">
+				<label for="doctor-rating">حداقل امتیاز</label>
+				<select id="doctor-rating" name="minRating">
+					<option value="">همهٔ امتیازها</option>
+					<option value="4">۴ از ۵ و بالاتر</option>
+					<option value="4.5">۴٫۵ از ۵ و بالاتر</option>
+					<option value="4.8">۴٫۸ از ۵ و بالاتر</option>
+					<option value="4.9">۴٫۹ از ۵ و بالاتر</option>
+				</select>
+			</div>
+			<details class="advanced-filters" id="advanced-filters">
+				<summary class="button button-secondary">
+					فیلترهای بیشتر <span id="advanced-count" class="advanced-count" hidden></span>
+				</summary>
+				<div class="advanced-fields">
+					<div class="filter-field">
+						<label for="doctor-availability">زمان نوبت آزاد</label>
+						<select id="doctor-availability" name="availability">
+							<option value="">همهٔ زمان‌ها</option>
+							<option value="today">امروز</option>
+							<option value="tomorrow">فردا</option>
+							<option value="week">۷ روز آینده</option>
+						</select>
+					</div>
+					<div class="filter-field">
+						<label for="doctor-fee">حداکثر هزینهٔ ویزیت</label>
+						<select id="doctor-fee" name="maxFee">
+							<option value="">همهٔ قیمت‌ها</option>
+							<option value="200000">تا ۲۰۰٬۰۰۰ تومان</option>
+							<option value="250000">تا ۲۵۰٬۰۰۰ تومان</option>
+							<option value="300000">تا ۳۰۰٬۰۰۰ تومان</option>
+							<option value="400000">تا ۴۰۰٬۰۰۰ تومان</option>
+							<option value="500000">تا ۵۰۰٬۰۰۰ تومان</option>
+						</select>
+					</div>
+					<div class="filter-field">
+						<label for="doctor-service">خدمت موردنیاز</label>
+						<input type="search" id="doctor-service" name="service" placeholder="مثلاً نوار قلب" autocomplete="off" maxlength="100">
+					</div>
+				</div>
+			</details>
+		</form>
+
+		<section class="results" aria-labelledby="results-title">
+			<div class="results-header">
+				<div>
+					<h2 id="results-title">پزشکان</h2>
+					<p id="results-count" class="results-count" role="status"></p>
+				</div>
+				<div class="results-actions">
+					<div class="filter-field sort-field">
+						<label for="doctor-sort">مرتب‌سازی</label>
+						<select id="doctor-sort" name="sort">
+							<option value="">پیش‌فرض</option>
+							<option value="soonest">نزدیک‌ترین نوبت</option>
+							<option value="fee">کمترین هزینه</option>
+							<option value="rating">بیشترین امتیاز</option>
+						</select>
+					</div>
+					<button class="button button-secondary" id="clear-filters" type="button" hidden>پاک کردن فیلترها</button>
+				</div>
+			</div>
+			<p class="results-message" id="results-message" hidden></p>
+			<ul class="doctors-grid" id="doctor-list"></ul>
+			<noscript><p class="results-message">برای نمایش پزشکان، JavaScript را در مرورگر فعال کنید.</p></noscript>
+		</section>
+
+		<template id="doctor-card">
+			<li>
+				<article class="doctor-card">
+					<div class="doctor-photo" aria-hidden="true">
+						<span class="doctor-initial"></span>
+						<img alt="" loading="lazy" hidden>
+					</div>
+					<div class="doctor-info">
+						<h3 class="doctor-name"></h3>
+						<p class="doctor-specialty"></p>
+						<div class="doctor-meta">
+							<span class="doctor-city"></span>
+							<span class="doctor-rating"><span aria-hidden="true">★</span> <span class="doctor-rating-text"></span></span>
+						</div>
+						<dl class="doctor-facts">
+							<div><dt>هزینهٔ ویزیت</dt><dd class="doctor-fee"></dd></div>
+							<div><dt>نزدیک‌ترین نوبت آزاد</dt><dd class="doctor-next-slot"></dd></div>
+						</dl>
+						<a class="button button-primary doctor-link">مشاهدهٔ پزشک</a>
+					</div>
+				</article>
+			</li>
+		</template>
+	</main>
+</body>
+</html>
