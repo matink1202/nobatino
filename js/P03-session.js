@@ -7,13 +7,14 @@
   const root = new URL('../', document.currentScript.src);
   const pages = {
     home: new URL('html/P01-landing.html', root),
+    search: new URL('html/P02-search.html', root),
     doctor: new URL('html/P02-doctor-details.html', root),
     auth: new URL('html/P03-auth.html', root),
     panel: new URL('html/P04-user-panel.html', root),
     staff: new URL('html/P05-doctor-panel.html', root)
   };
   const allowedPaths = new Set([root.pathname, new URL('index.html', root).pathname,
-    pages.home.pathname, pages.doctor.pathname, pages.panel.pathname, pages.staff.pathname]);
+    pages.home.pathname, pages.search.pathname, pages.doctor.pathname, pages.panel.pathname, pages.staff.pathname]);
   const route = (url) => url.protocol === 'file:' ? url.href : url.pathname + url.search + url.hash;
   const fa = (number) => number.replace(/\d/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[digit]);
   const valid = (number) => typeof number === 'string' && /^09\d{9}$/.test(number)

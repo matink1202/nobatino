@@ -129,16 +129,20 @@ const ReservationSystem = {
 				res.appointmentDate === appointmentDate &&
 				res.startTime === startTime) {
 
-				// Check if still active (not expired/cancelled/completed)
-				if (res.status === this.STATES.TEMPORARY_HOLD ||
-					res.status === this.STATES.AWAITING_PAYMENT ||
-					res.status === this.STATES.CONFIRMED) {
-					return res;
-				}
+				if (this.blocksSlot(res)) return res;
 			}
 		}
 
 		return null;
+	},
+
+	blocksSlot(reservation, now = Date.now()) {
+		if (reservation.status === this.STATES.CONFIRMED) return true;
+		if (reservation.status !== this.STATES.TEMPORARY_HOLD &&
+			reservation.status !== this.STATES.AWAITING_PAYMENT) return false;
+
+		const expiresAt = Date.parse(reservation.expiresAt);
+		return !Number.isFinite(expiresAt) || expiresAt > now;
 	},
 
 	/**

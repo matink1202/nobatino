@@ -142,21 +142,110 @@ const appointmentAvailability = {
 	}
 };
 
+// Reproduce the date keys already stored by the booking prototype.
+function legacyAppointmentDateParts(gregorianDate) {
+	const gy = gregorianDate.getFullYear();
+	const gm = gregorianDate.getMonth() + 1;
+	const gd = gregorianDate.getDate();
+
+	const baseDate = new Date(1600, 0, 1);
+	const currentDate = new Date(gy, gm - 1, gd);
+	const daysSince1600 = Math.floor((currentDate - baseDate) / (24 * 60 * 60 * 1000));
+
+	const isJalaliLeap = (y) => (y % 33 === 1 || y % 33 === 5 || y % 33 === 9 || y % 33 === 13 || y % 33 === 17 || y % 33 === 22 || y % 33 === 26 || y % 33 === 30);
+
+	let jy = 979;
+	let daysLeft = daysSince1600;
+
+	while (daysLeft >= (isJalaliLeap(jy) ? 366 : 365)) {
+		daysLeft -= (isJalaliLeap(jy) ? 366 : 365);
+		jy++;
+	}
+
+	let jm, jd;
+	const dayInYear = daysLeft + 1;
+
+	if (dayInYear <= 186) {
+		jm = Math.ceil(dayInYear / 31);
+		jd = dayInYear - ((jm - 1) * 31);
+	} else {
+		jm = Math.ceil((dayInYear - 186) / 30) + 6;
+		jd = (dayInYear - 186) - ((jm - 7) * 30);
+	}
+
+	return { year: jy, month: jm, day: jd };
+}
+
+const persianCalendar = new Intl.DateTimeFormat('en-US-u-ca-persian-nu-latn', {
+	year: 'numeric', month: 'numeric', day: 'numeric'
+});
+
+function getPersianDateParts(date) {
+	const parts = persianCalendar.formatToParts(date);
+	return Object.fromEntries(parts
+		.filter(part => ['year', 'month', 'day'].includes(part.type))
+		.map(part => [part.type, Number(part.value)]));
+}
+
+function getPersianMonthStart(date) {
+	const first = new Date(date);
+	first.setDate(first.getDate() - getPersianDateParts(date).day + 1);
+	return first;
+}
+
+function getPersianMonthLength(first) {
+	const { month } = getPersianDateParts(first);
+	if (month <= 6) return 31;
+	if (month < 12) return 30;
+	const last = new Date(first);
+	last.setDate(last.getDate() + 29);
+	return getPersianDateParts(last).month === 12 ? 30 : 29;
+}
+
+function formatAppointmentDateKey({ year, month, day }) {
+	return [String(year).padStart(4, '0'), String(month).padStart(2, '0'), String(day).padStart(2, '0')].join('-');
+}
+
+/**
+ * The public booking preview stores dates using its existing calendar key.
+ * Keep that key for reservations and use the actual day to choose the weekly schedule.
+ */
+function appointmentDateKey(date) {
+	return formatAppointmentDateKey(legacyAppointmentDateParts(date));
+}
+
+function getPublicAppointmentSlots(doctorId, date, now = new Date()) {
+	const reservations = ReservationSystem.getReservationsForSlot(doctorId, appointmentDateKey(date));
+	const blockedTimes = new Set(reservations
+		.filter(reservation => ReservationSystem.blocksSlot(reservation, now.getTime()))
+		.map(reservation => reservation.startTime));
+
+	return getAvailableSlots(doctorId, formatAppointmentDateKey(getPersianDateParts(date)), date).map(slot => {
+		const [hours, minutes] = slot.time.split(':').map(Number);
+		const start = new Date(date);
+		const startsAt = start.setHours(hours, minutes, 0, 0);
+
+		return { ...slot, startsAt, canBook: startsAt >= now.getTime() && !blockedTimes.has(slot.time) };
+	});
+}
+
 /**
  * Generate available time slots for a doctor on a specific date
  *
  * @param {string} doctorId - Doctor ID
- * @param {string} dateStr - Date string (YYYY-MM-DD)
+ * @param {string} dateStr - Date lookup key (YYYY-MM-DD)
+ * @param {Date} [calendarDate] - Actual date when the lookup key uses the public calendar
  * @returns {Array} Array of available time slots
  *
  * API Equivalent: GET /api/doctors/:doctorId/slots?date=YYYY-MM-DD
  */
-function getAvailableSlots(doctorId, dateStr) {
+function getAvailableSlots(doctorId, dateStr, calendarDate) {
 	const availability = appointmentAvailability[doctorId];
 	if (!availability) return [];
 
-	const date = new Date(dateStr + 'T00:00:00');
-	const dayOfWeek = getDayOfWeek(date);
+	const dayOfWeek = calendarDate
+		? ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][calendarDate.getDay()]
+		: getDayOfWeek(new Date(dateStr + 'T00:00:00'));
 
 	// Check if holiday
 	if (availability.holidays.includes(dateStr)) {
