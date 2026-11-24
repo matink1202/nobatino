@@ -4,7 +4,7 @@
   align-items: center;
   gap: 8px;
 }
-[data-p03-account][hidden], [data-p03-guest][hidden], .p03-account-menu[hidden] { display: none !important; }
+[data-p03-account][hidden], [data-p03-guest][hidden], [data-account-panel][hidden], .p03-account-menu[hidden] { display: none !important; }
 .p03-account {
   position: relative;
   flex: none;

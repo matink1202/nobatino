@@ -14,8 +14,11 @@ const params = new URLSearchParams(location.search);
 const returnTo = session.safeReturn(params.get('next') || document.referrer);
 const LOGIN = session.authUrl('login', returnTo);
 const REGISTER = session.authUrl('register', returnTo);
+const DOCTOR_REGISTER = session.authUrl('register-doctor', returnTo);
 const RESET = session.authUrl('reset', returnTo);
-let mode = ['register', 'reset'].includes(params.get('mode')) ? params.get('mode') : 'login';
+let mode = ['register', 'register-doctor', 'reset'].includes(params.get('mode')) ? params.get('mode') : 'login';
+const doctorRegistration = mode === 'register-doctor';
+const isRegistration = () => mode === 'register' || doctorRegistration;
 let phone = '';
 let step = 0; // Phone, confirmation, password.
 let timer;
@@ -41,12 +44,12 @@ const fromHex = (hex) => Uint8Array.from(hex.match(/../g), (pair) => parseInt(pa
 
 function finishSignIn(number) {
   session.signIn(number);
-  location.replace(returnTo);
+  location.replace(session.accountDestination(returnTo));
 }
 
 function returnIfSignedIn() {
   if (mode === 'reset' || !session.current()) return false;
-  location.replace(returnTo);
+  location.replace(session.accountDestination(returnTo));
   return true;
 }
 window.addEventListener('pageshow', (event) => { if (event.persisted) returnIfSignedIn(); });
@@ -102,12 +105,23 @@ function clearError() {
 
 const errorBox = () => '<div id="form-error" class="notice notice-error" role="alert" hidden>' + icon('info') + '<span></span></div>';
 const primary = (label) => '<button class="primary" type="submit"><span>' + label + '</span>' + icon('arrow') + '</button>';
+const actionLink = (url, label, centered = false) => '<div class="flow-actions' +
+  (centered ? ' flow-actions-centered' : '') + '"><a class="link-action" href="' + url + '">' + label + '</a></div>';
+const doctorRegistrationLink = () => mode === 'register' ? actionLink(DOCTOR_REGISTER, 'ثبت‌نام پزشکان', true) : '';
 const note = (lead, url, label) => '<p class="route-note">' + lead + ' <a class="link-action" href="' + url + '">' + label + '</a></p>';
 const support = (text) => '<div class="notice notice-success" role="status">' + icon('check') + '<p>' + text + '</p></div>';
 const mobileField = () =>
   '<div class="field"><label for="mobile">شماره موبایل</label><div class="field-box">' + icon('phone', 'field-icon') +
   '<input id="mobile" name="username" type="tel" dir="ltr" inputmode="tel" autocomplete="' +
   (mode === 'login' ? 'username' : 'tel-national') + '" placeholder="۰۹۱۲۳۴۵۶۷۸۹" maxlength="24" required></div></div>';
+const doctorField = (id, label, symbol, attributes) =>
+  '<div class="field"><label for="' + id + '">' + label + '</label><div class="field-box">' + icon(symbol, 'field-icon') +
+  '<input id="' + id + '" name="' + id + '" type="text" ' + attributes + ' required></div></div>';
+const doctorFields = () =>
+  doctorField('firstName', 'نام', 'user', 'dir="auto" autocomplete="given-name" maxlength="80"') +
+  doctorField('lastName', 'نام خانوادگی', 'user', 'dir="auto" autocomplete="family-name" maxlength="80"') +
+  doctorField('nationalId', 'کد ملی', 'id-card', 'dir="ltr" inputmode="numeric" autocomplete="off" maxlength="10"') +
+  doctorField('medicalLicenseNumber', 'شماره پروانه پزشکی', 'id-card', 'dir="auto" autocomplete="off" maxlength="40"');
 const passwordField = (id, label, autocomplete, hint = false) =>
   '<div class="field"><label for="' + id + '">' + label + '</label><div class="field-box">' + icon('lock', 'field-icon') +
   '<input id="' + id + '" name="' + id + '" type="password" dir="auto" autocomplete="' + autocomplete + '"' +
@@ -154,7 +168,7 @@ function mount(body, actions, onSubmit) {
 function renderLogin(message) {
   setIntro('ورود به نوبتینو', 'با شماره موبایل و رمز عبور وارد حساب کاربری‌تان شوید.');
   const form = mount((message ? support(message) : '') + mobileField() + passwordField('password', 'رمز عبور', 'current-password'),
-    '<div class="flow-actions"><a class="link-action" href="' + RESET + '">رمز عبورم را فراموش کرده‌ام</a></div>' +
+    actionLink(RESET, 'رمز عبورم را فراموش کرده‌ام') +
     primary('ورود به حساب'), async (fields) => {
     const mobile = fields.elements.username;
     const password = fields.elements.password;
@@ -172,14 +186,14 @@ function renderLogin(message) {
 }
 
 function renderPhone() {
-  const registering = mode === 'register';
-  setIntro(registering ? 'ساخت حساب کاربری' : 'بازیابی رمز عبور',
+  const registering = isRegistration();
+  setIntro(doctorRegistration ? 'ثبت‌نام پزشکان' : registering ? 'ساخت حساب کاربری' : 'بازیابی رمز عبور',
     registering ? 'شماره موبایل‌تان را وارد کنید تا کد تأیید دریافت کنید.'
       : 'شماره موبایلی را وارد کنید که با آن ثبت‌نام کرده‌اید.');
   const demo = '<div class="notice">' + icon('flask') +
     '<div><p><strong>حالت آزمایشی</strong> · پیامک واقعی ارسال نمی‌شود.</p><p>شمارهٔ تست: <bdi dir="ltr">' + fa(DEMO_PHONE) + '</bdi></p>' +
     '<button class="link-action" type="button" id="use-demo">استفاده از شمارهٔ تست</button></div></div>';
-  const form = mount(mobileField() + demo, primary('دریافت کد تأیید'), (fields) => {
+  const form = mount(mobileField() + demo, primary('دریافت کد تأیید') + doctorRegistrationLink(), (fields) => {
     const mobile = fields.elements.username;
     const number = normalizePhone(mobile.value);
     if (!validPhone(number)) return showError('شماره موبایل را با ۰۹ و به‌صورت ۱۱ رقمی وارد کنید.', mobile);
@@ -207,7 +221,9 @@ function secondsText(ms) {
 }
 
 function renderCode() {
-  setIntro('تأیید شماره موبایل', 'کد شش رقمی را وارد کنید تا به مرحلهٔ تعیین رمز عبور بروید.');
+  setIntro('تأیید شماره موبایل', doctorRegistration
+    ? 'کد شش رقمی را وارد کنید تا اطلاعات پزشک و رمز عبور را ثبت کنید.'
+    : 'کد شش رقمی را وارد کنید تا به مرحلهٔ تعیین رمز عبور بروید.');
   const field = '<div class="field"><label for="code">کد تأیید</label><div class="field-box">' + icon('lock', 'field-icon') +
     '<input id="code" class="otp" name="code" type="text" dir="ltr" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></div></div>';
   const inbox = '<div class="notice">' + icon('flask') + '<div><p><strong>پیامک آزمایشی</strong> برای <bdi dir="ltr">' +
@@ -280,19 +296,35 @@ function renderCode() {
 }
 
 function renderPassword() {
-  const registering = mode === 'register';
-  setIntro(registering ? 'تعیین رمز عبور' : 'تعیین رمز عبور جدید',
-    registering ? 'برای ورودهای بعدی، یک رمز عبور برای حسابتان تعیین کنید.' : 'از این پس با رمز جدید وارد حساب شوید.');
-  mount(passwordField('password', 'رمز عبور', 'new-password', true) +
+  const registering = isRegistration();
+  setIntro(doctorRegistration ? 'اطلاعات پزشک و رمز عبور' : registering ? 'تعیین رمز عبور' : 'تعیین رمز عبور جدید',
+    doctorRegistration ? 'برای این پیش‌نمایش، اطلاعات آزمایشی وارد کنید و برای حسابتان رمز عبور تعیین کنید.'
+      : registering ? 'برای ورودهای بعدی، یک رمز عبور برای حسابتان تعیین کنید.' : 'از این پس با رمز جدید وارد حساب شوید.');
+  mount((doctorRegistration ? doctorFields() : '') + passwordField('password', 'رمز عبور', 'new-password', true) +
     passwordField('confirmation', 'تکرار رمز عبور', 'new-password'),
-    primary(registering ? 'ساخت حساب' : 'ذخیرهٔ رمز جدید'), async (fields) => {
+    primary(doctorRegistration ? 'ساخت حساب پزشک' : registering ? 'ساخت حساب' : 'ذخیرهٔ رمز جدید') +
+    doctorRegistrationLink(), async (fields) => {
     const password = fields.elements.password;
     const confirmation = fields.elements.confirmation;
-    if (!getCode()?.verifiedUntil || getCode().verifiedUntil <= Date.now()) {
+    if (!(getCode()?.verifiedUntil > Date.now())) {
       remove(sessionStorage, codeKey(mode, phone));
       step = 0;
       render(true);
       return showError('مهلت تعیین رمز تمام شد. دوباره شماره موبایل را تأیید کنید.');
+    }
+    let doctor;
+    if (doctorRegistration) {
+      const { firstName, lastName, nationalId, medicalLicenseNumber } = fields.elements;
+      const given = firstName.value.trim();
+      const family = lastName.value.trim();
+      const code = ascii(nationalId.value.trim());
+      const license = ascii(medicalLicenseNumber.value.trim());
+      if (!given) return showError('نام را وارد کنید.', firstName);
+      if (!family) return showError('نام خانوادگی را وارد کنید.', lastName);
+      if (!/^\d{10}$/.test(code)) return showError('کد ملی را به‌صورت ۱۰ رقمی وارد کنید.', nationalId);
+      if (!license) return showError('شماره پروانه پزشکی را وارد کنید.', medicalLicenseNumber);
+      doctor = { id: 'doctor-' + toHex(crypto.getRandomValues(new Uint8Array(16))), firstName: given,
+        lastName: family, nationalId: code, medicalLicenseNumber: license };
     }
     if (password.value.trim().length < MIN_PASSWORD) return showError('رمز عبور باید حداقل ۸ نویسه باشد.', password);
     if (password.value !== confirmation.value) return showError('تکرار رمز عبور با رمز واردشده یکی نیست.', confirmation);
@@ -302,7 +334,8 @@ function renderPassword() {
       if (registering && entry) return 'duplicate';
       if (!registering && !entry) return 'missing';
       const passwordDigest = await digest(password.value, salt);
-      write(localStorage, 'account:' + phone, { salt: toHex(salt), digest: passwordDigest });
+      write(localStorage, 'account:' + phone, { ...entry, salt: toHex(salt), digest: passwordDigest,
+        ...(doctor ? { role: 'doctor', doctor } : {}) });
       return 'saved';
     });
     remove(sessionStorage, codeKey(mode, phone));
@@ -326,6 +359,7 @@ function render(moveFocus = false, message) {
   window.clearInterval(timer);
   const multi = mode !== 'login';
   progress.hidden = !multi;
+  progress.lastElementChild.lastElementChild.textContent = doctorRegistration ? 'اطلاعات و رمز' : 'رمز عبور';
   $('#login-tab').href = LOGIN;
   $('#register-tab').href = REGISTER;
   $('#auth-back').href = returnTo;
@@ -349,7 +383,7 @@ function render(moveFocus = false, message) {
     if (step === 0) renderPhone();
     else if (step === 1) renderCode();
     else renderPassword();
-    flow.insertAdjacentHTML('beforeend', note(mode === 'register' ? 'قبلاً ثبت‌نام کرده‌اید؟' : 'رمزتان را به یاد آوردید؟',
+    flow.insertAdjacentHTML('beforeend', note(isRegistration() ? 'قبلاً ثبت‌نام کرده‌اید؟' : 'رمزتان را به یاد آوردید؟',
       LOGIN, 'به صفحهٔ ورود بروید'));
   }
   if (moveFocus) title.focus();

@@ -182,6 +182,7 @@ h1 { color: var(--navy); font-size: 32px; line-height: 1.45; font-weight: 800; }
 .show-password:hover { background: var(--soft-blue); color: var(--navy); }
 .hint { color: var(--muted); font-size: 13px; }
 .flow-actions, .resend-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.flow-actions-centered { justify-content: center; }
 .resend-row { justify-content: space-between; }
 .link-action {
   display: inline-flex;

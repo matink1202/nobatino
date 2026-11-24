@@ -54,6 +54,20 @@
     } catch { return null; }
   }
 
+  function currentDoctor(number = readCurrent()) {
+    if (!number) return null;
+    try {
+      const entry = JSON.parse(localStorage.getItem(PREFIX + 'account:' + number));
+      if (entry?.role !== 'doctor' || !entry.doctor?.id) return null;
+      const { id, firstName, lastName, medicalLicenseNumber } = entry.doctor;
+      return { id, name: [firstName, lastName].join(' '), medicalLicenseNumber };
+    } catch { return null; }
+  }
+
+  function accountDestination(destination) {
+    return currentDoctor() ? route(pages.staff) : safeReturn(destination);
+  }
+
   function setCurrent(number) {
     localStorage.setItem(ACTIVE, JSON.stringify(number));
     sessionStorage.removeItem(ACTIVE);
@@ -70,7 +84,8 @@
   }
 
   window.NobatinoAccount = Object.freeze({
-    PREFIX, safeReturn, authUrl, current: readCurrent, signIn: setCurrent, signOut: () => setCurrent(null), profileKey
+    PREFIX, safeReturn, authUrl, accountDestination, current: readCurrent, currentDoctor,
+    signIn: setCurrent, signOut: () => setCurrent(null), profileKey
   });
 
   const icons = {
@@ -107,13 +122,13 @@
       '<nav id="p03-account-menu" class="p03-account-menu" aria-label="حساب کاربری" hidden>' +
       '<div class="p03-account-summary"><strong></strong><bdi dir="ltr"></bdi></div>' +
       '<a class="p03-account-action" data-destination="home">' + icon('home') + 'صفحهٔ اصلی</a>' +
-      (host.dataset.p03Account === 'staff' || location.pathname === pages.panel.pathname ? '' :
-        '<a class="p03-account-action" data-destination="panel">' + icon('panel') + 'پنل کاربر</a>') +
+      '<a class="p03-account-action" data-account-panel hidden></a>' +
       '<button type="button" class="p03-account-action p03-account-exit">' + icon('exit') + 'خروج از حساب</button></nav>';
     for (const link of host.querySelectorAll('[data-destination]')) link.href = pages[link.dataset.destination].href;
     const toggle = host.querySelector('.p03-account-toggle');
     const avatar = host.querySelector('.p03-account-avatar');
     const menu = host.querySelector('.p03-account-menu');
+    const panelLink = host.querySelector('[data-account-panel]');
 
     function setOpen(open) {
       menu.hidden = !open;
@@ -147,8 +162,13 @@
       host.hidden = !number;
       for (const guest of guests) guest.hidden = Boolean(number);
       if (!number) return;
-      const details = profile(number);
-      const name = typeof details.fullName === 'string' ? details.fullName.trim() : '';
+      const doctor = currentDoctor(number);
+      const details = doctor ? {} : profile(number);
+      const name = doctor ? doctor.name : typeof details.fullName === 'string' ? details.fullName.trim() : '';
+      const panel = doctor ? pages.staff : pages.panel;
+      panelLink.hidden = location.pathname === panel.pathname || (!doctor && host.dataset.p03Account === 'staff');
+      panelLink.href = panel.href;
+      panelLink.innerHTML = icon('panel') + (doctor ? 'پنل پزشک' : 'پنل کاربر');
       menu.querySelector('strong').textContent = name || 'حساب کاربری';
       menu.querySelector('bdi').textContent = fa(number);
       if (typeof details.photo === 'string' && /^data:image\/[\w.+-]+;base64,/i.test(details.photo)) {
