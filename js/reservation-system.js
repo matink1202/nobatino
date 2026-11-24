@@ -68,9 +68,10 @@ const ReservationSystem = {
 	 * @param {string} startTime - HH:MM
 	 * @param {string} endTime - HH:MM
 	 * @param {number} consultationFee
+	 * @param {string} [visitDate] - Calendar date shown to the user (Gregorian YYYY-MM-DD)
 	 * @returns {Object} Reservation object
 	 */
-	createTemporaryHold(doctorId, appointmentDate, startTime, endTime, consultationFee) {
+	createTemporaryHold(doctorId, appointmentDate, startTime, endTime, consultationFee, visitDate) {
 		// Check for conflicts first
 		const conflict = this.checkConflict(doctorId, appointmentDate, startTime);
 		if (conflict) {
@@ -98,6 +99,8 @@ const ReservationSystem = {
 			remainingSeconds: 600, // 10 minutes = 600 seconds
 			paymentStatus: null
 		};
+
+		if (visitDate) reservation.visitDate = visitDate;
 
 		// Store in localStorage (prototype only)
 		this.saveReservation(reservation);
@@ -136,10 +139,14 @@ const ReservationSystem = {
 		return null;
 	},
 
+	isPaymentPending(reservation) {
+		return reservation?.status === this.STATES.TEMPORARY_HOLD ||
+			reservation?.status === this.STATES.AWAITING_PAYMENT;
+	},
+
 	blocksSlot(reservation, now = Date.now()) {
 		if (reservation.status === this.STATES.CONFIRMED) return true;
-		if (reservation.status !== this.STATES.TEMPORARY_HOLD &&
-			reservation.status !== this.STATES.AWAITING_PAYMENT) return false;
+		if (!this.isPaymentPending(reservation)) return false;
 
 		const expiresAt = Date.parse(reservation.expiresAt);
 		return !Number.isFinite(expiresAt) || expiresAt > now;
@@ -155,6 +162,9 @@ const ReservationSystem = {
 	checkExpiration(reservationId) {
 		const reservation = this.getReservation(reservationId);
 		if (!reservation) return null;
+		if (!this.isPaymentPending(reservation)) {
+			return { expired: reservation.status === this.STATES.EXPIRED, status: reservation.status };
+		}
 
 		const now = new Date();
 		const expiresAt = new Date(reservation.expiresAt);
@@ -192,6 +202,8 @@ const ReservationSystem = {
 			return { success: false, error: 'Reservation not found' };
 		}
 
+		if (!this.isPaymentPending(reservation)) return { success: false, error: 'NOT_PAYABLE' };
+
 		// Verify still in hold period
 		const expireCheck = this.checkExpiration(reservationId);
 		if (expireCheck.expired) {
@@ -227,6 +239,8 @@ const ReservationSystem = {
 		if (!reservation) {
 			return { success: false, error: 'Reservation not found' };
 		}
+
+		if (!this.isPaymentPending(reservation)) return { success: false, error: 'NOT_PAYABLE' };
 
 		// Verify still in hold period
 		const expireCheck = this.checkExpiration(reservationId);
@@ -265,6 +279,8 @@ const ReservationSystem = {
 		if (!reservation) {
 			return { success: false, error: 'Reservation not found' };
 		}
+
+		if (!this.isPaymentPending(reservation)) return { success: false, error: 'NOT_PAYABLE' };
 
 		// Mark as payment failed
 		reservation.status = this.STATES.PAYMENT_FAILED;
@@ -391,6 +407,11 @@ const ReservationSystem = {
 				window.dispatchEvent(new CustomEvent('reservation-expired', {
 					detail: { reservationId }
 				}));
+				return;
+			}
+
+			if (!this.isPaymentPending(expireCheck)) {
+				clearInterval(countdownInterval);
 				return;
 			}
 
